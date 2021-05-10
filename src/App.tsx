@@ -12,8 +12,8 @@ const NewNote = lazy(() => import("./pages/notes/NewNote"));
 function App() {
   const [isHome, setIsHome] = useState<boolean>(true);
 
-  const toggleHome = () => {
-    setIsHome(isHome => !isHome);
+  const toggleHome = (val: boolean) => {
+    setIsHome(val);
   };
 
   return (
@@ -23,7 +23,7 @@ function App() {
           value={{ isHome, toggleHome }}
         >
           {
-            IsHome
+            isHome
               ? null
               : <Navbar fixed="top" className="px-3">
                 <Navbar.Brand>

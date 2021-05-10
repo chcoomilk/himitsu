@@ -7,7 +7,6 @@ const useLoginStatus = () => {
   const [status, setStatus] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log(status, login)
   }, [status, login])
 
   useEffect(() => {
