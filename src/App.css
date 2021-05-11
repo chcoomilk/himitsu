@@ -52,3 +52,15 @@
 .Home-buttons button {
   margin: 10px;
 }
+
+.Find-note-form {
+  width: 30%;
+}
+
+.Find-note-form label {
+  margin-top: 10px;
+}
+
+.Find-note-form input, textarea {
+  text-align: center;
+}

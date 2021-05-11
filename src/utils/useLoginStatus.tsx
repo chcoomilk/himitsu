@@ -33,6 +33,6 @@ const useLoginStatus = () => {
   }, [token]);
 
   return { status, login }
-}
+};
 
 export default useLoginStatus;

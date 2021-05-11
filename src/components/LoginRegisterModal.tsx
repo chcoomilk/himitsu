@@ -40,5 +40,6 @@ const LoginRegisterModal: React.FC<DoShowModal> = ({ show }) => {
       </Modal.Footer>
     </Modal>
   );
-}
+};
+
 export default LoginRegisterModal;

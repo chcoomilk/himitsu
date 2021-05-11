@@ -1,23 +1,29 @@
 import { useEffect, useState } from "react";
-import { Form, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
 import LoginRegisterModal from "../../components/LoginRegisterModal";
 import useLoginStatus from "../../utils/useLoginStatus";
 
 const NewNote = () => {
   const { login, status } = useLoginStatus();
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [usn, seusn] = useState<string>("")
 
   useEffect(() => {
     if (status) login ? setShowModal(false) : setShowModal(false);
   }, [login, status]);
 
-  return <>
-    <LoginRegisterModal show={showModal} />
-    <header className="App-header">
-      <Form className="New-note-form">
+  const Submit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    console.log(usn);
+  };
+
+  return (
+    <>
+      <LoginRegisterModal show={showModal} />
+      <Form onSubmit={Submit} className="New-note-form">
         <Form.Group controlId="formBasicTitle">
           <Form.Label>Title</Form.Label>
-          <Form.Control type="text" placeholder="Enter note's title here" />
+          <Form.Control type="text" placeholder="Enter note's title here" onChange={e=>seusn(e.target.value)} />
         </Form.Group>
 
         <Form.Group controlId="formBasicDescription">
@@ -32,16 +38,17 @@ const NewNote = () => {
             delay={{ show: 250, hide: 400 }}
             overlay={((props) => (
               <Tooltip id="description-tooltip" {...props}>
-                Remember not to lose this note's password, otherwise there is no way to decrpyt your note. Not even the developers can help you with that!
+                Remember not to lose this note's password, otherwise there is no way to decrpyt your note. Not even the developers can help you!
               </Tooltip>
             ))}
           >
             <Form.Control type="password" placeholder="Enter super secret password" />
           </OverlayTrigger>
         </Form.Group>
+        <Button type="submit" className="mt-3">Submit</Button>
       </Form>
-    </header>
-  </>
+    </>
+  );
 };
 
 export default NewNote;
