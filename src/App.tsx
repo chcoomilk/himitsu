@@ -4,7 +4,7 @@ import { Navbar } from "react-bootstrap";
 import HomeIcon from "./home.png";
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { IsHome } from "./utils/contexts";
+import { Store } from "./utils/contexts";
 import { NewNotePath, FindNotePath, HomePath } from "./utils/constants";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -18,7 +18,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <Router>
-          <IsHome.Provider
+          <Store.Provider
             value={{ isHome, setIsHome }}
           >
             {
@@ -46,7 +46,7 @@ function App() {
                 <Route exact path={FindNotePath} component={FindNote} />
               </Switch>
             </Suspense>
-          </IsHome.Provider>
+          </Store.Provider>
         </Router>
       </header>
     </div>

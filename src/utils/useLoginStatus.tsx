@@ -7,9 +7,6 @@ const useLoginStatus = () => {
   const [status, setStatus] = useState<boolean>(false);
 
   useEffect(() => {
-  }, [status, login])
-
-  useEffect(() => {
     if (token) {
       (async () => {
         try {

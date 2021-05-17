@@ -1,11 +1,23 @@
 import React from "react";
 
-interface CheckIfHomeContext {
-  setIsHome: (truthy: boolean) => void,
-  isHome: boolean
+interface Login {
+  checkLogin: () => void,
+  token: string,
+  setToken: (token: string) => void,
 }
 
-export const IsHome = React.createContext<CheckIfHomeContext>({
+interface Store {
+  setIsHome: (truthy: boolean) => void,
+  isHome: boolean,
+  Login: Login
+}
+
+export const Store = React.createContext<Store>({
   setIsHome: () => { },
-  isHome: false
+  isHome: false,
+  Login : {
+    checkLogin: () => { },
+    token: "",
+    setToken: () => { },
+  }
 });
