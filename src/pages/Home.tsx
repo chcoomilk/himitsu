@@ -3,11 +3,11 @@ import { useContext, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router";
 import { FindNotePath, NewNotePath } from "../utils/constants";
-import { Store } from "../utils/contexts";
+import { StoreContext } from "../utils/contexts";
 
 const Home = () => {
   const history = useHistory();
-  const { setIsHome } = useContext(Store);
+  const { setIsHome } = useContext(StoreContext);
 
   useEffect(() => {
     setIsHome(true);
