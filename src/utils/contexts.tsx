@@ -2,7 +2,8 @@ import React from "react";
 
 interface Login {
   logout: () => void,
-  username: string,
+  username: string | null,
+  showLoginModal: (show: boolean) => void,
   setToken: (token: string) => void,
 }
 
@@ -18,6 +19,7 @@ export const StoreContext = React.createContext<Store>({
   login : {
     logout: () => { },
     username: "",
+    showLoginModal: () => { },
     setToken: () => { },
   }
 });

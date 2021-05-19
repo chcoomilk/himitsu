@@ -1,7 +1,6 @@
 import { Formik } from "formik";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { Button, Form, OverlayTrigger, Tooltip } from "react-bootstrap";
-import LoginRegisterModal from "../../components/LoginRegisterModal";
 import { StoreContext } from "../../utils/contexts";
 import * as yup from "yup";
 
@@ -12,20 +11,30 @@ const schema = yup.object().shape({
 });
 
 const NewNote = () => {
-  const { login: { username } } = useContext(StoreContext);
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const { login: { username, showLoginModal } } = useContext(StoreContext);
+
+  const checkStatus = useCallback(() => {
+    if (!username) {
+      showLoginModal(true);
+      return false;
+    }
+
+    return true;
+  }, [username, showLoginModal]);
 
   useEffect(() => {
-    username ? setShowModal(false) : setShowModal(true);
-  }, [username]);
+    checkStatus();
+  }, [checkStatus]);
 
   return (
     <>
-      <LoginRegisterModal show={showModal} />
       <Formik
         validationSchema={schema}
         onSubmit={val => {
-          console.log(val);
+          let loginStatus = checkStatus();
+          if (loginStatus) {
+            console.log(val);
+          }
         }}
         initialValues={{
           title: "",

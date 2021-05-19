@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Toast, Button, Form, Modal } from "react-bootstrap";
 import { useHistory } from "react-router";
-import { HomePath } from "../utils/constants";
 import * as yup from "yup";
 import { Formik } from "formik";
-import { useMutation } from "react-query";
+import axios from "axios";
+import { StoreContext } from "../utils/contexts";
 
 interface DoShowModal {
   show: boolean
@@ -21,26 +21,19 @@ const schema = yup.object().shape({
 });
 
 const LoginRegisterModal: React.FC<DoShowModal> = ({ show }) => {
+  const { login: { showLoginModal } } = useContext(StoreContext);
   const [showToast, setShowToast] = useState<boolean>(false);
   const [toastMsg, setToastMsg] = useState<string>("");
-  const {  } = useMutation((login_data: LoginData) => fetch({
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(login_data)
-  }));
   const history = useHistory();
 
   return (
     <Modal
       show={show}
-      backdrop="static"
-      keyboard={false}
+      onHide={() => showLoginModal(false)}
       centered
     >
       <Toast
-
+        show={false}
       >
         <Toast.Header>
           {toastMsg}
@@ -95,7 +88,7 @@ const LoginRegisterModal: React.FC<DoShowModal> = ({ show }) => {
         </Formik>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="danger" onClick={(() => { history.push(HomePath) })}>
+        <Button variant="danger" onClick={(() => showLoginModal(false))}>
           Nah
         </Button>
         <Button variant="primary">Login</Button>
