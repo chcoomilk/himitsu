@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 import { Navbar } from "react-bootstrap";
 import HomeIcon from "./home.png";
@@ -13,6 +13,20 @@ const FindNote = lazy(() => import("./pages/notes/FindNote"));
 
 function App() {
   const [isHome, setIsHome] = useState<boolean>(false);
+  const [token, setToken] = useState<string>("");
+
+  useEffect(() => {
+
+  }, []);
+
+  const checkLogin = () => {
+    let storageToken = localStorage.getItem("token");
+    if (!!storageToken) {
+      // setIsLogin(true);
+      setToken(storageToken)
+    }
+  };
+
 
   return (
     <div className="App">
@@ -27,6 +41,7 @@ function App() {
                 : <Navbar fixed="top" className="px-3">
                   <Navbar.Brand>
                     <Link to={HomePath}>
+                      {"<"}
                       <img
                         src={HomeIcon}
                         width="30"
