@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useHistory } from "react-router";
+import { HomePath } from "../utils/constants";
 
 interface DoShowModal {
   show: boolean
@@ -33,7 +34,7 @@ const LoginRegisterModal: React.FC<DoShowModal> = ({ show }) => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="danger" onClick={(() => { history.push("/") })}>
+        <Button variant="danger" onClick={(() => { history.push(HomePath) })}>
           Nah
         </Button>
         <Button variant="primary">Login/Register</Button>

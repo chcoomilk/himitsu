@@ -4,26 +4,23 @@ import * as yup from "yup";
 
 const schema = yup.object().shape({
   ID: yup.number().required(),
-  password: yup.string()
+  password: yup.string()  
 });
 
 const FindNote = () => {
-  const Submit = (val: any) => {
-    console.log(val);
-  };
-
   return (
     <Formik
       validationSchema={schema}
-      onSubmit={Submit}
+      onSubmit={val => {
+
+      }}
       initialValues={{
-        ID: "",
+        ID: 0,
         password: ""
       }}
     >
       {({
         handleSubmit,
-        handleBlur,
         handleChange,
         values,
         errors
@@ -37,7 +34,6 @@ const FindNote = () => {
               placeholder="Enter note's ID here"
               value={values.ID}
               onChange={handleChange}
-              onBlur={handleBlur}
               isInvalid={!!errors.ID}
             />
             <Form.Control.Feedback type="invalid">

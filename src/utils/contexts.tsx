@@ -1,23 +1,25 @@
 import React from "react";
 
 interface Login {
-  checkLogin: () => void,
-  token: string,
+  logout: () => void,
+  username: string | null,
+  showLoginModal: (show: boolean) => void,
   setToken: (token: string) => void,
 }
 
 interface Store {
   setIsHome: (truthy: boolean) => void,
   isHome: boolean,
-  Login: Login
+  login: Login
 }
 
-export const Store = React.createContext<Store>({
+export const StoreContext = React.createContext<Store>({
   setIsHome: () => { },
   isHome: false,
-  Login : {
-    checkLogin: () => { },
-    token: "",
+  login : {
+    logout: () => { },
+    username: "",
+    showLoginModal: () => { },
     setToken: () => { },
   }
 });
