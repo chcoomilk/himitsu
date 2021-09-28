@@ -1,0 +1,2 @@
+To yours truly,
+private note app built with actix on backend and good ol' react on frontend

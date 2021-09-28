@@ -1,38 +1,38 @@
-// import logo from '../logo.svg'; // chungga chngga want me own logo
 import { useContext, useEffect } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Stack } from "react-bootstrap";
 import { useHistory } from "react-router";
 import { FindNotePath, NewNotePath } from "../utils/constants";
-import { StoreContext } from "../utils/contexts";
+import { StoreContext } from "../utils/context";
 
 const Home = () => {
   const history = useHistory();
-  const { setIsHome } = useContext(StoreContext);
+  const { setShowHomeLogo } = useContext(StoreContext);
 
   useEffect(() => {
-    setIsHome(true);
+    setShowHomeLogo(false);
     return () => {
-      setIsHome(false);
+      setShowHomeLogo(true);
     }
-  }, [setIsHome]);
+  }, [setShowHomeLogo]);
 
   return <>
-    <header className="App-header">
       <h1>himitsu</h1>
       <p>Onii-chan's simple, secure, and private ( ͡° ͜ʖ ͡°) note sharing web app</p>
-      <div className="Home-buttons">
+      <Stack direction="horizontal" className="mx-auto" gap={3}>
         <Button
+          size="lg"
           variant="success"
           onClick={(e) => {
             e.preventDefault();
             history.push(NewNotePath);
           }}>Add</Button>
-        <Button onClick={(e) => {
+        <Button
+          size="lg"
+          onClick={(e) => {
           e.preventDefault();
           history.push(FindNotePath);
         }}>Find</Button>
-      </div>
-    </header>
+      </Stack>
   </>
 };
 
