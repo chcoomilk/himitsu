@@ -1,4 +1,4 @@
-export const BaseUrl = "http://localhost:8080";
+export const BaseUrl = "https://himitsu-actix.herokuapp.com";
 
 export const HomePath = "/";
 export const AboutPath = "/about";
