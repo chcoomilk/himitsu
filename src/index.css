@@ -22,8 +22,3 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-.modal .modal-content {
-  background-color: #282c34;
-  color: white;
-}

@@ -1,10 +1,9 @@
 import { Formik } from "formik";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Button, Form, OverlayTrigger, Tooltip, Row, Col, Container } from "react-bootstrap";
 import * as yup from "yup";
 import ModalOnSaveNote from "../../components/ModalOnSaveNote";
 import { BaseUrl } from "../../utils/constants";
-import { StoreContext } from "../../utils/context";
 
 const schema = yup.object().shape({
   title: yup.string().required().max(100),
@@ -13,14 +12,13 @@ const schema = yup.object().shape({
 });
 
 const NewNote = () => {
-  const { theme } = useContext(StoreContext);
   const [showModal, setShowModal] = useState(false);
   const [note, setNote] = useState({
     id: 0,
     expiryTime: "uwu",
     password: "",
   });
-
+  
   return (
     <Container fluid>
       <ModalOnSaveNote show={showModal} setShow={setShowModal} noteId={note.id} expiryTime={note.expiryTime} password={note.password} />
@@ -87,7 +85,6 @@ const NewNote = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     isInvalid={touched.title && !!errors.title}
-                    style={theme}
                     autoComplete="off"
                   />
                 </Form.Group>
@@ -104,7 +101,6 @@ const NewNote = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     isInvalid={touched.content && !!errors.content}
-                    style={theme}
                   />
                 </Form.Group>
 
@@ -134,7 +130,6 @@ const NewNote = () => {
                           onBlur={handleBlur}
                           isInvalid={touched.password && !!errors.password}
                           autoComplete="new-password"
-                          style={theme}
                         />
                       </>
                     )}

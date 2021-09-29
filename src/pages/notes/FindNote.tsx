@@ -1,10 +1,8 @@
 import { Formik } from "formik";
-import { useContext } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap"
 import { useHistory } from "react-router";
 import * as yup from "yup";
 // import { BaseUrl } from "../../utils/constants";
-import { StoreContext } from "../../utils/context";
 // import { NoteProps } from "./Note";
 
 const schema = yup.object().shape({
@@ -14,7 +12,6 @@ const schema = yup.object().shape({
 
 const FindNote = () => {
   const history = useHistory();
-  const { theme } = useContext(StoreContext);
 
   return (
     <Container fluid>
@@ -51,7 +48,6 @@ const FindNote = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     isInvalid={touched.ID && !!errors.ID}
-                    style={theme}
                   />
                 </Form.Group>
 
@@ -67,7 +63,6 @@ const FindNote = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     isInvalid={touched.password && !!errors.password}
-                    style={theme}
                   />
                 </Form.Group>
                 <Button type="submit" className="mt-3">Submit</Button>

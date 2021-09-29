@@ -1,0 +1,52 @@
+@import "~bootstrap/scss/bootstrap";
+// @import url("https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.0/dist/css/bootstrap-night.min.css");
+
+$input-bg-color: rgb(36, 40, 46);
+$input-border-color: rgb(82, 82, 82);
+$text-color : rgb(210, 210, 210);
+
+.App {
+  text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: $text-color;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.modal .modal-content, .modal .modal-header, .modal .modal-footer {
+  background-color: $input-bg-color;
+  color: $text-color;
+  border-style: none;
+}
+
+.accordion .accordion-button, .accordion .accordion-item {
+  background-color: $input-bg-color;
+  color: $text-color;
+}
+
+.accordion .accordion-body {
+  font-size: 16px;
+}
+
+.accordion .accordion-button::after {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23e1e1e1'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+
+.form-control, .form-control:disabled, .form-control[readonly], .form-control:focus {
+  background-color: $input-bg-color;
+  color: $text-color;
+  border-color: $input-border-color;
+}
+
+.btn-outline-light {
+  border-color: $input-border-color;
+}

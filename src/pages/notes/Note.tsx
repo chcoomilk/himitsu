@@ -1,8 +1,7 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Alert, Col, Container, Form, FormControl, InputGroup, Modal, Row, Button } from "react-bootstrap";
 import { useHistory, useParams } from "react-router";
 import { BaseUrl } from "../../utils/constants";
-import { StoreContext } from "../../utils/context";
 
 interface NoteData {
   id: number;
@@ -27,7 +26,6 @@ interface Params {
 }
 
 const Note = ({ password }: NoteProps) => {
-  const { theme } = useContext(StoreContext);
   const history = useHistory();
   const { id }: Params = useParams();
   isNaN(+id) && history.push("/find");
@@ -161,7 +159,6 @@ const Note = ({ password }: NoteProps) => {
                       onChange={e => setPasswordFromModal(e.target.value)}
                       value={passwordFromModal}
                       aria-describedby="basic-addon2"
-                      style={theme}
                     />
                   </InputGroup>
                 </Col>
@@ -191,7 +188,6 @@ const Note = ({ password }: NoteProps) => {
                   name="title"
                   className="text-center"
                   value={note.title}
-                  style={theme}
                   readOnly
                 />
               </Form.Group>
@@ -204,7 +200,6 @@ const Note = ({ password }: NoteProps) => {
                   className="text-center"
                   rows={3}
                   value={note.content}
-                  style={theme}
                   readOnly
                 />
               </Form.Group>
@@ -216,7 +211,6 @@ const Note = ({ password }: NoteProps) => {
                   name="created"
                   className="text-center"
                   value={note.creationTime}
-                  style={theme}
                   readOnly
                 />
               </Form.Group>
@@ -228,7 +222,6 @@ const Note = ({ password }: NoteProps) => {
                   name="expires"
                   className="text-center"
                   value={note.expiryTime}
-                  style={theme}
                   readOnly
                 />
               </Form.Group>

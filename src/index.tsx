@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+if (!process.env.REACT_APP_BACKEND_URL) throw new Error("Server URL not provided");
+
 ReactDOM.render(
   <React.StrictMode>
     <App />

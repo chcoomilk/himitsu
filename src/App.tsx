@@ -1,11 +1,10 @@
-import React, { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { BrowserRouter as Router, Link, NavLink, Redirect, Route, Switch } from "react-router-dom";
 import { Navbar, Nav, Spinner } from "react-bootstrap";
 import HomeIcon from "./home.png";
 import { StoreContext } from "./utils/context";
 import { AboutPath, NewNotePath, FindNotePath, HomePath, NotePath } from "./utils/constants";
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.scss';
 
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
@@ -15,7 +14,6 @@ const Note = lazy(() => import("./pages/notes/Note"));
 
 function App() {
   const [showHomeLogo, setShowHomeLogo] = useState<boolean>(true);
-  const [theme] = useState<React.CSSProperties>({ backgroundColor: "#1e2127", color: "whitesmoke", border: "none" });
 
   return (
     <div className="App">
@@ -23,7 +21,6 @@ function App() {
         <Router>
           <StoreContext.Provider
             value={{
-              theme: theme,
               setShowHomeLogo: setShowHomeLogo
             }}
           >
