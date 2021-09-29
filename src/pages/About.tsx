@@ -54,7 +54,7 @@ const About = () => {
             }}>.</span>
           </h3>
 
-          <h2>
+          <h2 className="mt-5">
             FAQ
           </h2>
           <Accordion flush className="accordion">
