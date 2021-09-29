@@ -4,7 +4,7 @@ import { Navbar, Nav, Spinner } from "react-bootstrap";
 import HomeIcon from "./home.png";
 import { StoreContext } from "./utils/context";
 import { AboutPath, NewNotePath, FindNotePath, HomePath, NotePath } from "./utils/constants";
-import './App.scss';
+import './css/App.scss';
 
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
