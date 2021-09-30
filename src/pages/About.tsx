@@ -113,7 +113,7 @@ const About = () => {
             </Accordion.Item>
 
             <Accordion.Item eventKey="4">
-              <Accordion.Header>What if my secret note got leaked because of the backend app got hacked?</Accordion.Header>
+              <Accordion.Header>What will happen to my secret note if the backend app got hacked?</Accordion.Header>
               <Accordion.Body>
                 That is where your password comes in to help. <br /> <br />
                 So, I'm assuming you know how my app in the backend works.
