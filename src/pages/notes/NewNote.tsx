@@ -18,6 +18,8 @@ const NewNote = () => {
     expiryTime: "uwu",
     password: "",
   });
+  // eslint-disable-next-line
+  const [_, setSubmitFail] = useState(false);
   
   return (
     <Container fluid>
@@ -53,10 +55,12 @@ const NewNote = () => {
                     id: data.id,
                     password: val.password
                   });
+                  setSubmitFail(false);
                   setShowModal(true);
                 }
               } catch (error) {
-                console.log(error);
+                  setSubmitFail(true);
+                  console.log(error);
               }
             }}
             initialValues={{
@@ -69,6 +73,7 @@ const NewNote = () => {
               handleSubmit,
               handleChange,
               handleBlur,
+              isSubmitting,
               values,
               errors,
               touched
@@ -135,7 +140,9 @@ const NewNote = () => {
                     )}
                   </OverlayTrigger>
                 </Form.Group>
-                <Button size="lg" type="submit">Save</Button>
+                <Button size="lg" type="submit" disabled={isSubmitting} onClick={e => {
+                  handleSubmit();
+                }}>Save</Button>
               </Form>
             )}
           </Formik>
