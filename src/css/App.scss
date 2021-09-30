@@ -1,5 +1,6 @@
 @import "imports";
 
+$default-bg-color: rgb(40, 44, 52);
 $input-bg-color: rgb(36, 40, 46);
 $input-border-color: rgb(82, 82, 82);
 $text-color-normal : rgb(210, 210, 210);
@@ -31,9 +32,13 @@ a:hover {
 }
 
 .modal .modal-content, .modal .modal-header, .modal .modal-footer {
-  background-color: $input-bg-color;
+  background-color: $default-bg-color;
   color: $text-color-normal;
   border-style: none;
+}
+
+.modal .btn-close {
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fafafa'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") transparent center/1em auto no-repeat;
 }
 
 .accordion .accordion-button, .accordion .accordion-item {
@@ -52,7 +57,7 @@ a:hover {
 .form-control, .form-control:disabled, .form-control[readonly], .form-control:focus {
   background-color: $input-bg-color;
   color: $text-color-normal;
-  border-color: $input-border-color;
+  border-style: none;
 }
 
 .btn-outline-light {

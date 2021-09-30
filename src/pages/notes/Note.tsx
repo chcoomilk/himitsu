@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Col, Container, Form, FormControl, InputGroup, Modal, Row, Button } from "react-bootstrap";
 import { useHistory, useParams } from "react-router";
+import useTitle from "../../custom-hooks/useTitle";
 import { BaseUrl } from "../../utils/constants";
 
 interface NoteData {
@@ -25,10 +26,11 @@ interface Params {
   id: string
 }
 
-const Note = ({ password }: NoteProps) => {
+const Note = (props: NoteProps) => {
   const history = useHistory();
   const { id }: Params = useParams();
   isNaN(+id) && history.push("/find");
+  const setTitle = useTitle("Loading...");
 
   const [note, setNote] = useState<NoteData>({
     id: +id,
@@ -84,6 +86,7 @@ const Note = ({ password }: NoteProps) => {
           expiryTime: readableExpiryTime,
           creationTime: readableCreationTime
         });
+        setTitle(data.title);
       } else {
         switch (response.status) {
           case 404:
@@ -101,13 +104,13 @@ const Note = ({ password }: NoteProps) => {
     } catch (error) {
       console.log(error);
     }
-  }, [id]);
+  }, [id, setTitle]);
 
   useEffect(() => {
-    const the_one = password || localStorage.getItem("pswd") || "";
+    const password = props.password || localStorage.getItem("pswd") || "";
     localStorage.removeItem("pswd");
-    fetchData(the_one);
-  }, [fetchData, password]);
+    fetchData(password);
+  }, [fetchData, props]);
 
   return (
     <>
