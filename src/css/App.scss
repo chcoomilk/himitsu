@@ -2,7 +2,16 @@
 
 $input-bg-color: rgb(36, 40, 46);
 $input-border-color: rgb(82, 82, 82);
-$text-color : rgb(210, 210, 210);
+$text-color-normal : rgb(210, 210, 210);
+$text-color-darken : rgb(190, 190, 190);
+
+a {
+  color: $text-color-normal;
+}
+
+a:hover {
+  color: $text-color-darken;
+}
 
 .App {
   text-align: center;
@@ -13,7 +22,7 @@ $text-color : rgb(210, 210, 210);
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: $text-color;
+  color: $text-color-normal;
 }
 
 .App-logo {
@@ -23,13 +32,13 @@ $text-color : rgb(210, 210, 210);
 
 .modal .modal-content, .modal .modal-header, .modal .modal-footer {
   background-color: $input-bg-color;
-  color: $text-color;
+  color: $text-color-normal;
   border-style: none;
 }
 
 .accordion .accordion-button, .accordion .accordion-item {
   background-color: $input-bg-color;
-  color: $text-color;
+  color: $text-color-normal;
 }
 
 .accordion .accordion-body {
@@ -42,7 +51,7 @@ $text-color : rgb(210, 210, 210);
 
 .form-control, .form-control:disabled, .form-control[readonly], .form-control:focus {
   background-color: $input-bg-color;
-  color: $text-color;
+  color: $text-color-normal;
   border-color: $input-border-color;
 }
 

@@ -61,13 +61,14 @@ const About = () => {
             <Accordion.Item eventKey="0">
               <Accordion.Header>How can we trust you not logging our very secret and delicate stuff?</Accordion.Header>
               <Accordion.Body>
-                "Sagiri, you have to trust me.", said Masamune while pinning her little sister down on the be-... <br /> <br />
-                Ehm, erm.. In other words, you can and you can't. <br />
-                You can check out what is happening inside my application in my github
-                if there's a line of code suspiciously saving personal info and all that,
-                but what you can't trust me on is if the applications
-                that I deployed are EXACTLY the same as the ones in the source code,
-                meaning I can add some evil line of code to my own personal gain before deploying my app to the internet. <br /> <br />
+                "Sagiri, you have to trust me.", said Masamune while pinning her little sister down on the be-... <br />
+                Ehm, erm.. in other words, you can't, {" "}
+                <a href="https://www.youtube.com/watch?v=TN25ghkfgQA">or can you</a>? 
+                <br /> <br />
+                You can check out how my application work on my GitHub. 
+                You can see if there's any line of code suspiciously saving personal info and all that. <br />
+                But, what you can't trust me is that the applications I deployed are EXACTLY the same as the ones in the source code. 
+                This means I can add some evil line of code to steal your personal data before deploying my app to the internet.  <br /> <br />
                 So for me to gain my users' trust, here is a kanna gif <br />
                 <Image fluid src={kanna} alt="scary_dragon" className="pt-3 pb-3" />
               </Accordion.Body>
@@ -100,13 +101,14 @@ const About = () => {
             <Accordion.Item eventKey="3">
               <Accordion.Header>Why don't you encrypt my secret note on the frontend side?</Accordion.Header>
               <Accordion.Body>
-                I'm always told to not put anything supposedly private or sensitive on the frontend side. <br /> <br />
                 Let's say that I encrypt your stuff on the frontend and save the encrypted data on the backend.
                 And then, say there's some sketchy dude that happened to guess right the ID of your secret note and decided to request it for himself.
                 Because it's encrypted on the frontend, the backend has no idea if the request is coming from you or the people you trust.
                 Now, back to the sketchy dude I mentioned, he will get the encrypted message from the server
                 and brute force his way in. <br /> <br />
-                <Image fluid src={sponge} alt="scary_dragon" className="pt-3 pb-3" />
+                <Image fluid src={sponge} alt="sponge" className="pt-3 pb-3" /> <br />
+                That said, it maybe possible to implement end-to-end encryption or such method alike inside my app. 
+                But, I just don't have enough experience to do it and I don't want to risk it.
               </Accordion.Body>
             </Accordion.Item>
 
@@ -123,6 +125,13 @@ const About = () => {
               </Accordion.Body>
             </Accordion.Item>
 
+            <Accordion.Item eventKey="4.1">
+              <Accordion.Header>How secure is it?</Accordion.Header>
+              <Accordion.Body>
+                I would say it's as secure as it can get. I will try my best to get to today's standard.
+              </Accordion.Body>
+            </Accordion.Item>
+
             <Accordion.Item eventKey="5">
               <Accordion.Header>OK, but what if the actual server where the application hosted or my TLS connection got hacked?</Accordion.Header>
               <Accordion.Body>
@@ -134,7 +143,7 @@ const About = () => {
               <Accordion.Header>Speaking of host, where do you deploy this app's backend?</Accordion.Header>
               <Accordion.Body>
                 I'm currently using the free tier of Heroku.. mhm, yes i'm dirt poor very cool <br />
-                <Image fluid src={sad} alt="padlock_example" className="pt-3 pb-3" />
+                <Image fluid src={sad} alt="sad" className="pt-3 pb-3" />
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
