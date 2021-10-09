@@ -34,21 +34,30 @@ const ModalOnNewNote = ({ show, setShow, noteId, expiryTime, password }: Props) 
             </Col>
           </Form.Group>
 
-          <Form.Group as={Row} className="mb-3" controlId="formReadOnlyPassword">
-            <Form.Label column sm="3">
-              Password:
-            </Form.Label>
-            <Col sm="9">
-              <InputGroup className="mb-3">
-                <FormControl
-                  value={password.replace(/\d/g, "●")}
-                  aria-describedby="basic-addon2"
-                  readOnly
-                />
-                <Button variant="outline-light" id="button-addon2" onClick={() => navigator.clipboard.writeText(password)}>Copy</Button>
-              </InputGroup>
-            </Col>
-          </Form.Group>
+          {
+            password
+              ? (
+                <Form.Group as={Row} className="mb-3" controlId="formReadOnlyPassword">
+                  <Form.Label column sm="3">
+                    Password:
+                  </Form.Label>
+                  <Col sm="9">
+                    <InputGroup className="mb-3">
+                      <FormControl
+                        type="password"
+                        value={password}
+                        aria-describedby="basic-addon2"
+                        readOnly
+                        autoComplete="new-password"
+                      />
+                      <Button variant="outline-light" id="button-addon2" onClick={() => navigator.clipboard.writeText(password)}>Copy</Button>
+                    </InputGroup>
+                  </Col>
+                </Form.Group>
+              ) : (
+                null
+              )
+          }
 
           <Form.Group as={Row} className="mb-3" controlId="formReadOnlyExpiryTime">
             <Form.Label column sm="3">
@@ -57,7 +66,7 @@ const ModalOnNewNote = ({ show, setShow, noteId, expiryTime, password }: Props) 
             <Col sm="9">
               <InputGroup className="mb-3">
                 <FormControl
-                  value={expiryTime + " | 30 mins from creation"}
+                  value={expiryTime}
                   aria-describedby="basic-addon2"
                   readOnly
                 />

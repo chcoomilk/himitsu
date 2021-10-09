@@ -1,10 +1,24 @@
+// $white:    rgb(210, 210, 210) !default;
+// $gray-100: #212529 !default;
+// $gray-200: #343a40 !default;
+// $gray-300: #495057 !default;
+// $gray-400: #6c757d !default;
+// $gray-500: #adb5bd !default;
+// $gray-600: #ced4da !default;
+// $gray-700: #dee2e6 !default;
+// $gray-800: #e9ecef !default;
+// $gray-900: #f8f9fa !default;
+// $black:    #fff !default;
 @import "imports";
 
 $default-bg-color: rgb(40, 44, 52);
 $input-bg-color: rgb(36, 40, 46);
+$input-bg-color-disabled: rgb(32, 36, 42);
 $input-border-color: rgb(82, 82, 82);
 $text-color-normal : rgb(210, 210, 210);
 $text-color-darken : rgb(190, 190, 190);
+$text-color-black: rgb(5, 81, 96);
+$text-color-black-lighten: rgb(65, 141, 156);
 
 a {
   color: $text-color-normal;
@@ -14,9 +28,13 @@ a:hover {
   color: $text-color-darken;
 }
 
+p {
+  font-size: 1.2vw;
+}
+
 .App {
   text-align: center;
-  background-color: #282c34;
+  background-color: $default-bg-color;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -54,12 +72,37 @@ a:hover {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23e1e1e1'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
 }
 
-.form-control, .form-control:disabled, .form-control[readonly], .form-control:focus {
+.form-control, .form-control[readonly], .form-control:focus {
   background-color: $input-bg-color;
   color: $text-color-normal;
   border-style: none;
 }
 
+.form-control:disabled {
+  background-color: $input-bg-color-disabled;
+  color: $text-color-normal;
+}
+
 .btn-outline-light {
   border-color: $input-border-color;
+}
+
+input.form-range::-moz-range-track {
+  background-color: $input-bg-color;
+}
+
+input.form-range::-ms-track {
+  background-color: $input-bg-color;
+}
+
+input.form-range::-webkit-slider-runnable-track {
+  background-color: $input-bg-color;
+}
+
+a#special-alert-link {
+  color: $text-color-black;
+}
+
+a#special-alert-link:hover {
+  color: $text-color-black-lighten;
 }

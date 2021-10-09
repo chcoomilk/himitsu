@@ -1,17 +1,18 @@
 import { Formik } from "formik";
+import { useContext } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap"
 import { useHistory } from "react-router";
 import * as yup from "yup";
-// import { BaseUrl } from "../../utils/constants";
-// import { NoteProps } from "./Note";
+import { StoreContext } from "../../utils/context";
 
 const schema = yup.object().shape({
-  ID: yup.number().required(),
-  password: yup.string().required().min(1).max(50)
+  ID: yup.string().required(),
+  password: yup.string().min(1).max(50)
 });
 
 const FindNote = () => {
   const history = useHistory();
+  const { setPassword } = useContext(StoreContext);
 
   return (
     <Container fluid>
@@ -20,8 +21,8 @@ const FindNote = () => {
           <Formik
             validationSchema={schema}
             onSubmit={async (val) => {
-              localStorage.setItem("pswd", val.password);
-              history.push("/n/" + val.ID, val);
+              setPassword(val.password);
+              history.push("/n/" + val.ID);
             }}
             initialValues={{
               ID: "",
@@ -40,7 +41,7 @@ const FindNote = () => {
                 <Form.Group controlId="formBasicId" className="mb-3 pb-2">
                   <Form.Label>ID</Form.Label>
                   <Form.Control
-                    type="number"
+                    type="text"
                     name="ID"
                     placeholder="Enter note's ID here"
                     className="text-center"
@@ -58,7 +59,7 @@ const FindNote = () => {
                     name="password"
                     placeholder="Enter super secret password"
                     className="text-center"
-                    autoComplete="current-password"
+                    autoComplete="on"
                     value={values.password}
                     onChange={handleChange}
                     onBlur={handleBlur}
