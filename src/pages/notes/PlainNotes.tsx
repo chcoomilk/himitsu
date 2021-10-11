@@ -7,8 +7,9 @@ import useTitle from "../../custom-hooks/useTitle";
 import { get_plain_note } from "../../queries/get_plain_note";
 import { StoreContext } from "../../utils/context";
 import { generate_face } from "../../utils/generate_face";
-import { BasicNote } from "../../utils/types";
+import { BasicNote, FieldsWithEncryption } from "../../utils/types";
 import cryptojs from "crypto-js";
+import { timeConfig } from "../../utils/constants";
 
 interface PlainNoteProps {
   id: string,
@@ -34,8 +35,8 @@ const PlainNote = (props: PlainNoteProps) => {
       onSuccess: result => {
         if (result.is_ok) {
           let data = result.data;
-          const readableExpiryTime = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleTimeString();
-          const readableCreationTime = new Date(data.created_at.secs_since_epoch * 1000).toLocaleTimeString();
+          const readableExpiryTime = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, timeConfig);
+          const readableCreationTime = new Date(data.created_at.secs_since_epoch * 1000).toLocaleString(undefined, timeConfig);
           setIsEncrypted(data.is_encrypted);
           setPlainNote({
             id: data.id,
@@ -46,6 +47,7 @@ const PlainNote = (props: PlainNoteProps) => {
           });
           setTitle(data.title);
         } else {
+          setTitle(generate_face());
           setAlerts(result.error);
         }
       },
@@ -61,39 +63,44 @@ const PlainNote = (props: PlainNoteProps) => {
     }
   );
 
-  const decrypt = useCallback((password: string) => {
-    const decrypted_content = cryptojs.AES.decrypt(plainNote.content, password).toString(cryptojs.enc.Utf8);
-    const decrypted_title = cryptojs.AES.decrypt(plainNote.title, password).toString(cryptojs.enc.Utf8);
-    if (decrypted_title || decrypted_content) {
-      
-    }
-    setPlainNote(value => {
-      return {
-        ...value,
-        title: decrypted_title,
-        content: decrypted_content,
-      }
-    })
-  }, [plainNote, setPlainNote]);
+  const decrypt = useCallback((password: string): FieldsWithEncryption => {
+    let title = cryptojs.AES.decrypt(plainNote.title, password).toString(cryptojs.enc.Utf8);
+    let content = cryptojs.AES.decrypt(plainNote.content, password).toString(cryptojs.enc.Utf8);
+    return { content, title };
+  }, [plainNote]);
 
   useEffect(() => {
     if (isEncrypted) {
       if (password) {
-        decrypt(password);
+        let { title, content } = decrypt(password);
+        if (title !== "" || content !== "") {
+          setPlainNote(value => {
+            return {
+              ...value,
+              title,
+              content
+            };
+          });
+        } else {
+          setAlerts(value => {
+            return {
+              ...value,
+              wrongPassword: true
+            };
+          });
+        }
       } else {
         setShowPasswordModal(true);
       }
     }
-    // eslint-disable-next-line
-  }, [isEncrypted, password, setShowPasswordModal]);
+  }, [isEncrypted, password, setShowPasswordModal, decrypt, setAlerts]);
 
   useEffect(() => {
     if (passwordFromModal) {
       decrypt(passwordFromModal);
       setShowPasswordModal(false);
     }
-    // eslint-disable-next-line
-  }, [passwordFromModal]);
+  }, [passwordFromModal, decrypt]);
 
   // const { } = useQuery({
   //   queryKey: ["get_plain", props.id] as const,
@@ -103,7 +110,7 @@ const PlainNote = (props: PlainNoteProps) => {
   return (
     <Container fluid>
       <ModalForPassword show={showPasswordModal} setShow={setShowPasswordModal} setPassword={setPasswordFromModal} />
-      <NoteResult data={plainNote} />
+      <NoteResult data={plainNote} isLoading={isLoading} />
     </Container>
   );
 };

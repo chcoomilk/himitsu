@@ -1,21 +1,23 @@
-import { Col, Form, Row } from "react-bootstrap";
+import { Col, Form, Row, Spinner } from "react-bootstrap";
 
-interface NoteData {
+interface Props {
   data: {
     id: string | number;
     title: string;
     content: string;
     expiryTime: string;
     creationTime: string;
-  }
+  },
+  isLoading: boolean
 }
 
-const NoteResult = (props: NoteData) => {
+const NoteResult = (props: Props) => {
   const note = props.data;
 
   return (
     <Row>
       <Col xl={{ span: 4, offset: 4 }} xs={{ span: 10, offset: 1 }}>
+        <Spinner hidden={!props.isLoading} animation="border" />
         <Form noValidate>
           <Form.Group controlId="formBasicTitle" className="mb-3 pb-2">
             <Form.Label>Title</Form.Label>

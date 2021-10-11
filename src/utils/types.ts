@@ -1,7 +1,8 @@
 export interface ErrorKind {
   notFound: boolean,
   wrongPassword: boolean,
-  serverError: boolean
+  serverError: boolean,
+  fieldError: string[],
 }
 
 export interface BasicNote {
@@ -10,4 +11,9 @@ export interface BasicNote {
   content: string;
   expiryTime: string;
   creationTime: string;
+}
+
+export interface FieldsWithEncryption {
+  title: string,
+  content: string,
 }

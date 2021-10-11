@@ -1,10 +1,11 @@
 import { Formik } from "formik";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Form, OverlayTrigger, Tooltip, Row, Col, Container, DropdownButton, Dropdown, InputGroup, Stack } from "react-bootstrap";
 import * as yup from "yup";
 import ModalOnSaveNote from "../../components/ModalOnSaveNote";
-import { BaseUrl } from "../../utils/constants";
+import { BaseUrl, timeConfig } from "../../utils/constants";
 import cryptojs from "crypto-js";
+import { StoreContext } from "../../utils/context";
 
 const schema = yup.object().shape({
   title: yup.string().required().max(100),
@@ -20,6 +21,7 @@ enum EncryptionMethod {
 }
 
 const NewNote = () => {
+  const { setAlerts } = useContext(StoreContext);
   const [showModal, setShowModal] = useState(false);
   const [noteResult, setNoteResult] = useState({
     id: 0,
@@ -27,8 +29,6 @@ const NewNote = () => {
     password: "",
   });
   const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.ServerEncryption);
-  // eslint-disable-next-line
-  const [_, setSubmitFail] = useState(false);
   const [isPasswordInvalid, setPasswordInvalid] = useState(false);
 
   const to_friendly = (seconds: number) => {
@@ -47,8 +47,6 @@ const NewNote = () => {
           <Formik
             validationSchema={schema}
             onSubmit={async (val) => {
-              console.log(isPasswordInvalid);
-              
               let url = BaseUrl + "/notes";
               let converted_val;
 
@@ -56,6 +54,12 @@ const NewNote = () => {
                 url += "/new";
                 if (!val.password) {
                   setPasswordInvalid(true);
+                  setAlerts(value => {
+                    return {
+                      ...value,
+                      fieldError: ["password"],
+                    };
+                  });
                   return;
                 }
                 converted_val = {
@@ -106,17 +110,22 @@ const NewNote = () => {
                     id: number
                   }
                   const data: Response = await result.json();
-                  const readableDateTime = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleTimeString();
+                  const date_from_epoch = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, timeConfig);
+                  const readableDateTime = date_from_epoch;
                   setNoteResult({
                     expiryTime: readableDateTime,
                     id: data.id,
                     password: val.password
                   });
-                  setSubmitFail(false);
                   setShowModal(true);
                 }
               } catch (error) {
-                setSubmitFail(true);
+                setAlerts(value => {
+                  return {
+                    ...value,
+                    serverError: true
+                  };
+                });
                 console.log(error);
               }
             }}

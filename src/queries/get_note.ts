@@ -32,6 +32,7 @@ export const get_note = async ({ id, password }: GetNoteField): Promise<Result> 
     notFound: false,
     wrongPassword: false,
     serverError: false,
+    fieldError: [],
   };
   let data: ResponseData = {
     id: 0,

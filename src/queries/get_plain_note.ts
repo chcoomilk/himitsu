@@ -28,6 +28,7 @@ export const get_plain_note = async (id: string): Promise<Result> => {
     notFound: false,
     wrongPassword: false,
     serverError: false,
+    fieldError: [],
   };
   let data: ResponseData = {
     id: "",

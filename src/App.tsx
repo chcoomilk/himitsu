@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import { BrowserRouter as Router, Link, NavLink, Redirect, Route, Switch } from "react-router-dom";
+import { match } from "react-router";
 import { Navbar, Nav, Spinner, Alert } from "react-bootstrap";
 import HomeIcon from "./media/home.png";
 import { StoreContext } from "./utils/context";
@@ -23,12 +24,12 @@ function App() {
     notFound: false,
     serverError: false,
     wrongPassword: false,
-  })
+    fieldError: [],
+  });
 
   return (
     <div className="App">
       <Router>
-
         <StoreContext.Provider
           value={{
             setShowHomeLogo: setShowHomeLogo,
@@ -59,19 +60,14 @@ function App() {
               <Navbar.Toggle />
               <Navbar.Collapse className="justify-content-end text-white">
                 <Nav>
-                  <Nav.Link>
-                    <NavLink
-                      to={AboutPath}
-                      className=""
-                      style={{
-                        textDecorationLine: "none",
-                        paddingRight: "10px"
-                      }}
-                      activeStyle={{
-                        textDecorationLine: "underline"
-                      }}
-                      isActive={(match) => !match ? false : true}
-                    >About</NavLink>
+                  <Nav.Link
+                    as={NavLink}
+                    to={AboutPath}
+                    activeStyle={{
+                      textDecorationLine: "underline"
+                    }}
+                    isActive={(match: match | null) => !match ? false : true}
+                  >About
                   </Nav.Link>
                 </Nav>
               </Navbar.Collapse>
@@ -96,6 +92,7 @@ function App() {
                 </Link>?
               </p>
             </Alert>
+
             <Alert
               variant="danger"
               show={alerts.wrongPassword} onClose={() => setAlerts((previousValue) => {
@@ -114,6 +111,16 @@ function App() {
               dismissible
             >
               Oops, seems like our server is having some problems
+            </Alert>
+
+            <Alert
+              variant="danger"
+              show={!!alerts.fieldError.length} onClose={() => setAlerts((previousValue) => {
+                return { ...previousValue, fieldError: [] };
+              })}
+              dismissible
+            >
+              Invalid input on: {alerts.fieldError.join(", ")}
             </Alert>
 
             <Suspense fallback={

@@ -17,6 +17,7 @@ export const StoreContext = React.createContext<Store>({
     notFound: false,
     serverError: false,
     wrongPassword: false,
+    fieldError: [],
   },
   password: "",
 });

@@ -133,7 +133,13 @@ const About = () => {
               <Accordion.Header>How secure is it?</Accordion.Header>
               <Accordion.Body>
                 I would say it's as secure as it can get. I will try my best to keep everything up by today's standard.
-                <Image fluid src={padlock} alt="padlock_example" className="pt-3 pb-3" /> <br />
+                <Image fluid src={padlock} alt="padlock_example" className="pt-3 pb-3" /> <br /> <br />
+                For frontend encryption, we use AES-128 to encrypt both note's title and description.
+                There's a great post about {" "}
+                <a href="https://www.kryptall.com/index.php/2015-09-24-06-28-54/how-safe-is-safe-is-aes-encryption-safe">how safe is AES encryption?</a>,
+                and you should check it out.
+                The backend also use AES-256 encryption to encrypt both of the fields last mentioned and Argon2 for the password.
+                But eventually, it all depends on your password. So, make sure to provide a good and strong password!
               </Accordion.Body>
             </Accordion.Item>
 
