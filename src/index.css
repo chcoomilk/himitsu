@@ -12,7 +12,6 @@ code {
     monospace;
 }
 
-
 input[type=number] {
   -moz-appearance: textfield;
 }

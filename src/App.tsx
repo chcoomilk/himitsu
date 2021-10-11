@@ -1,11 +1,11 @@
 import { lazy, Suspense, useState } from "react";
 import { BrowserRouter as Router, Link, NavLink, Redirect, Route, Switch } from "react-router-dom";
 import { Navbar, Nav, Spinner, Alert } from "react-bootstrap";
-import HomeIcon from "./home.png";
+import HomeIcon from "./media/home.png";
 import { StoreContext } from "./utils/context";
 import { AboutPath, NewNotePath, FindNotePath, HomePath, NotePath } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
-import './css/App.scss';
+import './stylings/App.scss';
 import { ErrorKind } from "./utils/types";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -43,7 +43,7 @@ function App() {
             <Navbar fixed="top" variant="dark" className="px-3 align-center">
               {
                 showHomeLogo
-                  ? <Navbar.Brand>
+                  ? <Navbar.Brand style={{ paddingLeft: "5px" }}>
                     <Link to={HomePath}>
                       <img
                         src={HomeIcon}
@@ -62,9 +62,9 @@ function App() {
                   <Nav.Link>
                     <NavLink
                       to={AboutPath}
+                      className=""
                       style={{
                         textDecorationLine: "none",
-                        color: "inherit",
                         paddingRight: "10px"
                       }}
                       activeStyle={{
