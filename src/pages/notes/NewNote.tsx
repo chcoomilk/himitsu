@@ -1,35 +1,96 @@
 import { Formik } from "formik";
-import { useState } from "react";
-import { Button, Form, OverlayTrigger, Tooltip, Row, Col, Container } from "react-bootstrap";
+import { useContext, useState } from "react";
+import { Button, Form, OverlayTrigger, Tooltip, Row, Col, Container, DropdownButton, Dropdown, InputGroup, Stack } from "react-bootstrap";
 import * as yup from "yup";
 import ModalOnSaveNote from "../../components/ModalOnSaveNote";
-import { BaseUrl } from "../../utils/constants";
+import { BaseUrl, timeConfig } from "../../utils/constants";
+import cryptojs from "crypto-js";
+import { StoreContext } from "../../utils/context";
 
 const schema = yup.object().shape({
   title: yup.string().required().max(100),
   content: yup.string().required().max(5000),
-  password: yup.string().required().min(1).max(50)
+  password: yup.string().max(50),
+  duration: yup.number()
 });
 
+enum EncryptionMethod {
+  NoEncryption,
+  EndEncryption,
+  ServerEncryption
+}
+
 const NewNote = () => {
+  const { setAlerts } = useContext(StoreContext);
   const [showModal, setShowModal] = useState(false);
-  const [note, setNote] = useState({
+  const [noteResult, setNoteResult] = useState({
     id: 0,
     expiryTime: "uwu",
     password: "",
   });
-  // eslint-disable-next-line
-  const [_, setSubmitFail] = useState(false);
-  
+  const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.ServerEncryption);
+  const [isPasswordInvalid, setPasswordInvalid] = useState(false);
+
+  const to_friendly = (seconds: number) => {
+    const trail = (val: number) => (val > 1 ? "s " : " ");
+    var numdays = Math.floor((seconds % 31536000) / 86400);
+    var numhours = Math.floor(((seconds % 31536000) % 86400) / 3600);
+    var numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
+    return numdays + " day" + trail(numdays) + numhours + " hour" + trail(numhours) + numminutes + " minute" + trail(numminutes).trimEnd();
+  };
+
   return (
     <Container fluid>
-      <ModalOnSaveNote show={showModal} setShow={setShowModal} noteId={note.id} expiryTime={note.expiryTime} password={note.password} />
+      <ModalOnSaveNote show={showModal} setShow={setShowModal} noteId={noteResult.id} expiryTime={noteResult.expiryTime} password={noteResult.password} />
       <Row>
         <Col xl={{ span: 4, offset: 4 }} xs={{ span: 10, offset: 1 }}>
           <Formik
             validationSchema={schema}
             onSubmit={async (val) => {
-              const url = BaseUrl + "/notes/new";
+              let url = BaseUrl + "/notes";
+              let converted_val;
+
+              if (encryption === EncryptionMethod.ServerEncryption) {
+                url += "/new";
+                if (!val.password) {
+                  setPasswordInvalid(true);
+                  setAlerts(value => {
+                    return {
+                      ...value,
+                      fieldError: ["password"],
+                    };
+                  });
+                  return;
+                }
+                converted_val = {
+                  title: val.title,
+                  content: val.content,
+                  password: val.password,
+                  lifetime_in_secs: val.duration.toString()
+                };
+              } else {
+                url += "/plain";
+
+                if (encryption === EncryptionMethod.EndEncryption) {
+                  let encrypted_title = cryptojs.AES.encrypt(val.title, val.password).toString();
+                  let encrypted_content = cryptojs.AES.encrypt(val.content, val.password).toString();
+
+                  converted_val = {
+                    title: encrypted_title,
+                    content: encrypted_content,
+                    is_encrypted: "true",
+                    lifetime_in_secs: val.duration.toString()
+                  };
+                } else {
+                  converted_val = {
+                    title: val.title,
+                    content: val.content,
+                    is_encrypted: "false",
+                    lifetime_in_secs: val.duration.toString()
+                  };
+                }
+              }
+
               try {
                 const result = await fetch(url, {
                   method: "POST",
@@ -37,7 +98,7 @@ const NewNote = () => {
                   headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                   },
-                  body: new URLSearchParams(val)
+                  body: new URLSearchParams(converted_val)
                 });
 
                 if (result.ok) {
@@ -49,24 +110,30 @@ const NewNote = () => {
                     id: number
                   }
                   const data: Response = await result.json();
-                  const readableDateTime = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleTimeString();
-                  setNote({
+                  const date_from_epoch = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, timeConfig);
+                  const readableDateTime = date_from_epoch;
+                  setNoteResult({
                     expiryTime: readableDateTime,
                     id: data.id,
                     password: val.password
                   });
-                  setSubmitFail(false);
                   setShowModal(true);
                 }
               } catch (error) {
-                  setSubmitFail(true);
-                  console.log(error);
+                setAlerts(value => {
+                  return {
+                    ...value,
+                    serverError: true
+                  };
+                });
+                console.log(error);
               }
             }}
             initialValues={{
               title: "",
               content: "",
-              password: ""
+              password: "",
+              duration: 0
             }}
           >
             {({
@@ -99,7 +166,7 @@ const NewNote = () => {
                   <Form.Control
                     as="textarea"
                     name="content"
-                    placeholder="Enter your secret here 🙈🙈"
+                    placeholder="Enter note's description"
                     className="text-center"
                     rows={3}
                     value={values.content}
@@ -110,39 +177,82 @@ const NewNote = () => {
                 </Form.Group>
 
                 <Form.Group controlId="formBasicPassword" className="mb-4">
-                  <Form.Label>Password</Form.Label>
                   <OverlayTrigger
-                    placement="auto"
+                    placement="top"
+                    show={encryption === EncryptionMethod.NoEncryption ? false : undefined}
                     // transition={false} //strictmode compliant
                     delay={{ show: 0, hide: 400 }}
                     overlay={(
                       <Tooltip id="description-tooltip">
-                        Remember not to lose this note's password, otherwise there is no way to decrpyt your note!
+                        {
+                          encryption === EncryptionMethod.ServerEncryption
+                            ? "Remember not to lose this note's password!"
+                            : "Please, provide a strong password!"
+                        }
                       </Tooltip>
                     )}
                   >
                     {({ ref, ...triggerHandler }) => (
                       <>
-                        <Form.Control
-                          ref={ref}
-                          {...triggerHandler}
-                          type="password"
-                          name="password"
-                          placeholder="Enter super secret password"
-                          className="text-center"
-                          value={values.password}
-                          onChange={handleChange}
-                          onBlur={handleBlur}
-                          isInvalid={touched.password && !!errors.password}
-                          autoComplete="new-password"
-                        />
+                        <Stack direction="horizontal" className="justify-content-center" gap={1}>
+                          <Form.Label ref={ref}>Password</Form.Label>
+                          <DropdownButton
+                            size="sm"
+                            variant="outline-secondary"
+                            menuVariant="dark"
+                            className="pb-2"
+                            title=""
+                            id="input-group-dropdown-1"
+                          >
+                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.NoEncryption)} href="#">No Encryption</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.ServerEncryption)} href="#">Use Backend</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.EndEncryption)} href="#">Use Frontend (experimental)</Dropdown.Item>
+                          </DropdownButton>
+                        </Stack>
+                        <InputGroup>
+                          <Form.Control
+                            {...triggerHandler}
+                            type="password"
+                            name="password"
+                            placeholder="Enter super secret password"
+                            className="text-center"
+                            value={values.password}
+                            onChange={(e) => {
+                              setPasswordInvalid(false);
+                              handleChange(e);
+                            }}
+                            onBlur={handleBlur}
+                            disabled={encryption === EncryptionMethod.NoEncryption}
+                            isInvalid={touched.password && (isPasswordInvalid || !!errors.password)}
+                            autoComplete="new-password"
+                          />
+                        </InputGroup>
                       </>
                     )}
                   </OverlayTrigger>
                 </Form.Group>
-                <Button size="lg" type="submit" disabled={isSubmitting} onClick={e => {
-                  handleSubmit();
-                }}>Save</Button>
+
+                <Form.Group controlId="formBasicDuration" className="mb-4">
+                  <OverlayTrigger
+                    placement="top"
+                    show={encryption === EncryptionMethod.NoEncryption ? false : undefined}
+                    // transition={false} //strictmode compliant
+                    delay={{ show: 0, hide: 400 }}
+                    overlay={(
+                      <Tooltip id="description-tooltip">
+                        Leave it as is to use standard duration.
+                      </Tooltip>
+                    )}
+                  >
+                    {({ ref, ...triggerHandler }) => (
+                      <>
+                        <Form.Label ref={ref}>Duration<br /> {to_friendly(values.duration)}</Form.Label>
+                        <Form.Range {...triggerHandler} name="duration" min={0} max={2592000} onChange={handleChange} value={values.duration} step={60} />
+                      </>
+                    )}
+                  </OverlayTrigger>
+                </Form.Group>
+                <Button size="lg" type="submit" disabled={isSubmitting}>Save</Button>
               </Form>
             )}
           </Formik>
