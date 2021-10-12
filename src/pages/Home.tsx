@@ -15,15 +15,15 @@ const Home = () => {
   }, [setShowHomeLogo]);
 
   return (
-    <Container fluid>
+    <Container fluid className="text-center align-items-center">
       <Row>
-        <Col xl={{ span: 8, offset: 2 }} xs={{ span: 10, offset: 1 }}>
+        <Col xl={{ span: 10, offset: 1 }} xs={{ span: 10, offset: 1 }}>
           <h1>himitsu</h1>
-          <h2>Onii-chan's simple, secure, and private ( ͡° ͜ʖ ͡°) note sharing web app</h2>
+          <p>Onii-chan's simple, secure, and private <span className="text-nowrap">( ͡° ͜ʖ ͡°)</span> note sharing web app</p>
         </Col>
       </Row>
       <Row className="mt-2">
-        <Col>
+        <Col xl={{ span: 8, offset: 2 }} xs={{ span: 10, offset: 1 }}>
           <Link to={NewNotePath}>
             <Button
               size="lg"
@@ -34,6 +34,7 @@ const Home = () => {
           <Link to={FindNotePath}>
             <Button
               size="lg"
+              variant="primary"
               className="mx-2"
             >Find</Button>
           </Link>

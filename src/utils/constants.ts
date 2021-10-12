@@ -1,5 +1,13 @@
 export const BaseUrl = process.env.REACT_APP_BACKEND_URL;
 
+export const DefaultValue = {
+    ErrorKind: {
+        notFound: false,
+        serverError: false,
+        wrongPassword: false,
+    }
+};
+
 export const HomePath = "/";
 export const AboutPath = "/about";
 export const NewNotePath = "/new";

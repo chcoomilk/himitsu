@@ -1,13 +1,13 @@
 import { lazy, Suspense, useState } from "react";
 import { BrowserRouter as Router, Link, NavLink, Redirect, Route, Switch } from "react-router-dom";
 import { match } from "react-router";
-import { Navbar, Nav, Spinner, Alert } from "react-bootstrap";
+import { Navbar, Nav, Spinner, Alert, Container } from "react-bootstrap";
 import HomeIcon from "./media/home.png";
 import { StoreContext } from "./utils/context";
 import { AboutPath, NewNotePath, FindNotePath, HomePath, NotePath } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
-import './stylings/App.scss';
 import { ErrorKind } from "./utils/types";
+import './stylings/App.scss';
 
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
@@ -24,24 +24,22 @@ function App() {
     notFound: false,
     serverError: false,
     wrongPassword: false,
-    fieldError: [],
   });
 
   return (
-    <div className="App">
-      <Router>
-        <StoreContext.Provider
-          value={{
-            setShowHomeLogo: setShowHomeLogo,
-            setPassword,
-            alerts,
-            setAlerts,
-            password
-          }}
-        >
-          <QueryClientProvider client={queryClient}>
-
-            <Navbar fixed="top" variant="dark" className="px-3 align-center">
+    <Router>
+      <StoreContext.Provider
+        value={{
+          setShowHomeLogo: setShowHomeLogo,
+          setPassword,
+          alerts,
+          setAlerts,
+          password
+        }}
+      >
+        <QueryClientProvider client={queryClient}>
+          <Navbar expand="lg" variant="dark">
+            <Container>
               {
                 showHomeLogo
                   ? <Navbar.Brand style={{ paddingLeft: "5px" }}>
@@ -57,8 +55,9 @@ function App() {
                   </Navbar.Brand>
                   : null
               }
-              <Navbar.Toggle />
+              <Navbar.Toggle aria-controls="responsive-navbar-nav" />
               <Navbar.Collapse className="justify-content-end text-white">
+                <Nav className="me-auto"></Nav>
                 <Nav>
                   <Nav.Link
                     as={NavLink}
@@ -71,8 +70,9 @@ function App() {
                   </Nav.Link>
                 </Nav>
               </Navbar.Collapse>
-            </Navbar>
-
+            </Container>
+          </Navbar>
+          <Container className="page-content">
             <Alert
               variant="info"
               show={alerts.notFound} onClose={() => setAlerts((previousValue) => {
@@ -100,7 +100,12 @@ function App() {
               })}
               dismissible
             >
-              Wrong password, Try Again!
+              <Alert.Heading>
+                Wrong password
+              </Alert.Heading>
+              <p>
+                Your secret could not be decrypted, please try again!
+              </p>
             </Alert>
 
             <Alert
@@ -110,17 +115,12 @@ function App() {
               })}
               dismissible
             >
-              Oops, seems like our server is having some problems
-            </Alert>
-
-            <Alert
-              variant="danger"
-              show={!!alerts.fieldError.length} onClose={() => setAlerts((previousValue) => {
-                return { ...previousValue, fieldError: [] };
-              })}
-              dismissible
-            >
-              Invalid input on: {alerts.fieldError.join(", ")}
+              <Alert.Heading>
+                Woah, sorry!
+              </Alert.Heading>
+              <p>
+                Server seems to have some problems, please try again later.
+              </p>
             </Alert>
 
             <Suspense fallback={
@@ -137,11 +137,10 @@ function App() {
                 <Redirect to={HomePath} />
               </Switch>
             </Suspense>
-          </QueryClientProvider>
-
-        </StoreContext.Provider>
-      </Router>
-    </div >
+          </Container>
+        </QueryClientProvider>
+      </StoreContext.Provider>
+    </Router>
   );
 }
 

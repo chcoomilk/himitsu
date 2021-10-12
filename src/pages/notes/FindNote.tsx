@@ -7,7 +7,7 @@ import { StoreContext } from "../../utils/context";
 
 const schema = yup.object().shape({
   ID: yup.string().required(),
-  password: yup.string().min(1).max(50)
+  password: yup.string().max(50)
 });
 
 const FindNote = () => {
@@ -44,7 +44,6 @@ const FindNote = () => {
                     type="text"
                     name="ID"
                     placeholder="Enter note's ID here"
-                    className="text-center"
                     value={values.ID}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -58,7 +57,6 @@ const FindNote = () => {
                     type="password"
                     name="password"
                     placeholder="Enter super secret password"
-                    className="text-center"
                     autoComplete="on"
                     value={values.password}
                     onChange={handleChange}
@@ -66,7 +64,9 @@ const FindNote = () => {
                     isInvalid={touched.password && !!errors.password}
                   />
                 </Form.Group>
-                <Button type="submit" className="mt-3">Submit</Button>
+                <div className="text-center">
+                  <Button type="submit" variant="outline-primary" className="mt-3" size="lg">Find</Button>
+                </div>
               </Form>
             )}
           </Formik>
