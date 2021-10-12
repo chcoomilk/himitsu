@@ -74,7 +74,7 @@ const About = () => {
                 </p>  
                 <p>
                   So for me to gain my users' trust, here is a kanna gif <br />
-                  <Image src={kanna} alt="scary_dragon" className="pt-3 pb-3" />
+                  <Image fluid src={kanna} alt="scary_dragon" className="pt-3 pb-3" />
                 </p>
               </Accordion.Body>
             </Accordion.Item>
@@ -90,7 +90,7 @@ const About = () => {
                   If you're interested in system programming and all that technical stuff,
                   I highly recommend you to check out <a href="https://www.rust-lang.org/">https://www.rust-lang.org/</a> <br />
                 </p>
-                <Image src={vegetable} alt="dragon_deez_ballz" className="pt-3 pb-3" />
+                <Image fluid src={vegetable} alt="dragon_deez_ballz" className="pt-3 pb-3" />
               </Accordion.Body>
             </Accordion.Item>
 
@@ -126,7 +126,7 @@ const About = () => {
                   That is where your password comes in to help.
                   Unless if you're using no encryption...
                 </p>
-                <Image src={sponge} alt="sponge" className="pt-3 pb-3" />
+                <Image fluid src={sponge} alt="sponge" className="pt-3 pb-3" />
               </Accordion.Body>
             </Accordion.Item>
 
@@ -134,8 +134,8 @@ const About = () => {
               <Accordion.Header>How secure is it?</Accordion.Header>
               <Accordion.Body>
                 <p className="text-center">
-                  I would say it's as secure as it can get. I will try my best to keep everything up by today's standard.
-                  <Image src={padlock} alt="padlock_example" className="mt-4 pb-3" />
+                  I would say it's as secure as it can get. I will try my best to keep everything up by today's standard. <br />
+                  <Image fluid src={padlock} alt="padlock_example" className="mt-4 pb-3" />
                 </p>
                 <p className="text-justify">
                   For frontend encryption, we use AES-128 to encrypt both note's title and description.
@@ -159,7 +159,7 @@ const About = () => {
               <Accordion.Header>Speaking of host, where do you deploy this app's backend?</Accordion.Header>
               <Accordion.Body>
                 I'm currently using the free tier of Heroku.. mhm, yes i'm dirt poor <br />
-                <Image src={sad} alt="sad" className="pt-3 pb-3" />
+                <Image fluid src={sad} alt="sad" className="pt-3 pb-3" />
               </Accordion.Body>
             </Accordion.Item>
 
@@ -167,7 +167,7 @@ const About = () => {
               <Accordion.Header>You need some help</Accordion.Header>
               <Accordion.Body>
                 Yes, I do! You can help by contributing to the GitHub repos below.
-                <Image src={sad} alt="sad" className="pt-3 pb-3" />
+                <Image fluid src={sad} alt="sad" className="pt-3 pb-3" />
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
