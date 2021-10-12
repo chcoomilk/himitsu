@@ -1,17 +1,32 @@
 import { Formik } from "formik";
 import { useContext, useState } from "react";
-import { Button, Form, OverlayTrigger, Tooltip, Row, Col, Container, DropdownButton, Dropdown, InputGroup, Stack } from "react-bootstrap";
+import { Button, Form, OverlayTrigger, Tooltip, Row, Col, Container, DropdownButton, Dropdown, InputGroup, Stack, FormControl } from "react-bootstrap";
 import * as yup from "yup";
 import ModalOnSaveNote from "../../components/ModalOnSaveNote";
 import { BaseUrl, timeConfig } from "../../utils/constants";
 import cryptojs from "crypto-js";
 import { StoreContext } from "../../utils/context";
 
-const schema = yup.object().shape({
+const EncryptionSchema = yup.object().shape({
   title: yup.string().required().max(100),
   content: yup.string().required().max(5000),
-  password: yup.string().max(50),
-  duration: yup.number()
+  password: yup.string().required().min(4).max(50),
+  duration: yup.object().shape({
+    day: yup.number().moreThan(-1).max(300),
+    hour: yup.number().moreThan(-1).max(9999),
+    minute: yup.number().moreThan(-1).max(9999),
+  }),
+});
+
+const NoEncryptionSchema = yup.object().shape({
+  title: yup.string().required().max(100),
+  content: yup.string().required().max(5000),
+  password: yup.string(),
+  duration: yup.object().shape({
+    day: yup.number().moreThan(-1).max(300),
+    hour: yup.number().moreThan(-1).max(9999),
+    minute: yup.number().moreThan(-1).max(9999),
+  }),
 });
 
 enum EncryptionMethod {
@@ -29,44 +44,35 @@ const NewNote = () => {
     password: "",
   });
   const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.ServerEncryption);
-  const [isPasswordInvalid, setPasswordInvalid] = useState(false);
-
-  const to_friendly = (seconds: number) => {
-    const trail = (val: number) => (val > 1 ? "s " : " ");
-    var numdays = Math.floor((seconds % 31536000) / 86400);
-    var numhours = Math.floor(((seconds % 31536000) % 86400) / 3600);
-    var numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
-    return numdays + " day" + trail(numdays) + numhours + " hour" + trail(numhours) + numminutes + " minute" + trail(numminutes).trimEnd();
-  };
 
   return (
     <Container fluid>
-      <ModalOnSaveNote show={showModal} setShow={setShowModal} noteId={noteResult.id} expiryTime={noteResult.expiryTime} password={noteResult.password} />
+      <ModalOnSaveNote show={showModal} setShow={setShowModal} data={{ ...noteResult }} />
       <Row>
-        <Col xl={{ span: 4, offset: 4 }} xs={{ span: 10, offset: 1 }}>
+        <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
           <Formik
-            validationSchema={schema}
-            onSubmit={async (val) => {
+            validationSchema={encryption === EncryptionMethod.NoEncryption ? NoEncryptionSchema : EncryptionSchema}
+            onSubmit={async (val, { resetForm }) => {
               let url = BaseUrl + "/notes";
               let converted_val;
+              let duration_in_secs: number = 0;
+              if (val.duration.day) {
+                duration_in_secs += val.duration.day * 86400;
+              }
+              if (val.duration.hour) {
+                duration_in_secs += val.duration.hour * 3600;
+              }
+              if (val.duration.minute) {
+                duration_in_secs += val.duration.minute * 60;
+              }
 
               if (encryption === EncryptionMethod.ServerEncryption) {
                 url += "/new";
-                if (!val.password) {
-                  setPasswordInvalid(true);
-                  setAlerts(value => {
-                    return {
-                      ...value,
-                      fieldError: ["password"],
-                    };
-                  });
-                  return;
-                }
                 converted_val = {
                   title: val.title,
                   content: val.content,
                   password: val.password,
-                  lifetime_in_secs: val.duration.toString()
+                  lifetime_in_secs: duration_in_secs.toString()
                 };
               } else {
                 url += "/plain";
@@ -79,14 +85,14 @@ const NewNote = () => {
                     title: encrypted_title,
                     content: encrypted_content,
                     is_encrypted: "true",
-                    lifetime_in_secs: val.duration.toString()
+                    lifetime_in_secs: duration_in_secs.toString()
                   };
                 } else {
                   converted_val = {
                     title: val.title,
                     content: val.content,
                     is_encrypted: "false",
-                    lifetime_in_secs: val.duration.toString()
+                    lifetime_in_secs: duration_in_secs.toString()
                   };
                 }
               }
@@ -118,6 +124,7 @@ const NewNote = () => {
                     password: val.password
                   });
                   setShowModal(true);
+                  resetForm();
                 }
               } catch (error) {
                 setAlerts(value => {
@@ -126,17 +133,21 @@ const NewNote = () => {
                     serverError: true
                   };
                 });
-                console.log(error);
               }
             }}
             initialValues={{
               title: "",
               content: "",
               password: "",
-              duration: 0
+              duration: {
+                day: 0,
+                hour: 0,
+                minute: 0
+              }
             }}
           >
             {({
+              handleReset,
               handleSubmit,
               handleChange,
               handleBlur,
@@ -146,42 +157,41 @@ const NewNote = () => {
               touched
             }) => (
               <Form noValidate onSubmit={handleSubmit}>
-                <Form.Group controlId="formBasicTitle" className="mb-3 pb-2">
+                <Form.Group controlId="formBasicTitle" className="position-relative mb-5">
                   <Form.Label>Title</Form.Label>
                   <Form.Control
                     type="text"
                     name="title"
                     placeholder="Enter note's title here"
-                    className="text-center"
                     value={values.title}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     isInvalid={touched.title && !!errors.title}
                     autoComplete="off"
                   />
+                  <Form.Control.Feedback type="invalid" tooltip>{errors.title}</Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="formBasicDescription" className="mb-3 pb-2">
+                <Form.Group controlId="formBasicDescription" className="position-relative mb-5">
                   <Form.Label>Description</Form.Label>
                   <Form.Control
                     as="textarea"
                     name="content"
                     placeholder="Enter note's description"
-                    className="text-center"
                     rows={3}
                     value={values.content}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     isInvalid={touched.content && !!errors.content}
                   />
+                  <Form.Control.Feedback type="invalid" tooltip>{errors.content}</Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="formBasicPassword" className="mb-4">
+                <Form.Group controlId="formBasicPassword" className="position-relative mb-5">
                   <OverlayTrigger
                     placement="top"
                     show={encryption === EncryptionMethod.NoEncryption ? false : undefined}
                     // transition={false} //strictmode compliant
-                    delay={{ show: 0, hide: 400 }}
                     overlay={(
                       <Tooltip id="description-tooltip">
                         {
@@ -194,7 +204,7 @@ const NewNote = () => {
                   >
                     {({ ref, ...triggerHandler }) => (
                       <>
-                        <Stack direction="horizontal" className="justify-content-center" gap={1}>
+                        <Stack direction="horizontal" gap={2}>
                           <Form.Label ref={ref}>Password</Form.Label>
                           <DropdownButton
                             size="sm"
@@ -215,29 +225,28 @@ const NewNote = () => {
                             type="password"
                             name="password"
                             placeholder="Enter super secret password"
-                            className="text-center"
                             value={values.password}
-                            onChange={(e) => {
-                              setPasswordInvalid(false);
-                              handleChange(e);
-                            }}
+                            onChange={handleChange}
                             onBlur={handleBlur}
                             disabled={encryption === EncryptionMethod.NoEncryption}
-                            isInvalid={touched.password && (isPasswordInvalid || !!errors.password)}
+                            isInvalid={encryption !== EncryptionMethod.NoEncryption
+                              ? (touched.password && !!errors.password)
+                              : undefined
+                            }
                             autoComplete="new-password"
                           />
+                          <Form.Control.Feedback type="invalid" tooltip>{errors.password}</Form.Control.Feedback>
                         </InputGroup>
                       </>
                     )}
                   </OverlayTrigger>
                 </Form.Group>
 
-                <Form.Group controlId="formBasicDuration" className="mb-4">
+                <Form.Group controlId="formBasicDuration" className="mb-3">
                   <OverlayTrigger
                     placement="top"
                     show={encryption === EncryptionMethod.NoEncryption ? false : undefined}
                     // transition={false} //strictmode compliant
-                    delay={{ show: 0, hide: 400 }}
                     overlay={(
                       <Tooltip id="description-tooltip">
                         Leave it as is to use standard duration.
@@ -246,13 +255,51 @@ const NewNote = () => {
                   >
                     {({ ref, ...triggerHandler }) => (
                       <>
-                        <Form.Label ref={ref}>Duration<br /> {to_friendly(values.duration)}</Form.Label>
-                        <Form.Range {...triggerHandler} name="duration" min={0} max={2592000} onChange={handleChange} value={values.duration} step={60} />
+                        <Form.Label ref={ref}>Duration</Form.Label>
+                        <InputGroup className="mb-3" {...triggerHandler}>
+                          <FormControl
+                            aria-label="Day"
+                            type="number"
+                            name="duration.day"
+                            placeholder="Max is 300"
+                            value={values.duration.day}
+                            onChange={handleChange}
+                            isInvalid={!!errors.duration?.day}
+                          />
+                          <FormControl.Feedback type="invalid" tooltip>{errors.duration?.day}</FormControl.Feedback>
+                          <InputGroup.Text>Days</InputGroup.Text>
+                          <FormControl
+                            aria-label="Hour"
+                            type="number"
+                            name="duration.hour"
+                            placeholder="Max is 9999"
+                            value={values.duration.hour}
+                            onChange={handleChange}
+                            isInvalid={!!errors.duration?.hour}
+                          />
+                          <FormControl.Feedback type="invalid" tooltip>{errors.duration?.hour}</FormControl.Feedback>
+                          <InputGroup.Text>Hours</InputGroup.Text>
+                          <FormControl
+                            aria-label="Minute"
+                            type="number"
+                            name="duration.minute"
+                            placeholder="Max is 9999"
+                            value={values.duration.minute}
+                            onChange={handleChange}
+                            isInvalid={!!errors.duration?.minute}
+                          />
+                          <FormControl.Feedback type="invalid" tooltip>{errors.duration?.minute}</FormControl.Feedback>
+                          <InputGroup.Text>Mins</InputGroup.Text>
+                        </InputGroup>
                       </>
                     )}
                   </OverlayTrigger>
                 </Form.Group>
-                <Button size="lg" type="submit" disabled={isSubmitting}>Save</Button>
+                <div className="text-end">
+                  <Button size="lg" variant="outline-danger" onClick={handleReset} disabled={isSubmitting}>Reset</Button>
+                  {" "}
+                  <Button size="lg" variant="success" type="submit" disabled={isSubmitting}>{isSubmitting ? "Saving" : "Save"}</Button>
+                </div>
               </Form>
             )}
           </Formik>

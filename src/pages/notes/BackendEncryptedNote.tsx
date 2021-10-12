@@ -44,13 +44,15 @@ const BackendEncryptedNote = ({ id }: NoteProps) => {
         setAlerts(result.error);
       }
     },
-    onError: () => setAlerts(value => {
+    onError: () => {
       setTitle(generate_face());
-      return {
-        ...value,
-        serverError: true
-      };
-    }),
+      setAlerts(value => {
+        return {
+          ...value,
+          serverError: true
+        };
+      })
+    },
   });
 
   useEffect(() => {

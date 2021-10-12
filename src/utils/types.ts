@@ -2,7 +2,6 @@ export interface ErrorKind {
   notFound: boolean,
   wrongPassword: boolean,
   serverError: boolean,
-  fieldError: string[],
 }
 
 export interface BasicNote {

@@ -19,7 +19,7 @@ const ModalForPassword = ({ show, setPassword, setShow }: Props) => {
   }, []);
 
   return (
-    <Modal show={show} onHide={() => setShow(false)} centered>
+    <Modal show={show} onHide={() => setShow(false)} centered className="smaller-font">
       <Form onSubmit={(e) => {
         e.preventDefault();
         setPassword(form.password);
@@ -36,6 +36,8 @@ const ModalForPassword = ({ show, setPassword, setShow }: Props) => {
             <Col sm="9">
               <InputGroup className="mb-3">
                 <FormControl
+                  type="password"
+                  autoComplete="current-password"
                   onChange={e => setForm((prev) => {
                     return {
                       ...prev,

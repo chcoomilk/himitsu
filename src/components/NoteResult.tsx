@@ -16,7 +16,7 @@ const NoteResult = (props: Props) => {
 
   return (
     <Row>
-      <Col xl={{ span: 4, offset: 4 }} xs={{ span: 10, offset: 1 }}>
+      <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
         <Spinner hidden={!props.isLoading} animation="border" />
         <Form noValidate>
           <Form.Group controlId="formBasicTitle" className="mb-3 pb-2">
@@ -24,7 +24,6 @@ const NoteResult = (props: Props) => {
             <Form.Control
               type="text"
               name="title"
-              className="text-center"
               value={note.title}
               readOnly
             />
@@ -35,7 +34,6 @@ const NoteResult = (props: Props) => {
             <Form.Control
               as="textarea"
               name="content"
-              className="text-center"
               rows={3}
               value={note.content}
               readOnly
@@ -47,7 +45,6 @@ const NoteResult = (props: Props) => {
             <Form.Control
               type="text"
               name="created"
-              className="text-center"
               value={note.creationTime}
               readOnly
             />
@@ -58,7 +55,6 @@ const NoteResult = (props: Props) => {
             <Form.Control
               type="text"
               name="expires"
-              className="text-center"
               value={note.expiryTime}
               readOnly
             />
