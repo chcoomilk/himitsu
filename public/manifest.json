@@ -5,25 +5,50 @@
     {
       "src": "hash.png",
       "type": "image/png",
-      "sizes": "500x500"
+      "sizes": "500x500",
+      "purpose": "any"
+    },
+    {
+      "src": "hashx192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "hashicon.png",
+      "type": "image/png",
+      "sizes": "500x500",
+      "purpose": "maskable"
     }
   ],
   "start_url": ".",
   "display": "minimal-ui",
-  "theme_color": "#000000",
-  "background_color": "#ffffff",
+  "theme_color": "#282C34",
+  "background_color": "#282C34",
   "shortucts": [
     {
       "name": "New note",
       "short_name": "New",
       "description": "Write a new secret note",
-      "url": "/new"
+      "url": "/new",
+      "icon": [
+        {
+          "src": "plus.png",
+          "sizes": "512x512"
+        }
+      ]
     },
     {
       "name": "Find a note",
       "short_name": "Find",
       "description": "Find your secret note",
-      "url": "/find"
+      "url": "/find",
+      "icon": [
+        {
+          "src": "find.png",
+          "sizes": "512x512"
+        }
+      ]
     }
   ]
 }

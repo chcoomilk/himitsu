@@ -4,7 +4,7 @@ interface Props {
   show: boolean,
   setShow: (mode: boolean) => void,
   data: {
-    id: number,
+    id: string,
     expiryTime: string,
     password: string,
   },
@@ -73,7 +73,7 @@ const ModalOnNewNote = ({ show, setShow, data: { id, expiryTime, password } }: P
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={close}>
-          Close
+          Ok
         </Button>
       </Modal.Footer>
     </Modal>

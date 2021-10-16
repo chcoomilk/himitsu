@@ -1,3 +1,4 @@
+import { Result } from ".";
 import { BaseUrl } from "../utils/constants";
 import { ErrorKind } from "../utils/types";
 
@@ -16,13 +17,7 @@ interface ResponseData {
   "title": string,
 }
 
-interface Result {
-  is_ok: boolean,
-  data: ResponseData,
-  error: ErrorKind,
-}
-
-export const get_plain_note = async (id: string): Promise<Result> => {
+export const get_plain_note = async (id: string): Promise<Result<ResponseData>> => {
   const url = BaseUrl + "/notes/plain/" + id;
   let error: ErrorKind = {
     notFound: false,

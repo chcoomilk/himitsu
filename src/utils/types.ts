@@ -16,3 +16,9 @@ export interface FieldsWithEncryption {
   title: string,
   content: string,
 }
+
+export enum EncryptionMethod {
+  NoEncryption,
+  EndToEndEncryption,
+  ServerEncryption,
+}
