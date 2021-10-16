@@ -3,9 +3,10 @@ import { useContext, useState } from "react";
 import { Button, Form, OverlayTrigger, Tooltip, Row, Col, Container, DropdownButton, Dropdown, InputGroup, Stack, FormControl } from "react-bootstrap";
 import * as yup from "yup";
 import ModalOnSaveNote from "../../components/ModalOnSaveNote";
-import { BaseUrl, timeConfig } from "../../utils/constants";
-import cryptojs from "crypto-js";
 import { StoreContext } from "../../utils/context";
+import { EncryptionMethod } from "../../utils/types";
+import { useMutation } from "react-query";
+import { post_note } from "../../queries/post_note";
 
 const EncryptionSchema = yup.object().shape({
   title: yup.string().required().max(100),
@@ -29,21 +30,16 @@ const NoEncryptionSchema = yup.object().shape({
   }),
 });
 
-enum EncryptionMethod {
-  NoEncryption,
-  EndEncryption,
-  ServerEncryption
-}
-
 const NewNote = () => {
   const { setAlerts } = useContext(StoreContext);
   const [showModal, setShowModal] = useState(false);
   const [noteResult, setNoteResult] = useState({
-    id: 0,
+    id: "",
     expiryTime: "uwu",
     password: "",
   });
   const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.ServerEncryption);
+  const { mutateAsync } = useMutation(post_note);
 
   return (
     <Container fluid>
@@ -52,9 +48,7 @@ const NewNote = () => {
         <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
           <Formik
             validationSchema={encryption === EncryptionMethod.NoEncryption ? NoEncryptionSchema : EncryptionSchema}
-            onSubmit={async (val, { resetForm }) => {
-              let url = BaseUrl + "/notes";
-              let converted_val;
+            onSubmit={(val, { resetForm }) => {
               let duration_in_secs: number = 0;
               if (val.duration.day) {
                 duration_in_secs += val.duration.day * 86400;
@@ -66,74 +60,33 @@ const NewNote = () => {
                 duration_in_secs += val.duration.minute * 60;
               }
 
-              if (encryption === EncryptionMethod.ServerEncryption) {
-                url += "/new";
-                converted_val = {
-                  title: val.title,
-                  content: val.content,
-                  password: val.password,
-                  lifetime_in_secs: duration_in_secs.toString()
-                };
-              } else {
-                url += "/plain";
-
-                if (encryption === EncryptionMethod.EndEncryption) {
-                  let encrypted_title = cryptojs.AES.encrypt(val.title, val.password).toString();
-                  let encrypted_content = cryptojs.AES.encrypt(val.content, val.password).toString();
-
-                  converted_val = {
-                    title: encrypted_title,
-                    content: encrypted_content,
-                    is_encrypted: "true",
-                    lifetime_in_secs: duration_in_secs.toString()
-                  };
-                } else {
-                  converted_val = {
-                    title: val.title,
-                    content: val.content,
-                    is_encrypted: "false",
-                    lifetime_in_secs: duration_in_secs.toString()
-                  };
-                }
-              }
-
-              try {
-                const result = await fetch(url, {
-                  method: "POST",
-                  mode: "cors",
-                  headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                  },
-                  body: new URLSearchParams(converted_val)
-                });
-
-                if (result.ok) {
-                  interface Response {
-                    expired_at: {
-                      "nanos_since_epoch": number,
-                      "secs_since_epoch": number
-                    },
-                    id: number
-                  }
-                  const data: Response = await result.json();
-                  const date_from_epoch = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, timeConfig);
-                  const readableDateTime = date_from_epoch;
+              mutateAsync({
+                encryption: encryption,
+                title: val.title,
+                content: val.content,
+                lifetime_in_secs: duration_in_secs.toString(),
+                password: val.password
+              }).then(result => {
+                if (result && result.is_ok) {
+                  let data = result.data;
                   setNoteResult({
-                    expiryTime: readableDateTime,
+                    expiryTime: data.expiryTime,
                     id: data.id,
                     password: val.password
                   });
                   setShowModal(true);
                   resetForm();
+                } else {
+                  setAlerts(result.error);
                 }
-              } catch (error) {
+              }).catch(() => {
                 setAlerts(value => {
                   return {
                     ...value,
                     serverError: true
                   };
                 });
-              }
+              });
             }}
             initialValues={{
               title: "",
@@ -208,15 +161,15 @@ const NewNote = () => {
                           <Form.Label ref={ref}>Password</Form.Label>
                           <DropdownButton
                             size="sm"
-                            variant="outline-secondary"
+                            variant="outline-secondary align-middle"
                             menuVariant="dark"
                             className="pb-2"
-                            title=""
+                            title={EncryptionMethod[encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}
                             id="input-group-dropdown-1"
                           >
-                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.NoEncryption)} href="#">No Encryption</Dropdown.Item>
                             <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.ServerEncryption)} href="#">Use Backend</Dropdown.Item>
-                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.EndEncryption)} href="#">Use Frontend (experimental)</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.EndToEndEncryption)} href="#">Use Frontend (experimental)</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.NoEncryption)} href="#">No Encryption</Dropdown.Item>
                           </DropdownButton>
                         </Stack>
                         <InputGroup>
@@ -255,42 +208,47 @@ const NewNote = () => {
                   >
                     {({ ref, ...triggerHandler }) => (
                       <>
-                        <Form.Label ref={ref}>Duration</Form.Label>
-                        <InputGroup className="mb-3" {...triggerHandler}>
+                        <Form.Label ref={ref}>
+                          Duration
+                        </Form.Label>
+                        <InputGroup {...triggerHandler}>
                           <FormControl
                             aria-label="Day"
                             type="number"
                             name="duration.day"
-                            placeholder="Max is 300"
-                            value={values.duration.day}
+                            placeholder="≤300"
+                            value={values.duration.day || " "}
                             onChange={handleChange}
                             isInvalid={!!errors.duration?.day}
                           />
                           <FormControl.Feedback type="invalid" tooltip>{errors.duration?.day}</FormControl.Feedback>
-                          <InputGroup.Text>Days</InputGroup.Text>
+                          <InputGroup.Text>D</InputGroup.Text>
                           <FormControl
                             aria-label="Hour"
                             type="number"
                             name="duration.hour"
-                            placeholder="Max is 9999"
-                            value={values.duration.hour}
+                            placeholder="≤9999"
+                            value={values.duration.hour || " "}
                             onChange={handleChange}
                             isInvalid={!!errors.duration?.hour}
                           />
                           <FormControl.Feedback type="invalid" tooltip>{errors.duration?.hour}</FormControl.Feedback>
-                          <InputGroup.Text>Hours</InputGroup.Text>
+                          <InputGroup.Text>H</InputGroup.Text>
                           <FormControl
                             aria-label="Minute"
                             type="number"
                             name="duration.minute"
-                            placeholder="Max is 9999"
-                            value={values.duration.minute}
+                            placeholder="≤9999"
+                            value={values.duration.minute || " "}
                             onChange={handleChange}
                             isInvalid={!!errors.duration?.minute}
                           />
                           <FormControl.Feedback type="invalid" tooltip>{errors.duration?.minute}</FormControl.Feedback>
-                          <InputGroup.Text>Mins</InputGroup.Text>
+                          <InputGroup.Text>M</InputGroup.Text>
                         </InputGroup>
+                        <Form.Text className="text-muted smaller-font">
+                          D as in day, H for hour, and S for second
+                        </Form.Text>
                       </>
                     )}
                   </OverlayTrigger>
@@ -305,7 +263,7 @@ const NewNote = () => {
           </Formik>
         </Col>
       </Row>
-    </Container>
+    </Container >
   );
 };
 

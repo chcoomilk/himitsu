@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import { BrowserRouter as Router, Link, NavLink, Redirect, Route, Switch } from "react-router-dom";
 import { match } from "react-router";
-import { Navbar, Nav, Spinner, Alert, Container } from "react-bootstrap";
+import { Navbar, Nav, Spinner, Alert, Container, Image } from "react-bootstrap";
 import HomeIcon from "./media/home.png";
 import { StoreContext } from "./utils/context";
 import { AboutPath, NewNotePath, FindNotePath, HomePath, NotePath } from "./utils/constants";
@@ -38,23 +38,26 @@ function App() {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Navbar expand="lg" variant="dark">
+          <Navbar collapseOnSelect variant="dark" sticky="top">
             <Container>
-              {
-                showHomeLogo
-                  ? <Navbar.Brand style={{ paddingLeft: "5px" }}>
+              <Navbar.Brand>
+                {
+                  showHomeLogo
+                    ?
                     <Link to={HomePath}>
-                      <img
+                      <Image
                         src={HomeIcon}
-                        width="30"
-                        height="30"
-                        className="d-inline-block align-top"
-                        alt="React Bootstrap logo"
+                        fluid
+                        className="home-button"
+                        style={{
+                          width: "calc(10px + 3vmin)"
+                        }}
+                        alt="Home"
                       />
                     </Link>
-                  </Navbar.Brand>
-                  : null
-              }
+                    : null
+                }
+              </Navbar.Brand>
               <Navbar.Toggle aria-controls="responsive-navbar-nav" />
               <Navbar.Collapse className="justify-content-end text-white">
                 <Nav className="me-auto"></Nav>

@@ -44,7 +44,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 //
@@ -117,6 +117,10 @@ input[type=number] {
 
 .btn-outline-light {
   border-color: $input-border-color;
+}
+
+.navbar-dark {
+  background-color: $default-bg-color;
 }
 
 input.form-range::-moz-range-track {
