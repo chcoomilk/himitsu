@@ -5,7 +5,7 @@ const useTitle = (initialTitle: string) => {
 
   useEffect(() => {
     const defaultTitle = "himitsu";
-    document.title = `${defaultTitle} | ${title}`;
+    document.title = `${title} | ${defaultTitle} `;
     return () => {
       document.title = defaultTitle;
     };

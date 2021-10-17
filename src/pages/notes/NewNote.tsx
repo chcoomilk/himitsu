@@ -7,6 +7,7 @@ import { StoreContext } from "../../utils/context";
 import { EncryptionMethod } from "../../utils/types";
 import { useMutation } from "react-query";
 import { post_note } from "../../queries/post_note";
+import useTitle from "../../custom-hooks/useTitle";
 
 const EncryptionSchema = yup.object().shape({
   title: yup.string().required().max(100),
@@ -38,6 +39,7 @@ const NewNote = () => {
     expiryTime: "uwu",
     password: "",
   });
+  useTitle("New note");
   const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.ServerEncryption);
   const { mutateAsync } = useMutation(post_note);
 
@@ -140,61 +142,6 @@ const NewNote = () => {
                   <Form.Control.Feedback type="invalid" tooltip>{errors.content}</Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="formBasicPassword" className="position-relative mb-5">
-                  <OverlayTrigger
-                    placement="top"
-                    show={encryption === EncryptionMethod.NoEncryption ? false : undefined}
-                    // transition={false} //strictmode compliant
-                    overlay={(
-                      <Tooltip id="description-tooltip">
-                        {
-                          encryption === EncryptionMethod.ServerEncryption
-                            ? "Remember not to lose this note's password!"
-                            : "Please, provide a strong password!"
-                        }
-                      </Tooltip>
-                    )}
-                  >
-                    {({ ref, ...triggerHandler }) => (
-                      <>
-                        <Stack direction="horizontal" gap={2}>
-                          <Form.Label ref={ref}>Password</Form.Label>
-                          <DropdownButton
-                            size="sm"
-                            variant="outline-secondary align-middle"
-                            menuVariant="dark"
-                            className="pb-2"
-                            title={EncryptionMethod[encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}
-                            id="input-group-dropdown-1"
-                          >
-                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.ServerEncryption)} href="#">Use Backend</Dropdown.Item>
-                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.EndToEndEncryption)} href="#">Use Frontend (experimental)</Dropdown.Item>
-                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.NoEncryption)} href="#">No Encryption</Dropdown.Item>
-                          </DropdownButton>
-                        </Stack>
-                        <InputGroup>
-                          <Form.Control
-                            {...triggerHandler}
-                            type="password"
-                            name="password"
-                            placeholder="Enter super secret password"
-                            value={values.password}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            disabled={encryption === EncryptionMethod.NoEncryption}
-                            isInvalid={encryption !== EncryptionMethod.NoEncryption
-                              ? (touched.password && !!errors.password)
-                              : undefined
-                            }
-                            autoComplete="new-password"
-                          />
-                          <Form.Control.Feedback type="invalid" tooltip>{errors.password}</Form.Control.Feedback>
-                        </InputGroup>
-                      </>
-                    )}
-                  </OverlayTrigger>
-                </Form.Group>
-
                 <Form.Group controlId="formBasicDuration" className="mb-3">
                   <OverlayTrigger
                     placement="top"
@@ -249,6 +196,61 @@ const NewNote = () => {
                         <Form.Text className="text-muted smaller-font">
                           D as in day, H for hour, and S for second
                         </Form.Text>
+                      </>
+                    )}
+                  </OverlayTrigger>
+                </Form.Group>
+
+                <Form.Group controlId="formBasicPassword" className="position-relative mb-5">
+                  <OverlayTrigger
+                    placement="top"
+                    show={encryption === EncryptionMethod.NoEncryption ? false : undefined}
+                    // transition={false} //strictmode compliant
+                    overlay={(
+                      <Tooltip id="description-tooltip">
+                        {
+                          encryption === EncryptionMethod.ServerEncryption
+                            ? "Remember not to lose this note's password!"
+                            : "Please, provide a strong password!"
+                        }
+                      </Tooltip>
+                    )}
+                  >
+                    {({ ref, ...triggerHandler }) => (
+                      <>
+                        <Stack direction="horizontal" gap={2}>
+                          <Form.Label ref={ref}>Password</Form.Label>
+                          <DropdownButton
+                            size="sm"
+                            variant="outline-secondary align-middle"
+                            menuVariant="dark"
+                            className="pb-2"
+                            title={EncryptionMethod[encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}
+                            id="input-group-dropdown-1"
+                          >
+                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.ServerEncryption)} href="#">Use Backend</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.EndToEndEncryption)} href="#">Use Frontend (experimental)</Dropdown.Item>
+                            <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.NoEncryption)} href="#">No Encryption</Dropdown.Item>
+                          </DropdownButton>
+                        </Stack>
+                        <InputGroup>
+                          <Form.Control
+                            {...triggerHandler}
+                            type="password"
+                            name="password"
+                            placeholder="Enter super secret password"
+                            value={values.password}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            disabled={encryption === EncryptionMethod.NoEncryption}
+                            isInvalid={encryption !== EncryptionMethod.NoEncryption
+                              ? (touched.password && !!errors.password)
+                              : undefined
+                            }
+                            autoComplete="new-password"
+                          />
+                          <Form.Control.Feedback type="invalid" tooltip>{errors.password}</Form.Control.Feedback>
+                        </InputGroup>
                       </>
                     )}
                   </OverlayTrigger>
