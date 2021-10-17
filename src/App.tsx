@@ -39,7 +39,9 @@ function App() {
       >
         <QueryClientProvider client={queryClient}>
           <Navbar collapseOnSelect variant="dark" sticky="top">
-            <Container>
+            <Container
+              className="px-5"
+            >
               <Navbar.Brand>
                 {
                   showHomeLogo
@@ -75,7 +77,7 @@ function App() {
               </Navbar.Collapse>
             </Container>
           </Navbar>
-          <Container className="page-content">
+          <Container className="page-content py-5">
             <Alert
               variant="info"
               show={alerts.notFound} onClose={() => setAlerts((previousValue) => {
@@ -119,10 +121,10 @@ function App() {
               dismissible
             >
               <Alert.Heading>
-                Woah, sorry!
+                Sorry!
               </Alert.Heading>
               <p>
-                Server seems to have some problems, please try again later.
+                The server is unavailabe at the moment, please try again later.
               </p>
             </Alert>
 
