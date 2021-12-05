@@ -10,7 +10,7 @@ import { ErrorKind } from "./utils/types";
 import './stylings/App.scss';
 
 const Home = lazy(() => import("./pages/Home"));
-const About = lazy(() => import("./pages/About"));
+// const About = lazy(() => import("./pages/About"));
 const NewNote = lazy(() => import("./pages/notes/NewNote"));
 const FindNote = lazy(() => import("./pages/notes/FindNote"));
 const Note = lazy(() => import("./pages/notes/Note"));
@@ -135,7 +135,7 @@ function App() {
             }>
               <Switch>
                 <Route exact path={HomePath} component={Home} />
-                <Route exact path={AboutPath} component={About} />
+                {/* <Route exact path={AboutPath} component={About} /> */}
                 <Route exact path={NewNotePath} component={NewNote} />
                 <Route exact path={FindNotePath} component={FindNote} />
                 <Route exact path={NotePath} component={Note} />
