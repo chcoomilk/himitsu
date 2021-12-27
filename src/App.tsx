@@ -1,16 +1,15 @@
 import { lazy, Suspense, useState } from "react";
-import { BrowserRouter as Router, Link, NavLink, Redirect, Route, Switch } from "react-router-dom";
-import { match } from "react-router";
-import { Navbar, Nav, Spinner, Alert, Container, Image } from "react-bootstrap";
-import HomeIcon from "./media/home.png";
+import { BrowserRouter as Router, Link, Redirect, Route, Switch } from "react-router-dom";
+import { Spinner, Alert, Container } from "react-bootstrap";
 import { StoreContext } from "./utils/context";
-import { AboutPath, NewNotePath, FindNotePath, HomePath, NotePath } from "./utils/constants";
+import { PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 import { ErrorKind } from "./utils/types";
 import './stylings/App.scss';
+import Navigation from "./components/Navigation";
 
 const Home = lazy(() => import("./pages/Home"));
-// const About = lazy(() => import("./pages/About"));
+const About = lazy(() => import("./pages/About"));
 const NewNote = lazy(() => import("./pages/notes/NewNote"));
 const FindNote = lazy(() => import("./pages/notes/FindNote"));
 const Note = lazy(() => import("./pages/notes/Note"));
@@ -38,45 +37,7 @@ function App() {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Navbar collapseOnSelect variant="dark" sticky="top">
-            <Container
-              className="px-5"
-            >
-              <Navbar.Brand>
-                {
-                  showHomeLogo
-                    ?
-                    <Link to={HomePath}>
-                      <Image
-                        src={HomeIcon}
-                        fluid
-                        className="home-button"
-                        style={{
-                          width: "calc(10px + 3vmin)"
-                        }}
-                        alt="Home"
-                      />
-                    </Link>
-                    : null
-                }
-              </Navbar.Brand>
-              <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-              <Navbar.Collapse className="justify-content-end text-white">
-                <Nav className="me-auto"></Nav>
-                <Nav>
-                  <Nav.Link
-                    as={NavLink}
-                    to={AboutPath}
-                    activeStyle={{
-                      textDecorationLine: "underline"
-                    }}
-                    isActive={(match: match | null) => !match ? false : true}
-                  >About
-                  </Nav.Link>
-                </Nav>
-              </Navbar.Collapse>
-            </Container>
-          </Navbar>
+          <Navigation showHome={showHomeLogo} />
           <Container className="page-content py-5">
             <Alert
               variant="info"
@@ -134,12 +95,12 @@ function App() {
               </Spinner>
             }>
               <Switch>
-                <Route exact path={HomePath} component={Home} />
-                {/* <Route exact path={AboutPath} component={About} /> */}
-                <Route exact path={NewNotePath} component={NewNote} />
-                <Route exact path={FindNotePath} component={FindNote} />
-                <Route exact path={NotePath} component={Note} />
-                <Redirect to={HomePath} />
+                <Route exact path={PATHS.home} component={Home} />
+                <Route exact path={PATHS.about} component={About} />
+                <Route exact path={PATHS.new_note} component={NewNote} />
+                <Route exact path={PATHS.find_note} component={FindNote} />
+                <Route exact path={PATHS.note_detail + "/:id"} component={Note} />
+                <Redirect to={PATHS.home} />
               </Switch>
             </Suspense>
           </Container>

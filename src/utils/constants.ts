@@ -1,4 +1,4 @@
-export const BaseUrl = process.env.REACT_APP_BACKEND_URL;
+export const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const DefaultValue = {
     ErrorKind: {
@@ -8,12 +8,15 @@ export const DefaultValue = {
     }
 };
 
-export const HomePath = "/";
-export const AboutPath = "/about";
-export const NewNotePath = "/new";
-export const FindNotePath = "/find";
-export const NotePath = "/n/:id";
-export const timeConfig: Intl.DateTimeFormatOptions | undefined = {
+export const PATHS = {
+    home: "/",
+    about: "/about",
+    new_note: "/new",
+    find_note: "/find",
+    note_detail: "/n",
+}
+
+export const TIME_CONFIG: Intl.DateTimeFormatOptions | undefined = {
     weekday: "short",
     day: "2-digit",
     month: "long",

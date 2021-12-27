@@ -10,7 +10,7 @@ import { post_note } from "../../queries/post_note";
 import useTitle from "../../custom-hooks/useTitle";
 
 const EncryptionSchema = yup.object().shape({
-  title: yup.string().required().max(100),
+  title: yup.string().max(100),
   content: yup.string().required().max(5000),
   password: yup.string().required().min(4).max(50),
   duration: yup.object().shape({
@@ -21,7 +21,7 @@ const EncryptionSchema = yup.object().shape({
 });
 
 const NoEncryptionSchema = yup.object().shape({
-  title: yup.string().required().max(100),
+  title: yup.string().max(100),
   content: yup.string().required().max(5000),
   password: yup.string(),
   duration: yup.object().shape({

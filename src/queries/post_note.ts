@@ -1,5 +1,5 @@
 import { Result } from ".";
-import { BaseUrl, timeConfig } from "../utils/constants";
+import { BASE_URL, TIME_CONFIG } from "../utils/constants";
 import { EncryptionMethod, ErrorKind } from "../utils/types";
 import CryptoJS from "crypto-js";
 
@@ -26,7 +26,7 @@ export async function post_note({ encryption, title, content, password, lifetime
         expiryTime: "",
         id: "",
     };
-    let url = BaseUrl + "/notes" + (encryption === EncryptionMethod.ServerEncryption ? "/new" : "/plain");
+    let url = BASE_URL + "/notes" + (encryption === EncryptionMethod.ServerEncryption ? "/new" : "/plain");
     let converted_val;
 
     if (encryption === EncryptionMethod.NoEncryption) {
@@ -88,7 +88,7 @@ export async function post_note({ encryption, title, content, password, lifetime
         }
 
         const data: Response = await result.json();
-        const date_from_epoch = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, timeConfig);
+        const date_from_epoch = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, TIME_CONFIG);
         const readableDateTime = date_from_epoch;
         return {
             is_ok: true,
