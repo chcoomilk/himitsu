@@ -14,7 +14,7 @@ const holy_list = {
 };
 
 const About = () => {
-  const [text, setText] = useState({
+  const [texts, setTexts] = useState({
     text1: holy_list.normal_text_1,
     text2: holy_list.normal_text_2,
     uwu: false
@@ -22,13 +22,13 @@ const About = () => {
   let timer: NodeJS.Timeout;
 
   const toggleText = () => {
-    text.uwu
-      ? setText({
+    texts.uwu
+      ? setTexts({
         text1: holy_list.normal_text_1,
         text2: holy_list.normal_text_2,
         uwu: false
       })
-      : setText({
+      : setTexts({
         text1: holy_list.uwufied_text_1,
         text2: holy_list.uwufied_text_2,
         uwu: true
@@ -46,10 +46,10 @@ const About = () => {
               </Accordion.Header>
               <Accordion.Body>
                 <h2>
-                  {text.text1}
+                  {texts.text1}
                 </h2>
                 <p>
-                  {text.text2}<span onClick={e => {
+                  {texts.text2}<span onClick={e => {
                     clearTimeout(timer);
                     if (e.detail === 1) {
                       timer = setTimeout(() => { }, 200);
@@ -71,7 +71,7 @@ const About = () => {
                   You can check out how my application work on my GitHub.
                   You can see if there's any line of code suspiciously saving personal info and all that. But, what you can't trust me is that the applications I deployed are EXACTLY the same as the ones in the source code.
                   This means I can add some evil line of code to steal your personal data before deploying my app to the internet.
-                </p>  
+                </p>
                 <p>
                   So for me to gain my users' trust, here is a kanna gif <br />
                   <Image fluid src={kanna} alt="scary_dragon" className="pt-3 pb-3" />
@@ -80,7 +80,7 @@ const About = () => {
             </Accordion.Item>
 
             <Accordion.Item eventKey="2">
-              <Accordion.Header>OK, I trust you, but how does it work?</Accordion.Header>
+              <Accordion.Header>How does your app work??</Accordion.Header>
               <Accordion.Body>
                 <p className="text-justify">
                   When you save a note, your request will be sent to the server.
@@ -108,13 +108,12 @@ const About = () => {
                 </p>
                 <p className="text-justify">
                   If you're using frontend encryption,
-                  The hacker can probably yank your secrets if it's encrypted with a weak password (or encryption, which is why it's labled 'experimental').
+                  The hacker can probably yank your secrets if it's encrypted with a weak password, 
+                  because they only need to know your password.
                   But with frontend encryption, you're much more safer against {" "}
                   <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">Man-in-the-middle attack</a>.
-                  It's also much privacy oriented. If by any chance the server logs your requests,
+                  It's also much privacy oriented. If by any chance, the server hosting my app (in this case heroku) logs your requests,
                   they can only see the encrypted strings of data that will be put in to the database.
-                  Unless if they're logging it from the frontend side,
-                  which is a stupid move because you can see every network activity happening in the application from your browser.
                 </p>
               </Accordion.Body>
             </Accordion.Item>
@@ -138,11 +137,11 @@ const About = () => {
                   <Image fluid src={padlock} alt="padlock_example" className="mt-4 pb-3" />
                 </p>
                 <p className="text-justify">
-                  For frontend encryption, we use AES-128 to encrypt both note's title and description.
+                  For frontend encryption, the app uses AES-128 for encryption.
                   There's a great post about {" "}
                   <a href="https://www.kryptall.com/index.php/2015-09-24-06-28-54/how-safe-is-safe-is-aes-encryption-safe">how safe is AES encryption?</a>,
                   and you should check it out.
-                  The backend also use AES-256 encryption to encrypt both of the fields last mentioned and Argon2 for the password.
+                  The backend uses AES-256 for encryption and Argon2 for the password.
                   But eventually, it all depends on your password. So, make sure to provide a good and strong password!
                 </p>
               </Accordion.Body>
@@ -159,14 +158,6 @@ const About = () => {
               <Accordion.Header>Speaking of host, where do you deploy this app's backend?</Accordion.Header>
               <Accordion.Body>
                 I'm currently using the free tier of Heroku.. mhm, yes i'm dirt poor <br />
-                <Image fluid src={sad} alt="sad" className="pt-3 pb-3" />
-              </Accordion.Body>
-            </Accordion.Item>
-
-            <Accordion.Item eventKey="7">
-              <Accordion.Header>You need some help</Accordion.Header>
-              <Accordion.Body>
-                Yes, I do! You can help by contributing to the GitHub repos below.
                 <Image fluid src={sad} alt="sad" className="pt-3 pb-3" />
               </Accordion.Body>
             </Accordion.Item>

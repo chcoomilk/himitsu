@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { FindNotePath, NewNotePath } from "../utils/constants";
+import { PATHS } from "../utils/constants";
 import { StoreContext } from "../utils/context";
 
 const Home = () => {
@@ -24,14 +24,14 @@ const Home = () => {
       </Row>
       <Row className="mt-2">
         <Col xl={{ span: 8, offset: 2 }} xs={{ span: 10, offset: 1 }}>
-          <Link to={NewNotePath}>
+          <Link to={PATHS.new_note}>
             <Button
               size="lg"
               variant="success"
               className="mx-2"
             >Add</Button>
           </Link>
-          <Link to={FindNotePath}>
+          <Link to={PATHS.find_note}>
             <Button
               size="lg"
               variant="primary"
