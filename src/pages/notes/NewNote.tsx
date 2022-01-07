@@ -9,27 +9,26 @@ import { useMutation } from "react-query";
 import { post_note } from "../../queries/post_note";
 import useTitle from "../../custom-hooks/useTitle";
 
-const EncryptionSchema = yup.object().shape({
-  title: yup.string().max(100),
-  content: yup.string().required().max(5000),
-  password: yup.string().required().min(4).max(50),
+const BasicNoteSchema = yup.object().shape({
+  title: yup.string(),
+  content: yup.string().required(),
+  password: yup.string().required().min(4),
   duration: yup.object().shape({
-    day: yup.number().moreThan(-1).max(300),
-    hour: yup.number().moreThan(-1).max(9999),
-    minute: yup.number().moreThan(-1).max(9999),
+    day: yup.number().moreThan(-1),
+    hour: yup.number().moreThan(-1),
+    minute: yup.number().moreThan(-1),
+    second: yup.number().moreThan(-1)
   }),
-});
+})
 
-const NoEncryptionSchema = yup.object().shape({
-  title: yup.string().max(100),
-  content: yup.string().required().max(5000),
+const EncryptionSchema = {
+  ...BasicNoteSchema
+};
+
+const NoEncryptionSchema = {
+  ...BasicNoteSchema,
   password: yup.string(),
-  duration: yup.object().shape({
-    day: yup.number().moreThan(-1).max(300),
-    hour: yup.number().moreThan(-1).max(9999),
-    minute: yup.number().moreThan(-1).max(9999),
-  }),
-});
+};
 
 const NewNote = () => {
   const { setAlerts } = useContext(StoreContext);
@@ -51,15 +50,15 @@ const NewNote = () => {
           <Formik
             validationSchema={encryption === EncryptionMethod.NoEncryption ? NoEncryptionSchema : EncryptionSchema}
             onSubmit={(val, { resetForm }) => {
-              let duration_in_secs: number = 0;
+              let duration_in_secs: number = +val.duration.second;
               if (val.duration.day) {
-                duration_in_secs += val.duration.day * 86400;
+                duration_in_secs += +val.duration.day * 86400;
               }
               if (val.duration.hour) {
-                duration_in_secs += val.duration.hour * 3600;
+                duration_in_secs += +val.duration.hour * 3600;
               }
               if (val.duration.minute) {
-                duration_in_secs += val.duration.minute * 60;
+                duration_in_secs += +val.duration.minute * 60;
               }
 
               mutateAsync({
@@ -95,9 +94,10 @@ const NewNote = () => {
               content: "",
               password: "",
               duration: {
-                day: 0,
-                hour: 0,
-                minute: 0
+                day: "",
+                hour: "",
+                minute: "",
+                second: "",
               }
             }}
           >
@@ -149,7 +149,7 @@ const NewNote = () => {
                     // transition={false} //strictmode compliant
                     overlay={(
                       <Tooltip id="description-tooltip">
-                        Leave it as is to use standard duration.
+                        Leave it empty to set it permanent
                       </Tooltip>
                     )}
                   >
@@ -161,41 +161,35 @@ const NewNote = () => {
                         <InputGroup {...triggerHandler}>
                           <FormControl
                             aria-label="Day"
-                            type="number"
+                            type="text"
                             name="duration.day"
-                            placeholder="≤300"
-                            value={values.duration.day || " "}
+                            placeholder="Day"
+                            value={values.duration.day}
                             onChange={handleChange}
                             isInvalid={!!errors.duration?.day}
                           />
                           <FormControl.Feedback type="invalid" tooltip>{errors.duration?.day}</FormControl.Feedback>
-                          <InputGroup.Text>D</InputGroup.Text>
                           <FormControl
                             aria-label="Hour"
-                            type="number"
+                            type="text"
                             name="duration.hour"
-                            placeholder="≤9999"
-                            value={values.duration.hour || " "}
+                            placeholder="Hour"
+                            value={values.duration.hour}
                             onChange={handleChange}
                             isInvalid={!!errors.duration?.hour}
                           />
                           <FormControl.Feedback type="invalid" tooltip>{errors.duration?.hour}</FormControl.Feedback>
-                          <InputGroup.Text>H</InputGroup.Text>
                           <FormControl
                             aria-label="Minute"
-                            type="number"
+                            type="text"
                             name="duration.minute"
-                            placeholder="≤9999"
-                            value={values.duration.minute || " "}
+                            placeholder="Minute"
+                            value={values.duration.minute}
                             onChange={handleChange}
                             isInvalid={!!errors.duration?.minute}
                           />
                           <FormControl.Feedback type="invalid" tooltip>{errors.duration?.minute}</FormControl.Feedback>
-                          <InputGroup.Text>M</InputGroup.Text>
                         </InputGroup>
-                        <Form.Text className="text-muted smaller-font">
-                          D as in day, H for hour, and S for second
-                        </Form.Text>
                       </>
                     )}
                   </OverlayTrigger>

@@ -1,5 +1,5 @@
 import { Result } from ".";
-import { BASE_URL, TIME_CONFIG } from "../utils/constants";
+import { BASE_URL, DefaultValue, TIME_CONFIG } from "../utils/constants";
 import { EncryptionMethod, ErrorKind } from "../utils/types";
 import CryptoJS from "crypto-js";
 
@@ -17,11 +17,7 @@ type Note = {
 }
 
 export async function post_note({ encryption, title, content, password, lifetime_in_secs }: Note): Promise<Result<Data>> {
-    let error: ErrorKind = {
-        notFound: false,
-        wrongPassword: false,
-        serverError: false,
-    };
+    let error: ErrorKind = DefaultValue.Error;
     let data: Data = {
         expiryTime: "",
         id: "",

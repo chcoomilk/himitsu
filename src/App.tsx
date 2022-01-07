@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from "react";
-import { BrowserRouter as Router, Link, Redirect, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Link, Navigate, Route, Routes } from "react-router-dom";
 import { Spinner, Alert, Container } from "react-bootstrap";
 import { StoreContext } from "./utils/context";
 import { PATHS } from "./utils/constants";
@@ -94,14 +94,14 @@ function App() {
                 <span className="visually-hidden">Loading...</span>
               </Spinner>
             }>
-              <Switch>
-                <Route exact path={PATHS.home} component={Home} />
-                <Route exact path={PATHS.about} component={About} />
-                <Route exact path={PATHS.new_note} component={NewNote} />
-                <Route exact path={PATHS.find_note} component={FindNote} />
-                <Route exact path={PATHS.note_detail + "/:id"} component={Note} />
-                <Redirect to={PATHS.home} />
-              </Switch>
+              <Routes>
+                <Route path={PATHS.home} element={<Home />} />
+                <Route path={PATHS.about} element={<About />} />
+                <Route path={PATHS.new_note} element={<NewNote />} />
+                <Route path={PATHS.find_note} element={<FindNote />} />
+                <Route path={PATHS.note_detail + "/:id"} element={<Note />} />
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
             </Suspense>
           </Container>
         </QueryClientProvider>

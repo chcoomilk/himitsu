@@ -5,7 +5,7 @@ export interface ErrorKind {
 }
 
 export interface BasicNote {
-  id: string | number;
+  id: number;
   title: string;
   content: string;
   expiryTime: string;

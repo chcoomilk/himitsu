@@ -1,5 +1,5 @@
 import { Result } from ".";
-import { BASE_URL } from "../utils/constants";
+import { BASE_URL, DefaultValue } from "../utils/constants";
 import { ErrorKind } from "../utils/types";
 
 interface GetNoteField {
@@ -23,11 +23,7 @@ interface ResponseData {
 
 export const get_note = async ({ id, password }: GetNoteField): Promise<Result<ResponseData>> => {
   const url = BASE_URL + "/notes/get/" + id;
-  let error: ErrorKind = {
-    notFound: false,
-    wrongPassword: false,
-    serverError: false,
-  };
+  let error: ErrorKind = DefaultValue.Error;
   let data: ResponseData = {
     id: 0,
     title: "",

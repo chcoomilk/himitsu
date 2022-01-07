@@ -2,7 +2,6 @@ import { Container, Nav, Navbar, Image } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
 import { PATHS } from "../utils/constants";
 import HomeIcon from "../media/home.png";
-import { match } from "react-router";
 
 interface Props {
   showHome: boolean
@@ -39,10 +38,9 @@ const Navigation = (props: Props) => {
             <Nav.Link
               as={NavLink}
               to={PATHS.about}
-              activeStyle={{
-                textDecorationLine: "underline"
-              }}
-              isActive={(match: match | null) => !match ? false : true}
+              // activeStyle={{
+              //   textDecorationLine: "underline"
+              // }}
             >About
             </Nav.Link>
           </Nav>

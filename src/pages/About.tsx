@@ -9,7 +9,7 @@ import sponge from "../media/spongebob-wall.gif";
 const holy_list = {
   normal_text_1: "To yours truly,",
   normal_text_2: "a private note app built with actix on backend and good ol' react on frontend",
-  uwufied_text_1: "To youws twuwy, 🥺",
+  uwufied_text_1: "To youws twuwy, OwO",
   uwufied_text_2: "pwivate nyote app b-buiwt with nyactix o-on byackend and g-good ow' weact o-on fwontend"
 };
 

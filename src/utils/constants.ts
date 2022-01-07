@@ -1,11 +1,15 @@
+import { ErrorKind } from "./types";
+
 export const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
+const Error: ErrorKind = {
+    notFound: false,
+    serverError: false,
+    wrongPassword: false,
+}
+
 export const DefaultValue = {
-    ErrorKind: {
-        notFound: false,
-        serverError: false,
-        wrongPassword: false,
-    }
+    Error,
 };
 
 export const PATHS = {

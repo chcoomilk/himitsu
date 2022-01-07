@@ -1,7 +1,7 @@
 import { Formik } from "formik";
 import { useContext } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap"
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 import * as yup from "yup";
 import useTitle from "../../custom-hooks/useTitle";
 import { StoreContext } from "../../utils/context";
@@ -12,7 +12,7 @@ const schema = yup.object().shape({
 });
 
 const FindNote = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const { setPassword } = useContext(StoreContext);
   useTitle("Find");
 
@@ -24,7 +24,7 @@ const FindNote = () => {
             validationSchema={schema}
             onSubmit={async (val) => {
               setPassword(val.password);
-              history.push("/n/" + val.ID);
+              navigate("/n/"+ val.ID);
             }}
             initialValues={{
               ID: "",
