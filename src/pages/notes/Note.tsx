@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import { useMutation } from "react-query";
-import ModalForPassword from "../../components/ModalForPassword";
-import NoteResult from "../../components/NoteResult";
+import ModalForPassword from "../../components/note/PasswordModal";
+import NoteResult from "../../components/note/NoteResult";
 import useTitle from "../../custom-hooks/useTitle";
 import { get_note } from "../../queries/get_note";
 import { useParams } from "react-router";

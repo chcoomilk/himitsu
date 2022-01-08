@@ -19,7 +19,7 @@ const ModalForPassword = ({ show, setPassword, setShow }: Props) => {
   }, []);
 
   return (
-    <Modal show={show} onHide={() => setShow(false)} centered className="smaller-font">
+    <Modal show={show} onHide={() => setShow(false)} centered className="fs-4">
       <Form onSubmit={(e) => {
         e.preventDefault();
         setPassword(form.password);

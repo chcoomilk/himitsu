@@ -2,6 +2,8 @@ import { ErrorKind } from "./types";
 
 export const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
+if (typeof BASE_URL === "undefined") console.error("No server URL set in .env");
+
 const Error: ErrorKind = {
     notFound: false,
     serverError: false,
@@ -17,7 +19,7 @@ export const PATHS = {
     about: "/about",
     new_note: "/new",
     find_note: "/find",
-    note_detail: "/n",
+    note_detail: "/n/:id",
 }
 
 export const TIME_CONFIG: Intl.DateTimeFormatOptions | undefined = {

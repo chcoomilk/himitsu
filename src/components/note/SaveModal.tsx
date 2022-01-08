@@ -14,7 +14,7 @@ const ModalOnNewNote = ({ show, setShow, data: { id, expiryTime, password } }: P
   const close = () => setShow(false);
 
   return (
-    <Modal show={show} onHide={close} centered contentClassName="smaller-font">
+    <Modal show={show} onHide={close} centered contentClassName="fs-4">
       <Modal.Header closeButton closeVariant="white">
         <Modal.Title>Saved!</Modal.Title>
       </Modal.Header>
