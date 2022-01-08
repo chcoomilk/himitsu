@@ -22,7 +22,7 @@ export async function post_note({ encryption, title, content, password, lifetime
         expiryTime: "",
         id: "",
     };
-    let url = BASE_URL + "/notes" + (encryption === EncryptionMethod.ServerEncryption ? "/new" : "/plain");
+    let url = BASE_URL + "/notes" + (encryption === EncryptionMethod.BackendEncryption ? "/new" : "/plain");
     let converted_val;
 
     if (encryption === EncryptionMethod.NoEncryption) {
@@ -44,7 +44,7 @@ export async function post_note({ encryption, title, content, password, lifetime
             };
         }
 
-        if (encryption === EncryptionMethod.ServerEncryption) {
+        if (encryption === EncryptionMethod.BackendEncryption) {
             converted_val = {
                 title,
                 content,

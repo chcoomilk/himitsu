@@ -1,6 +1,6 @@
 import { Formik } from "formik";
 import { useContext, useState } from "react";
-import { Button, Form, OverlayTrigger, Tooltip, Row, Col, Container, DropdownButton, Dropdown, InputGroup, Stack, FormControl } from "react-bootstrap";
+import { Button, Form, Row, Col, Container, DropdownButton, Dropdown, InputGroup, FormControl } from "react-bootstrap";
 import * as yup from "yup";
 import ModalOnSaveNote from "../../components/note/SaveModal";
 import { StoreContext } from "../../utils/context";
@@ -14,10 +14,10 @@ const BasicNoteSchema = {
   content: yup.string().required(),
   password: yup.string().required().min(4),
   duration: yup.object().shape({
-    day: yup.number().moreThan(-1),
-    hour: yup.number().moreThan(-1),
-    minute: yup.number().moreThan(-1),
-    second: yup.number().moreThan(-1)
+    day: yup.number().positive(),
+    hour: yup.number().positive(),
+    minute: yup.number().positive(),
+    second: yup.number().moreThan(30)
   }),
 };
 
@@ -39,7 +39,7 @@ const NewNote = () => {
     password: "",
   });
   useTitle("New note");
-  const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.ServerEncryption);
+  const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.BackendEncryption);
   const { mutateAsync } = useMutation(post_note);
 
   return (
@@ -114,6 +114,9 @@ const NewNote = () => {
               <Form noValidate onSubmit={handleSubmit}>
                 <Form.Group controlId="formBasicTitle" className="position-relative mb-5">
                   <Form.Label>Title</Form.Label>
+                  <Form.Text muted>
+                    {" "}(unencrypted)
+                  </Form.Text>
                   <Form.Control
                     type="text"
                     name="title"
@@ -128,11 +131,14 @@ const NewNote = () => {
                 </Form.Group>
 
                 <Form.Group controlId="formBasicDescription" className="position-relative mb-5">
-                  <Form.Label>Description</Form.Label>
+                  <Form.Label>Secret</Form.Label>
+                  <Form.Text muted>
+                    {` (${!encryption ? "unencrypted" : "encrypted"})`}
+                  </Form.Text>
                   <Form.Control
                     as="textarea"
                     name="content"
-                    placeholder="Enter note's description"
+                    placeholder="Enter note here"
                     rows={3}
                     value={values.content}
                     onChange={handleChange}
@@ -143,86 +149,86 @@ const NewNote = () => {
                 </Form.Group>
 
                 <Form.Group controlId="formBasicDuration" className="mb-3">
-                  <OverlayTrigger
-                    placement="top"
-                    show={encryption === EncryptionMethod.NoEncryption ? false : undefined}
-                    // transition={false} //strictmode compliant
-                    overlay={(
-                      <Tooltip id="description-tooltip">
-                        Leave it empty to set it permanent
-                      </Tooltip>
-                    )}
-                  >
-                    {({ ref, ...triggerHandler }) => (
-                      <>
-                        <Form.Label ref={ref}>
-                          Duration
-                        </Form.Label>
-                        <InputGroup {...triggerHandler}>
-                          <FormControl
-                            aria-label="Day"
-                            type="text"
-                            name="duration.day"
-                            placeholder="Day"
-                            value={values.duration.day}
-                            onChange={handleChange}
-                            isInvalid={!!errors.duration?.day}
-                          />
-                          <FormControl.Feedback type="invalid" tooltip>{errors.duration?.day}</FormControl.Feedback>
-                          <FormControl
-                            aria-label="Hour"
-                            type="text"
-                            name="duration.hour"
-                            placeholder="Hour"
-                            value={values.duration.hour}
-                            onChange={handleChange}
-                            isInvalid={!!errors.duration?.hour}
-                          />
-                          <FormControl.Feedback type="invalid" tooltip>{errors.duration?.hour}</FormControl.Feedback>
-                          <FormControl
-                            aria-label="Minute"
-                            type="text"
-                            name="duration.minute"
-                            placeholder="Minute"
-                            value={values.duration.minute}
-                            onChange={handleChange}
-                            isInvalid={!!errors.duration?.minute}
-                          />
-                          <FormControl.Feedback type="invalid" tooltip>{errors.duration?.minute}</FormControl.Feedback>
-                          <FormControl
-                            aria-label="Second"
-                            type="text"
-                            name="duration.second"
-                            placeholder="Second"
-                            value={values.duration.second}
-                            onChange={handleChange}
-                            isInvalid={!!errors.duration?.second}
-                          />
-                          <FormControl.Feedback type="invalid" tooltip>{errors.duration?.second}</FormControl.Feedback>
-                        </InputGroup>
-                      </>
-                    )}
-                  </OverlayTrigger>
+                  <Form.Label>
+                    Duration
+                  </Form.Label>
+                  <Form.Text muted>
+                    {" "}(unencrypted)
+                  </Form.Text>
+                  <InputGroup>
+                    <FormControl
+                      aria-label="Day"
+                      type="text"
+                      name="duration.day"
+                      placeholder="D"
+                      value={values.duration.day}
+                      onChange={handleChange}
+                      isInvalid={!!errors.duration?.day}
+                    />
+                    <FormControl.Feedback type="invalid" tooltip>{errors.duration?.day}</FormControl.Feedback>
+                    <FormControl
+                      aria-label="Hour"
+                      type="text"
+                      name="duration.hour"
+                      placeholder="H"
+                      value={values.duration.hour}
+                      onChange={handleChange}
+                      isInvalid={!!errors.duration?.hour}
+                    />
+                    <FormControl.Feedback type="invalid" tooltip>{errors.duration?.hour}</FormControl.Feedback>
+                    <FormControl
+                      aria-label="Minute"
+                      type="text"
+                      name="duration.minute"
+                      placeholder="M"
+                      value={values.duration.minute}
+                      onChange={handleChange}
+                      isInvalid={!!errors.duration?.minute}
+                    />
+                    <FormControl.Feedback type="invalid" tooltip>{errors.duration?.minute}</FormControl.Feedback>
+                    <FormControl
+                      aria-label="Second"
+                      type="text"
+                      name="duration.second"
+                      placeholder="S"
+                      value={values.duration.second}
+                      onChange={handleChange}
+                      isInvalid={!!errors.duration?.second}
+                    />
+                    <FormControl.Feedback type="invalid" tooltip>{errors.duration?.second}</FormControl.Feedback>
+                  </InputGroup>
+                  <Form.Text muted>
+                    Omit these fields to set it permanent
+                  </Form.Text>
                 </Form.Group>
 
                 <Form.Group controlId="formBasicPassword" className="position-relative mb-5">
-
-                  <Stack direction="horizontal" gap={2}>
-                    <Form.Label>Password</Form.Label>
+                  <Form.Label>Password</Form.Label>
+                  <Form.Text muted>
+                    {` (${EncryptionMethod[encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')})`}
+                  </Form.Text>
+                  <InputGroup>
                     <DropdownButton
                       size="sm"
-                      variant="outline-secondary align-middle"
+                      variant="outline-secondary"
                       menuVariant="dark"
                       className="pb-2"
-                      title={EncryptionMethod[encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}
+                      title=""
                       id="input-group-dropdown-1"
                     >
-                      <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.ServerEncryption)} href="#">Use Backend</Dropdown.Item>
-                      <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.EndToEndEncryption)} href="#">Use Frontend (experimental)</Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => setEncryption(EncryptionMethod.BackendEncryption)}
+                        href="#">
+                        Use Backend
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => setEncryption(EncryptionMethod.FrontendEncryption)}
+                        href="#"
+                      >
+                        Use Frontend
+                      </Dropdown.Item>
                       <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.NoEncryption)} href="#">No Encryption</Dropdown.Item>
                     </DropdownButton>
-                  </Stack>
-                  <InputGroup>
                     <Form.Control
                       type="password"
                       name="password"

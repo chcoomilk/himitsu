@@ -2,7 +2,6 @@ import React from "react";
 import { ErrorKind } from "./types";
 
 interface Store {
-  setShowHomeLogo: React.Dispatch<React.SetStateAction<boolean>>,
   setPassword: React.Dispatch<React.SetStateAction<string>>,
   alerts: ErrorKind,
   setAlerts: React.Dispatch<React.SetStateAction<ErrorKind>>,
@@ -10,7 +9,6 @@ interface Store {
 }
 
 export const StoreContext = React.createContext<Store>({
-  setShowHomeLogo: () => { },
   setPassword: () => { },
   setAlerts: () => { },
   alerts: {

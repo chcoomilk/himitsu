@@ -19,7 +19,6 @@ const Note = lazy(() => import("./pages/notes/Note"));
 const queryClient = new QueryClient();
 
 function App() {
-  const [showHomeLogo, setShowHomeLogo] = useState<boolean>(true);
   const [password, setPassword] = useState("");
   const [alerts, setAlerts] = useState<ErrorKind>({
     notFound: false,
@@ -31,7 +30,6 @@ function App() {
     <Router>
       <StoreContext.Provider
         value={{
-          setShowHomeLogo: setShowHomeLogo,
           setPassword,
           alerts,
           setAlerts,
@@ -39,7 +37,7 @@ function App() {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Navigation showHome={showHomeLogo} />
+          <Navigation />
           <Container className="page-content">
             <BasicAlerts alerts={alerts} setAlerts={setAlerts} />
             <Suspense fallback={

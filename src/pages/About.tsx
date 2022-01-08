@@ -57,6 +57,9 @@ const About = () => {
                     }
                   }}>.</span>
                 </p>
+                <p>
+                  Below is basically a set of brief explanations about this web app.
+                </p>
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey="1">
@@ -108,7 +111,8 @@ const About = () => {
               <Accordion.Body>
                 <p className="fs-6">
                   If you are planning to save it for a long period of time. I recommend choosing backend encryption,
-                  because it's much harder to get to. Otherwise, choose frontend.. or choose none so everyone can
+                  because it's much harder to get to. <br />
+                  Otherwise, choose frontend.. or choose none so everyone can
                   see your little secret you dirty pig
                 </p>
                 <Image fluid src={disgusted} alt="ew" />

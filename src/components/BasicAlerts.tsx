@@ -1,4 +1,4 @@
-import { Alert, Container } from "react-bootstrap";
+import { Alert, Col, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { ErrorKind } from "../utils/types";
 
@@ -9,7 +9,7 @@ interface Props {
 
 const BasicAlerts = ({ alerts, setAlerts }: Props) => {
   return (
-    <Container>
+    <Container as={Col} xl={{ offset: 3, span: 6 }}>
       <Alert
         variant="info"
         show={alerts.notFound} onClose={() => setAlerts((previousValue) => {

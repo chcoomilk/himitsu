@@ -1,5 +1,10 @@
+$font-size-base: 1.1rem;
+
 @import "~bootstrap/scss/bootstrap";
 
+.fs-0 {
+  font-size: $font-size-base * 3.25;
+}
 $default-bg-color: rgb(40, 44, 52);
 $input-bg-color: rgb(36, 40, 46);
 $input-bg-color-disabled: rgb(32, 36, 42);
@@ -24,7 +29,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: $default-bg-color;
   color: $text-color-normal;
-  font-size: calc(10px + 2vmin);
 }
 // For hiding arrows in input type number
 input::-webkit-outer-spin-button,
