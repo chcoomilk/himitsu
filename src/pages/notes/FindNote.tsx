@@ -4,11 +4,12 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap"
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import useTitle from "../../custom-hooks/useTitle";
+import { PATHS } from "../../utils/constants";
 import { StoreContext } from "../../utils/context";
 
 const schema = yup.object().shape({
-  ID: yup.string().required(),
-  password: yup.string().max(50)
+  ID: yup.number().required(),
+  password: yup.string().min(4).max(1024)
 });
 
 const FindNote = () => {
@@ -24,7 +25,7 @@ const FindNote = () => {
             validationSchema={schema}
             onSubmit={async (val) => {
               setPassword(val.password);
-              navigate("/n/"+ val.ID);
+              navigate(PATHS.note_detail + "/" + val.ID);
             }}
             initialValues={{
               ID: "",
@@ -40,7 +41,7 @@ const FindNote = () => {
               touched
             }) => (
               <Form noValidate onSubmit={handleSubmit}>
-                <Form.Group controlId="formBasicId" className="mb-3 pb-2">
+                <Form.Group controlId="formBasicId" className="position-relative mb-3">
                   <Form.Label>ID</Form.Label>
                   <Form.Control
                     type="text"
@@ -51,9 +52,10 @@ const FindNote = () => {
                     onBlur={handleBlur}
                     isInvalid={touched.ID && !!errors.ID}
                   />
+                  <Form.Control.Feedback type="invalid" tooltip>{errors.ID}</Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group controlId="formBasicPassword" className="mb-2">
+                <Form.Group controlId="formBasicPassword" className="position-relative mb-1">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
                     type="password"
@@ -65,6 +67,7 @@ const FindNote = () => {
                     onBlur={handleBlur}
                     isInvalid={touched.password && !!errors.password}
                   />
+                  <Form.Control.Feedback type="invalid" tooltip>{errors.password}</Form.Control.Feedback>
                 </Form.Group>
                 <div className="text-center">
                   <Button type="submit" variant="outline-primary" className="mt-3" size="lg">Find</Button>

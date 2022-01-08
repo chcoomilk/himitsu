@@ -2,6 +2,8 @@ export interface ErrorKind {
   notFound: boolean,
   wrongPassword: boolean,
   serverError: boolean,
+  invalidId: boolean,
+  passwordNotRequired: boolean,
 }
 
 export interface BasicNote {
@@ -10,11 +12,6 @@ export interface BasicNote {
   content: string;
   expiryTime: string;
   creationTime: string;
-}
-
-export interface FieldsWithEncryption {
-  title: string,
-  content: string,
 }
 
 export enum EncryptionMethod {

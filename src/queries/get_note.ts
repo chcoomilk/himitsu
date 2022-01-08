@@ -22,7 +22,7 @@ interface ResponseData {
 }
 
 export const get_note = async ({ id, password }: GetNoteField): Promise<Result<ResponseData>> => {
-  const url = BASE_URL + "/notes/get/" + id;
+  const url = BASE_URL + "/notes/" + id;
   let error: ErrorKind = DefaultValue.Error;
   let data: ResponseData = {
     id: 0,
@@ -42,9 +42,9 @@ export const get_note = async ({ id, password }: GetNoteField): Promise<Result<R
     method: "POST",
     mode: "cors",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
+      "Content-Type": "application/json"
     },
-    body: new URLSearchParams({ password })
+    body: JSON.stringify({ password })
   });
 
   if (response.ok) {

@@ -2,7 +2,7 @@ import { lazy, Suspense, useState } from "react";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { Spinner, Container } from "react-bootstrap";
 import { StoreContext } from "./utils/context";
-import { PATHS } from "./utils/constants";
+import { DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 import { ErrorKind } from "./utils/types";
 import Navigation from "./components/Navigation";
@@ -21,9 +21,7 @@ const queryClient = new QueryClient();
 function App() {
   const [password, setPassword] = useState("");
   const [alerts, setAlerts] = useState<ErrorKind>({
-    notFound: false,
-    serverError: false,
-    wrongPassword: false,
+    ...DefaultValue.Error,
   });
 
   return (
@@ -50,7 +48,7 @@ function App() {
                 <Route path={PATHS.about} element={<About />} />
                 <Route path={PATHS.new_note} element={<NewNote />} />
                 <Route path={PATHS.find_note} element={<FindNote />} />
-                <Route path={PATHS.note_detail} element={<Note />} />
+                <Route path={PATHS.note_detail + "/:_id"} element={<Note />} />
                 <Route path="*" element={
                   <Navigate to="/" />
                 } />

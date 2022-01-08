@@ -1,19 +1,29 @@
 import { useContext, useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import { useMutation } from "react-query";
-import ModalForPassword from "../../components/note/PasswordModal";
+import PasswordModal from "../../components/note/PasswordModal";
 import NoteResult from "../../components/note/NoteResult";
 import useTitle from "../../custom-hooks/useTitle";
 import { get_note } from "../../queries/get_note";
 import { useParams } from "react-router";
-import { DefaultValue, TIME_CONFIG } from "../../utils/constants";
+import { useNavigate } from "react-router-dom";
+import { DefaultValue, PATHS, TIME_CONFIG } from "../../utils/constants";
 import { StoreContext } from "../../utils/context";
 import { generate_face } from "../../utils/generate_face";
 import { BasicNote } from "../../utils/types";
 
 const Note = () => {
-  const { param_id } = useParams();
-  const id: string = param_id ? param_id : "none";
+  let { _id } = useParams();
+  let navigate = useNavigate();
+  let id: string;
+
+  if (typeof _id === "undefined" || isNaN(+_id)) {
+    id = "";
+    navigate(PATHS.find_note);
+  } else {
+    id = _id
+  }
+
   const { password, setAlerts } = useContext(StoreContext);
 
   useEffect(() => {
@@ -30,7 +40,6 @@ const Note = () => {
     expiryTime: ""
   });
   const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
-  const [passwordFromModal, setPasswordFromModal] = useState<string>("");
   const setTitle = useTitle("Loading...");
   const { mutate, isLoading } = useMutation(get_note, {
     onSuccess: result => {
@@ -71,18 +80,9 @@ const Note = () => {
     }
   }, [id, password, mutate]);
 
-  useEffect(() => {
-    if (passwordFromModal) {
-      setAlerts((previousValue) => {
-        return { ...previousValue, wrongPassword: false };
-      });
-      mutate({ id: +id, password: passwordFromModal });
-    }
-  }, [id, passwordFromModal, mutate, setAlerts]);
-
   return (
     <Container fluid>
-      <ModalForPassword show={showPasswordModal} setShow={setShowPasswordModal} setPassword={setPasswordFromModal} />
+      <PasswordModal show={showPasswordModal} setShow={setShowPasswordModal} />
       <NoteResult data={note} isLoading={isLoading} />
     </Container>
   );

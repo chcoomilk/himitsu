@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Row, Col, Form, FormControl, InputGroup, Modal, Button } from "react-bootstrap";
+import { StoreContext } from "../../utils/context";
 
 interface Props {
   show: boolean,
   setShow: (value: boolean) => void,
-  setPassword: (value: string) => void,
 }
 
-const ModalForPassword = ({ show, setPassword, setShow }: Props) => {
+const PasswordModal = ({ show, setShow }: Props) => {
+  const { setPassword } = useContext(StoreContext);
   const [form, setForm] = useState({
     password: ""
   });
@@ -25,16 +26,16 @@ const ModalForPassword = ({ show, setPassword, setShow }: Props) => {
         setPassword(form.password);
         setShow(false);
       }}>
-        <Modal.Header closeButton>
+        <Modal.Header closeButton closeVariant="white">
           <Modal.Title>Input Password</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Group as={Row} className="mb-3" controlId="formPassword">
-            <Form.Label column sm="3">
-              Password:
+          <Form.Group as={Row} className="mb-3 fs-4" controlId="formPassword">
+            <Form.Label as={Col} sm="3">
+              Password
             </Form.Label>
             <Col sm="9">
-              <InputGroup className="mb-3">
+              <InputGroup>
                 <FormControl
                   type="password"
                   autoComplete="current-password"
@@ -61,4 +62,4 @@ const ModalForPassword = ({ show, setPassword, setShow }: Props) => {
   );
 };
 
-export default ModalForPassword;
+export default PasswordModal;

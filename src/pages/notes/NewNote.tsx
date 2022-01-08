@@ -2,7 +2,7 @@ import { Formik } from "formik";
 import { useContext, useState } from "react";
 import { Button, Form, Row, Col, Container, DropdownButton, Dropdown, InputGroup, FormControl } from "react-bootstrap";
 import * as yup from "yup";
-import ModalOnSaveNote from "../../components/note/SaveModal";
+import NewNoteModal from "../../components/note/NewNoteModal";
 import { StoreContext } from "../../utils/context";
 import { EncryptionMethod } from "../../utils/types";
 import { useMutation } from "react-query";
@@ -12,7 +12,7 @@ import useTitle from "../../custom-hooks/useTitle";
 const BasicNoteSchema = {
   title: yup.string(),
   content: yup.string().required(),
-  password: yup.string().required().min(4),
+  password: yup.string().required().min(4).max(1024),
   duration: yup.object().shape({
     day: yup.number().positive(),
     hour: yup.number().positive(),
@@ -34,7 +34,7 @@ const NewNote = () => {
   const { setAlerts } = useContext(StoreContext);
   const [showModal, setShowModal] = useState(false);
   const [noteResult, setNoteResult] = useState({
-    id: "",
+    id: 0,
     expiryTime: "uwu",
     password: "",
   });
@@ -44,7 +44,7 @@ const NewNote = () => {
 
   return (
     <Container fluid>
-      <ModalOnSaveNote show={showModal} setShow={setShowModal} data={{ ...noteResult }} />
+      <NewNoteModal show={showModal} setShow={setShowModal} data={{ ...noteResult }} />
       <Row>
         <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
           <Formik
@@ -65,7 +65,7 @@ const NewNote = () => {
                 encryption: encryption,
                 title: val.title,
                 content: val.content,
-                lifetime_in_secs: duration_in_secs.toString(),
+                lifetime_in_secs: duration_in_secs,
                 password: val.password
               }).then(result => {
                 if (result && result.is_ok) {
@@ -160,7 +160,7 @@ const NewNote = () => {
                       aria-label="Day"
                       type="text"
                       name="duration.day"
-                      placeholder="D"
+                      placeholder="Days"
                       value={values.duration.day}
                       onChange={handleChange}
                       isInvalid={!!errors.duration?.day}
@@ -170,7 +170,7 @@ const NewNote = () => {
                       aria-label="Hour"
                       type="text"
                       name="duration.hour"
-                      placeholder="H"
+                      placeholder="Hrs"
                       value={values.duration.hour}
                       onChange={handleChange}
                       isInvalid={!!errors.duration?.hour}
@@ -180,7 +180,7 @@ const NewNote = () => {
                       aria-label="Minute"
                       type="text"
                       name="duration.minute"
-                      placeholder="M"
+                      placeholder="Mins"
                       value={values.duration.minute}
                       onChange={handleChange}
                       isInvalid={!!errors.duration?.minute}
@@ -190,7 +190,7 @@ const NewNote = () => {
                       aria-label="Second"
                       type="text"
                       name="duration.second"
-                      placeholder="S"
+                      placeholder="Secs"
                       value={values.duration.second}
                       onChange={handleChange}
                       isInvalid={!!errors.duration?.second}
@@ -208,11 +208,24 @@ const NewNote = () => {
                     {` (${EncryptionMethod[encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')})`}
                   </Form.Text>
                   <InputGroup>
+                    <Form.Control
+                      type="password"
+                      name="password"
+                      placeholder="Enter super secret password"
+                      value={values.password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      disabled={encryption === EncryptionMethod.NoEncryption}
+                      isInvalid={encryption !== EncryptionMethod.NoEncryption
+                        ? (touched.password && !!errors.password)
+                        : undefined
+                      }
+                      autoComplete="new-password"
+                    />
                     <DropdownButton
                       size="sm"
                       variant="outline-secondary"
                       menuVariant="dark"
-                      className="pb-2"
                       title=""
                       id="input-group-dropdown-1"
                     >
@@ -229,20 +242,6 @@ const NewNote = () => {
                       </Dropdown.Item>
                       <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.NoEncryption)} href="#">No Encryption</Dropdown.Item>
                     </DropdownButton>
-                    <Form.Control
-                      type="password"
-                      name="password"
-                      placeholder="Enter super secret password"
-                      value={values.password}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      disabled={encryption === EncryptionMethod.NoEncryption}
-                      isInvalid={encryption !== EncryptionMethod.NoEncryption
-                        ? (touched.password && !!errors.password)
-                        : undefined
-                      }
-                      autoComplete="new-password"
-                    />
                     <Form.Control.Feedback type="invalid" tooltip>{errors.password}</Form.Control.Feedback>
                   </InputGroup>
                 </Form.Group>

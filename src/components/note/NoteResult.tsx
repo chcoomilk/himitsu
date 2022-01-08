@@ -2,7 +2,7 @@ import { Col, Form, Row, Spinner } from "react-bootstrap";
 
 interface Props {
   data: {
-    id: string | number;
+    id: number;
     title: string;
     content: string;
     expiryTime: string;

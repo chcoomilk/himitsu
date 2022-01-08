@@ -1,4 +1,5 @@
 import React from "react";
+import { DefaultValue } from "./constants";
 import { ErrorKind } from "./types";
 
 interface Store {
@@ -12,9 +13,7 @@ export const StoreContext = React.createContext<Store>({
   setPassword: () => { },
   setAlerts: () => { },
   alerts: {
-    notFound: false,
-    serverError: false,
-    wrongPassword: false,
+    ...DefaultValue.Error
   },
   password: "",
 });

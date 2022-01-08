@@ -4,13 +4,13 @@ interface Props {
   show: boolean,
   setShow: (mode: boolean) => void,
   data: {
-    id: string,
+    id: number,
     expiryTime: string,
     password: string,
   },
 }
 
-const ModalOnNewNote = ({ show, setShow, data: { id, expiryTime, password } }: Props) => {
+const NewNoteModal = ({ show, setShow, data: { id, expiryTime, password } }: Props) => {
   const close = () => setShow(false);
 
   return (
@@ -80,4 +80,4 @@ const ModalOnNewNote = ({ show, setShow, data: { id, expiryTime, password } }: P
   );
 };
 
-export default ModalOnNewNote;
+export default NewNoteModal;

@@ -8,6 +8,8 @@ const Error: ErrorKind = {
     notFound: false,
     serverError: false,
     wrongPassword: false,
+    invalidId: false,
+    passwordNotRequired: false,
 }
 
 export const DefaultValue = {
@@ -19,7 +21,7 @@ export const PATHS = {
     about: "/about",
     new_note: "/new",
     find_note: "/find",
-    note_detail: "/n/:id",
+    note_detail: "/n",
 }
 
 export const TIME_CONFIG: Intl.DateTimeFormatOptions | undefined = {
