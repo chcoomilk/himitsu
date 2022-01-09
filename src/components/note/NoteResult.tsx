@@ -2,11 +2,12 @@ import { Col, Form, Row, Spinner } from "react-bootstrap";
 
 interface Props {
   data: {
-    id: number;
-    title: string;
-    content: string;
-    expiryTime: string;
-    creationTime: string;
+    id: number,
+    title: string,
+    content: string,
+    expiryTime: string,
+    creationTime: string,
+    decrypted: boolean,
   },
   isLoading: boolean
 }

@@ -1,14 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Row, Col, Form, FormControl, InputGroup, Modal, Button } from "react-bootstrap";
-import { StoreContext } from "../../utils/context";
 
 interface Props {
   show: boolean,
   setShow: (value: boolean) => void,
+  setPassword(password: string): void
 }
 
-const PasswordModal = ({ show, setShow }: Props) => {
-  const { setPassword } = useContext(StoreContext);
+const PasswordModal = ({ show, setShow, setPassword }: Props) => {
   const [form, setForm] = useState({
     password: ""
   });

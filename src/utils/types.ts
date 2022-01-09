@@ -7,11 +7,13 @@ export interface ErrorKind {
 }
 
 export interface BasicNote {
-  id: number;
-  title: string;
-  content: string;
-  expiryTime: string;
-  creationTime: string;
+  id: number,
+  title: string,
+  content: string,
+  expiryTime: string,
+  creationTime: string,
+  decrypted: boolean,
+  fetched: boolean,
 }
 
 export enum EncryptionMethod {

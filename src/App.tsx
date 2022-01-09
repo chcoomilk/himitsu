@@ -2,7 +2,7 @@ import { lazy, Suspense, useState } from "react";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { Spinner, Container } from "react-bootstrap";
 import { StoreContext } from "./utils/context";
-import { DefaultValue, PATHS } from "./utils/constants";
+import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 import { ErrorKind } from "./utils/types";
 import Navigation from "./components/Navigation";
@@ -16,19 +16,41 @@ const NewNote = lazy(() => import("./pages/notes/NewNote"));
 const FindNote = lazy(() => import("./pages/notes/FindNote"));
 const Note = lazy(() => import("./pages/notes/Note"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      queryFn: async ({ queryKey }) => {
+        let url = BASE_URL + queryKey[0];
+
+        let response = await fetch(url, {
+          method: "GET",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+        });
+
+        return await response.json();
+      }
+    }
+  }
+});
 
 function App() {
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState<string | null>(null);
   const [alerts, setAlerts] = useState<ErrorKind>({
     ...DefaultValue.Error,
   });
+
+  const mutatePassword = (password: string) => {
+    setPassword(password);
+  }
 
   return (
     <Router>
       <StoreContext.Provider
         value={{
-          setPassword,
+          setPassword: mutatePassword,
           alerts,
           setAlerts,
           password

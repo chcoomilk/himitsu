@@ -3,10 +3,10 @@ import { DefaultValue } from "./constants";
 import { ErrorKind } from "./types";
 
 interface Store {
-  setPassword: React.Dispatch<React.SetStateAction<string>>,
+  setPassword(password: string): void,
   alerts: ErrorKind,
   setAlerts: React.Dispatch<React.SetStateAction<ErrorKind>>,
-  password: string,
+  password: string | null,
 }
 
 export const StoreContext = React.createContext<Store>({
@@ -15,5 +15,5 @@ export const StoreContext = React.createContext<Store>({
   alerts: {
     ...DefaultValue.Error
   },
-  password: "",
+  password: null,
 });

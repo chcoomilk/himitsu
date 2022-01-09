@@ -69,15 +69,15 @@ export async function post_note({ title, password, encryption, content, lifetime
 
     if (result.ok) {
         interface Response {
-            expired_at?: {
+            expired_at: {
                 "nanos_since_epoch": number,
                 "secs_since_epoch": number
-            },
+            } | null,
             id: number
         }
 
         const data: Response = await result.json();
-        const date_from_epoch = typeof data.expired_at !== "undefined"
+        const date_from_epoch = data.expired_at !== null 
             ? new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, TIME_CONFIG)
             : "Never"
         const readableDateTime = date_from_epoch;

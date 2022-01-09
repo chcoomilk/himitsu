@@ -1,8 +1,11 @@
 import { ErrorKind } from "./types";
 
-export const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+let __ENV_REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL
 
-if (typeof BASE_URL === "undefined") console.error("No server URL set in .env");
+if (typeof __ENV_REACT_APP_BACKEND_URL === "undefined") console.error("No server URL set in .env");
+
+export const BASE_URL: string = __ENV_REACT_APP_BACKEND_URL || "";
+
 
 const Error: ErrorKind = {
     notFound: false,

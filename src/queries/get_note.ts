@@ -4,7 +4,7 @@ import { ErrorKind } from "../utils/types";
 
 interface GetNoteField {
   id: number,
-  password: string
+  password: string | null
 }
 
 interface ResponseData {
@@ -13,10 +13,12 @@ interface ResponseData {
     "nanos_since_epoch": number,
     "secs_since_epoch": number
   },
+  "decrypted": boolean,
+  "encryption": boolean,
   "expired_at": {
     "nanos_since_epoch": number,
     "secs_since_epoch": number
-  },
+  } | null,
   "id": number,
   "title": string,
 }
@@ -28,6 +30,8 @@ export const get_note = async ({ id, password }: GetNoteField): Promise<Result<R
     id: 0,
     title: "",
     content: "",
+    decrypted: false,
+    encryption: false,
     created_at: {
       nanos_since_epoch: 0,
       secs_since_epoch: 0,
@@ -44,7 +48,7 @@ export const get_note = async ({ id, password }: GetNoteField): Promise<Result<R
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ password })
+    body: JSON.stringify({ password: password })
   });
 
   if (response.ok) {
