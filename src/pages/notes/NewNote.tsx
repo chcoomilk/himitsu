@@ -1,6 +1,6 @@
 import { Formik } from "formik";
 import { useContext, useState } from "react";
-import { Button, Form, Row, Col, Container, DropdownButton, Dropdown, InputGroup, FormControl } from "react-bootstrap";
+import { Button, Form, Row, Col, Container, DropdownButton, Dropdown, InputGroup, FormControl, Stack } from "react-bootstrap";
 import * as yup from "yup";
 import NewNoteModal from "../../components/note/NewNoteModal";
 import { StoreContext } from "../../utils/context";
@@ -245,11 +245,10 @@ const NewNote = () => {
                     <Form.Control.Feedback type="invalid" tooltip>{errors.password}</Form.Control.Feedback>
                   </InputGroup>
                 </Form.Group>
-                <div className="text-end">
-                  <Button size="lg" variant="outline-danger" onClick={handleReset} disabled={isSubmitting}>Reset</Button>
-                  {" "}
+                <Stack direction="horizontal" gap={3}>
+                  <Button className="ms-auto" size="lg" variant="outline-danger" onClick={handleReset} disabled={isSubmitting}>Reset</Button>
                   <Button size="lg" variant="success" type="submit" disabled={isSubmitting}>{isSubmitting ? "Saving" : "Save"}</Button>
-                </div>
+                </Stack>
               </Form>
             )}
           </Formik>

@@ -107,7 +107,7 @@ const Note = () => {
   const { mutate: inf_mut, isLoading: inf_is_loading } = useMutation(get_note_info, {
     onSuccess: result => {
       if (result.is_ok) {
-        if (result.data.encryption && result.data.decryptable) {
+        if (result.data.decryptable) {
           if (password !== null) {
             mutate({ id: +id, password });
           } else {
@@ -119,6 +119,15 @@ const Note = () => {
             });
           }
         } else {
+          if (!result.data.encryption && password !== null) {
+            setAlerts(prev => {
+              return {
+                ...prev,
+                passwordNotRequired: true
+              };
+            });
+          }
+
           mutate({ id: +id, password: null });
         }
       } else {
@@ -127,57 +136,77 @@ const Note = () => {
     }
   });
 
-  const try_decrypt = useCallback((password: string) => {
+  const try_decrypt = useCallback((password: string): void => {
     let content = cryptojs.AES.decrypt(note.content, password).toString(cryptojs.enc.Utf8);
-    return content;
-  }, [note.content]);
+    if (content === "") {
+      setAlerts(prev => {
+        return {
+          ...prev,
+          wrongPassword: true,
+        };
+      });
+      setModalDecrypt({
+        password: null,
+        showModal: true,
+      });
+    } else {
+      setAlerts(prev => {
+        return {
+          ...prev,
+          wrongPassword: false,
+        };
+      });
+      setModalDecrypt({
+        password: null,
+        showModal: false,
+      });
+      setNote(prev => {
+        return {
+          ...prev,
+          decrypted: true,
+          content
+        };
+      });
+    }
+  }, [note.content, setAlerts]);
 
   useEffect(() => {
     inf_mut({ id: +id });
   }, [id, inf_mut]);
 
   useEffect(() => {
-    if (modalDecrypt.password !== null) {
-      let content = try_decrypt(modalDecrypt.password);
-
-      if (content === "") {
-        setAlerts(prev => {
-          return {
-            ...prev,
-            wrongPassword: true,
-          };
-        });
-        setModalDecrypt({
-          password: null,
-          showModal: true,
-        });
-      } else {
-        setNote(prev => {
-          return {
-            ...prev,
-            content
-          };
-        });
-      }
+    if (!note.decrypted && modalDecrypt.password !== null) {
+      try_decrypt(modalDecrypt.password);
     }
-  }, [modalDecrypt.password, setAlerts, try_decrypt]);
+  }, [note.decrypted, modalDecrypt.password, try_decrypt]);
 
   useEffect(() => {
     if (!note.decrypted) {
+      if (password !== null) {
+        try_decrypt(password);
+      } else {
+        setModalDecrypt(prev => {
+          return {
+            ...prev,
+            showModal: true
+          };
+        });
+      }
+    } else {
       setModalDecrypt(prev => {
         return {
           ...prev,
-          showModal: true
+          showModal: false
         };
       });
     }
-  }, [note.decrypted]);
+  }, [note.decrypted, password, try_decrypt]);
 
   useEffect(() => {
     if (modalMutate.password !== null) {
       mutate({ id: +id, password: modalMutate.password });
     }
-  }, [id, modalMutate.password, mutate])
+  }, [id, modalMutate.password, mutate]);
 
   return (
     <Container fluid>
@@ -200,7 +229,12 @@ const Note = () => {
           return { ...prev, password: password };
         })} />
 
-      <NoteResult data={note} isLoading={inf_is_loading || isLoading} />
+      <NoteResult data={note} isLoading={inf_is_loading || isLoading} whenRetry={() => setModalDecrypt(prev => {
+        return {
+          ...prev,
+          showModal: true,
+        };
+      })} />
     </Container>
   );
 };

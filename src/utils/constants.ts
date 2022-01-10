@@ -1,10 +1,8 @@
 import { ErrorKind } from "./types";
 
-let __ENV_REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL set in .env");
 
-if (typeof __ENV_REACT_APP_BACKEND_URL === "undefined") console.error("No server URL set in .env");
-
-export const BASE_URL: string = __ENV_REACT_APP_BACKEND_URL || "";
+export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
 
 
 const Error: ErrorKind = {
@@ -13,7 +11,7 @@ const Error: ErrorKind = {
     wrongPassword: false,
     invalidId: false,
     passwordNotRequired: false,
-}
+};
 
 export const DefaultValue = {
     Error,

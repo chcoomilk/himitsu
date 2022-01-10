@@ -8,7 +8,8 @@ import { ErrorKind } from "./utils/types";
 import Navigation from "./components/Navigation";
 import BasicAlerts from "./components/BasicAlerts";
 
-import './stylings/App.scss';
+import "./stylings/index.scss";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
@@ -42,15 +43,11 @@ function App() {
     ...DefaultValue.Error,
   });
 
-  const mutatePassword = (password: string) => {
-    setPassword(password);
-  }
-
   return (
     <Router>
       <StoreContext.Provider
         value={{
-          setPassword: mutatePassword,
+          setPassword,
           alerts,
           setAlerts,
           password
@@ -58,7 +55,7 @@ function App() {
       >
         <QueryClientProvider client={queryClient}>
           <Navigation />
-          <Container className="page-content">
+          <Container className="himitsu">
             <BasicAlerts alerts={alerts} setAlerts={setAlerts} />
             <Suspense fallback={
               <Spinner animation="border" role="status">

@@ -80,7 +80,7 @@ const About = () => {
             </Accordion.Item>
 
             <Accordion.Item eventKey="2.1">
-              <Accordion.Header>What is frontend encryption?</Accordion.Header>
+              <Accordion.Header>What does frontend encryption mean?</Accordion.Header>
               <Accordion.Body>
                 <h2>
                   It means the data is encrypted before going into the server
@@ -94,7 +94,7 @@ const About = () => {
             </Accordion.Item>
 
             <Accordion.Item eventKey="2.2">
-              <Accordion.Header>What is backend encryption?</Accordion.Header>
+              <Accordion.Header>What does backend encryption mean?</Accordion.Header>
               <Accordion.Body>
                 <h2>
                   It means the data will be encrypted in the server
@@ -123,16 +123,22 @@ const About = () => {
         <Col className="mt-4" xl={{ offset: 1, span: 10 }}>
           <Row>
             <Col xl={6} md={6} sm={12}>
-              <a href="https://github.com/chcoomilk/himitsu">
+              <a target="_blank" rel="noreferrer" href="https://github.com/chcoomilk/himitsu"
+                style={{ textDecoration: "none" }}>
                 <Image fluid src={ts_gif} alt="average typescript enjoyer" width={"100%"} />
+                <i className="bi bi-github" />
+                {" "}
+                himitsu web
               </a>
-              himitsu web
             </Col>
             <Col xl={6} md={6} sm={12}>
-              <a href="https://github.com/chcoomilk/himitsu-backend">
+              <a target="_blank" rel="noreferrer" href="https://github.com/chcoomilk/himitsu-backend"
+                style={{ textDecoration: "none" }}>
                 <Image fluid src={rust_gif} alt="average rust enjoyer" width={"100%"} />
+                <i className="bi bi-github" />
+                {" "}
+                himitsu backend
               </a>
-              himitsu backend
             </Col>
           </Row>
         </Col>

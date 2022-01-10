@@ -9,7 +9,7 @@ import { StoreContext } from "../../utils/context";
 
 const schema = yup.object().shape({
   ID: yup.number().required(),
-  password: yup.string().min(4).max(1024)
+  password: yup.string().min(4).max(1024).nullable()
 });
 
 const FindNote = () => {
@@ -29,7 +29,7 @@ const FindNote = () => {
             }}
             initialValues={{
               ID: "",
-              password: ""
+              password: null
             }}
           >
             {({
@@ -62,7 +62,7 @@ const FindNote = () => {
                     name="password"
                     placeholder="Enter super secret password"
                     autoComplete="on"
-                    value={values.password}
+                    value={values.password || undefined}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     isInvalid={touched.password && !!errors.password}

@@ -1,4 +1,4 @@
-import { Col, Form, Row, Spinner } from "react-bootstrap";
+import { Button, Col, Form, Row, Spinner, Stack } from "react-bootstrap";
 
 interface Props {
   data: {
@@ -9,7 +9,8 @@ interface Props {
     creationTime: string,
     decrypted: boolean,
   },
-  isLoading: boolean
+  isLoading: boolean,
+  whenRetry?(): void,
 }
 
 const NoteResult = (props: Props) => {
@@ -60,6 +61,22 @@ const NoteResult = (props: Props) => {
               readOnly
             />
           </Form.Group>
+          <Stack direction="horizontal" gap={3}>
+            {
+              note.decrypted
+                ? (
+                  <>
+                    <Button size="lg" className="ms-auto" variant="outline-danger">
+                      <i className="bi bi-trash"></i>
+                    </Button>
+                    <Button size="lg" variant="outline-danger" onClick={props.whenRetry}>Retry</Button>
+                  </>
+                )
+                : (
+                  <Button size="lg" variant="outline-danger" onClick={props.whenRetry}>Retry</Button>
+                )
+            }
+          </Stack>
         </Form>
       </Col>
     </Row>

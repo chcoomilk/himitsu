@@ -4,15 +4,15 @@ import { PATHS } from "../utils/constants";
 
 const Home = () => {
   return (
-    <Container fluid className="text-center align-items-center">
-      <Row>
-        <Col xl={{ span: 10, offset: 1 }} xs={{ span: 10, offset: 1 }}>
+    <Container fluid className="himitsu-home text-center align-items-center">
+      <Row className="align-items-center text-center">
+        <Col>
           <h1 className="fs-0">himitsu</h1>
           <p className="fs-4">Onii-chan's simple, secure, and private <span className="text-nowrap">( ͡° ͜ʖ ͡°)</span> note sharing web app</p>
         </Col>
       </Row>
       <Row className="mt-2">
-        <Col xl={{ span: 8, offset: 2 }} xs={{ span: 10, offset: 1 }}>
+        <Col>
           <Link to={PATHS.new_note}>
             <Button
               size="lg"
