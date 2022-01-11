@@ -5,16 +5,18 @@ import { StoreContext } from "./utils/context";
 import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 import { ErrorKind } from "./utils/types";
-import Navigation from "./components/Navigation";
-import BasicAlerts from "./components/BasicAlerts";
 
 import "./stylings/index.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import 'react-loading-skeleton/dist/skeleton.css'
 
-const Home = lazy(() => import("./pages/Home"));
+import Home from "./pages/Home";
+import NewNote from "./pages/notes/NewNote";
+import FindNote from "./pages/notes/FindNote";
+// const Home = lazy(() => import("./pages/Home"));
+const BasicAlerts = lazy(() => import("./components/BasicAlerts"))
 const About = lazy(() => import("./pages/About"));
-const NewNote = lazy(() => import("./pages/notes/NewNote"));
-const FindNote = lazy(() => import("./pages/notes/FindNote"));
+const Navigation = lazy(() => import("./components/Navigation"))
 const Note = lazy(() => import("./pages/notes/Note"));
 
 const queryClient = new QueryClient({
@@ -54,14 +56,24 @@ function App() {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Navigation />
-          <Container className="himitsu">
-            <BasicAlerts alerts={alerts} setAlerts={setAlerts} />
-            <Suspense fallback={
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-            }>
+          <Suspense fallback={
+            <Spinner animation="border" role="status"
+              style={{
+                position: "absolute",
+                marginLeft: "auto",
+                marginRight: "auto",
+                top: "50vh",
+                left: 0,
+                right: 0,
+                textAlign: "center",
+              }}
+            >
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          }>
+            <Navigation />
+            <Container className="himitsu">
+              <BasicAlerts alerts={alerts} setAlerts={setAlerts} />
               <Routes>
                 <Route path={PATHS.home} element={<Home />} />
                 <Route path={PATHS.about} element={<About />} />
@@ -72,11 +84,11 @@ function App() {
                   <Navigate to="/" />
                 } />
               </Routes>
-            </Suspense>
-          </Container>
+            </Container>
+          </Suspense>
         </QueryClientProvider>
-      </StoreContext.Provider>
-    </Router>
+      </StoreContext.Provider >
+    </Router >
   );
 }
 

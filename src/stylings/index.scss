@@ -7,12 +7,10 @@ $font-size-base: 1.1rem;
 }
 $default-bg-color: rgb(40, 44, 52);
 $input-bg-color: rgb(36, 40, 46);
-$input-bg-color-disabled: rgb(32, 36, 42);
+$input-bg-color-disabled: scale-color($input-bg-color, $lightness: -20%);
 $input-border-color: rgba(65, 65, 65, 0.24);
 $text-color-normal: rgb(210, 210, 210);
-$text-color-darken: rgb(190, 190, 190);
-$text-color-black: rgb(5, 81, 96);
-$text-color-black-lighten: rgb(65, 141, 156);
+$text-color-darken: scale-color($text-color-normal, $lightness: -10%);
 
 a {
   color: $text-color-normal;
@@ -22,7 +20,8 @@ a:hover {
   color: $text-color-darken;
 }
 
-html, body {
+html,
+body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -30,11 +29,17 @@ html, body {
   background-color: $default-bg-color;
   color: $text-color-normal;
 }
-// For hiding arrows in input type number
+// For hiding vertical arrows in number input
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 input[type="number"] {
@@ -43,7 +48,7 @@ input[type="number"] {
 //
 
 .himitsu {
-  min-height: 90vh;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,7 +64,7 @@ input[type="number"] {
 }
 
 .accordion .accordion-button {
-  background-color: #40516b;
+  background-color: $input-bg-color-disabled;
   color: $text-color-normal;
 }
 
@@ -69,8 +74,7 @@ input[type="number"] {
 }
 
 .accordion .accordion-item {
-  background-color: $input-bg-color;
-  color: $text-color-normal;
+  background-color: $input-bg-color-disabled;
 }
 
 .accordion .accordion-button::after {
@@ -117,9 +121,9 @@ span.input-group-text {
 }
 
 a#special-alert-link {
-  color: $text-color-black;
+  color: rgb(5, 81, 96);
 }
 
 a#special-alert-link:hover {
-  color: $text-color-black-lighten;
+  color: rgb(65, 141, 156);
 }

@@ -59,6 +59,14 @@ const About = () => {
                 </p>
                 <p>
                   Below is basically a set of brief explanations about this web app.
+                  <br />
+                  <p style={{ lineHeight: "0.7" }}>
+                    If you have any more questions, clench them tightly and maybe someone will answer them one day!
+                    <br />
+                    <small className="text-nowrap" style={{ fontSize: "0.3em", color: "#d5d5d5" }}>
+                      no, i will not answer any of them *dabs away*
+                    </small>
+                  </p>
                 </p>
               </Accordion.Body>
             </Accordion.Item>
