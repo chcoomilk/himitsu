@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Col, Form, FormControl, Modal, Button } from "react-bootstrap";
+import { Form, Modal, Button, InputGroup } from "react-bootstrap";
 
 interface Props {
   title?: string,
@@ -41,8 +41,8 @@ const PassphraseModal = ({ title, show, setShow, setPassphrase }: Props) => {
             <Form.Label >
               Passphrase
             </Form.Label>
-            <Col>
-              <FormControl
+            <InputGroup>
+              <Form.Control
                 type={formState.passphrase ? "password" : "text"}
                 autoComplete="current-passphrase"
                 onChange={e => setForm((prev) => {
@@ -62,8 +62,10 @@ const PassphraseModal = ({ title, show, setShow, setPassphrase }: Props) => {
                     passphrase: !prev.passphrase
                   };
                 })}
-              ></Button>
-            </Col>
+              >
+                {formState.passphrase ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}
+              </Button>
+            </InputGroup>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>

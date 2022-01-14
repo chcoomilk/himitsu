@@ -286,7 +286,7 @@ const Note = () => {
     <Container fluid>
 
       <PassphraseModal
-        show={modalDecrypt.showModal}
+        show={true}
         setShow={(show) => setModalDecrypt(prev => {
           return { ...prev, showModal: show };
         })}
