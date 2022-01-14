@@ -1,112 +1,93 @@
 import { lazy, Suspense, useState } from "react";
-import { BrowserRouter as Router, Link, Redirect, Route, Switch } from "react-router-dom";
-import { Spinner, Alert, Container } from "react-bootstrap";
+import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
+import { Spinner, Container } from "react-bootstrap";
 import { StoreContext } from "./utils/context";
-import { PATHS } from "./utils/constants";
+import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
-import { ErrorKind } from "./utils/types";
-import './stylings/App.scss';
-import Navigation from "./components/Navigation";
+import { Popup } from "./utils/types";
 
-const Home = lazy(() => import("./pages/Home"));
+import "./stylings/index.scss";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "react-loading-skeleton/dist/skeleton.css";
+
+import Home from "./pages/Home";
+import NewNote from "./pages/notes/NewNote";
+import FindNote from "./pages/notes/FindNote";
+const Popups = lazy(() => import("./components/Popups"))
 const About = lazy(() => import("./pages/About"));
-const NewNote = lazy(() => import("./pages/notes/NewNote"));
-const FindNote = lazy(() => import("./pages/notes/FindNote"));
+const Navigation = lazy(() => import("./components/Navigation"))
 const Note = lazy(() => import("./pages/notes/Note"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      queryFn: async ({ queryKey }) => {
+        let url = BASE_URL + queryKey[0];
+
+        let response = await fetch(url, {
+          method: "GET",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+        });
+
+        return await response.json();
+      }
+    }
+  }
+});
 
 function App() {
-  const [showHomeLogo, setShowHomeLogo] = useState<boolean>(true);
-  const [password, setPassword] = useState("");
-  const [alerts, setAlerts] = useState<ErrorKind>({
-    notFound: false,
-    serverError: false,
-    wrongPassword: false,
+  const [passphrase, setPassphrase] = useState<string | null>(null);
+  const [popups, setPopups] = useState<Popup>({
+    ...DefaultValue.Popups,
   });
 
   return (
     <Router>
       <StoreContext.Provider
         value={{
-          setShowHomeLogo: setShowHomeLogo,
-          setPassword,
-          alerts,
-          setAlerts,
-          password
+          setPassphrase,
+          popups,
+          setPopups,
+          passphrase
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Navigation showHome={showHomeLogo} />
-          <Container className="page-content py-5">
-            <Alert
-              variant="info"
-              show={alerts.notFound} onClose={() => setAlerts((previousValue) => {
-                return { ...previousValue, notFound: false };
-              })}
-              dismissible
+          <Suspense fallback={
+            <Spinner animation="border" role="status"
+              style={{
+                position: "absolute",
+                marginLeft: "auto",
+                marginRight: "auto",
+                top: "50vh",
+                left: 0,
+                right: 0,
+                textAlign: "center",
+              }}
             >
-              <Alert.Heading>
-                Note not found T_T
-              </Alert.Heading>
-              <p>
-                Note doesn't exist, or perhaps it's past its expiration date, {" "}
-                <Link id="special-alert-link" to="/find" onClick={() => setAlerts((previousValue) => {
-                  return { ...previousValue, notFound: false };
-                })}>
-                  Try Again
-                </Link>?
-              </p>
-            </Alert>
-
-            <Alert
-              variant="danger"
-              show={alerts.wrongPassword} onClose={() => setAlerts((previousValue) => {
-                return { ...previousValue, wrongPassword: false };
-              })}
-              dismissible
-            >
-              <Alert.Heading>
-                Wrong password
-              </Alert.Heading>
-              <p>
-                Your secret could not be decrypted, please try again!
-              </p>
-            </Alert>
-
-            <Alert
-              variant="secondary"
-              show={alerts.serverError} onClose={() => setAlerts((previousValue) => {
-                return { ...previousValue, serverError: false };
-              })}
-              dismissible
-            >
-              <Alert.Heading>
-                Sorry!
-              </Alert.Heading>
-              <p>
-                The server is unavailabe at the moment, please try again later.
-              </p>
-            </Alert>
-
-            <Suspense fallback={
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-            }>
-              <Switch>
-                <Route exact path={PATHS.home} component={Home} />
-                <Route exact path={PATHS.about} component={About} />
-                <Route exact path={PATHS.new_note} component={NewNote} />
-                <Route exact path={PATHS.find_note} component={FindNote} />
-                <Route exact path={PATHS.note_detail + "/:id"} component={Note} />
-                <Redirect to={PATHS.home} />
-              </Switch>
-            </Suspense>
-          </Container>
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          }>
+            <Navigation />
+            <Popups popups={popups} setPopups={setPopups} />
+            <Container className="himitsu">
+              <Routes>
+                <Route path={PATHS.home} element={<Home />} />
+                <Route path={PATHS.about} element={<About />} />
+                <Route path={PATHS.new_note} element={<NewNote />} />
+                <Route path={PATHS.find_note} element={<FindNote />} />
+                <Route path={PATHS.note_detail + "/:_id"} element={<Note />} />
+                <Route path="*" element={
+                  <Navigate to="/" />
+                } />
+              </Routes>
+            </Container>
+          </Suspense>
         </QueryClientProvider>
-      </StoreContext.Provider>
-    </Router>
+      </StoreContext.Provider >
+    </Router >
   );
 }
 

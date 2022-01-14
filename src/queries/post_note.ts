@@ -1,95 +1,81 @@
 import { Result } from ".";
-import { BASE_URL, TIME_CONFIG } from "../utils/constants";
-import { EncryptionMethod, ErrorKind } from "../utils/types";
+import { BASE_URL, DefaultValue, TIME_CONFIG } from "../utils/constants";
+import { EncryptionMethod, Popup, BasicInfo } from "../utils/types";
 import CryptoJS from "crypto-js";
 
-interface Data {
+interface NoteInfo {
+    id: number,
     expiryTime: string,
-    id: string,
 }
 
-type Note = {
-    encryption: EncryptionMethod,
+interface Note {
     title: string,
+    encryption: EncryptionMethod,
     content: string,
-    password?: string,
-    lifetime_in_secs: string,
+    passphrase: string,
+    lifetime_in_secs: number,
 }
 
-export async function post_note({ encryption, title, content, password, lifetime_in_secs }: Note): Promise<Result<Data>> {
-    let error: ErrorKind = {
-        notFound: false,
-        wrongPassword: false,
-        serverError: false,
-    };
-    let data: Data = {
-        expiryTime: "",
-        id: "",
-    };
-    let url = BASE_URL + "/notes" + (encryption === EncryptionMethod.ServerEncryption ? "/new" : "/plain");
-    let converted_val;
+interface Request {
+    title: string,
+    is_currently_encrypted: boolean,
+    content: string,
+    passphrase: string | null,
+    lifetime_in_secs: number | null,
+}
 
-    if (encryption === EncryptionMethod.NoEncryption) {
-        converted_val = {
-            title: title,
-            content: content,
-            is_encrypted: "false",
-            lifetime_in_secs: lifetime_in_secs.toString()
-        };
-    } else {
-        if (typeof password === "undefined") {
-            return {
-                is_ok: false,
-                data,
-                error: {
-                    ...error,
-                    wrongPassword: true
-                }
-            };
-        }
+type ResponseData = BasicInfo;
 
-        if (encryption === EncryptionMethod.ServerEncryption) {
-            converted_val = {
+export async function post_note({ title, passphrase, encryption, content, lifetime_in_secs }: Note): Promise<Result<NoteInfo>> {
+    let error: Popup = DefaultValue.Popups;
+    let url = BASE_URL + "/notes/new/";
+    let request: Request;
+
+    switch (encryption) {
+        case EncryptionMethod.NoEncryption:
+            request = {
                 title,
                 content,
-                password,
-                lifetime_in_secs,
+                passphrase: null,
+                is_currently_encrypted: false,
+                lifetime_in_secs: lifetime_in_secs || null
             };
-        } else {
-            let encrypted_title = CryptoJS.AES.encrypt(title, password).toString();
-            let encrypted_content = CryptoJS.AES.encrypt(content, password).toString();
-
-            converted_val = {
-                title: encrypted_title,
+            break;
+        case EncryptionMethod.BackendEncryption:
+            request = {
+                title,
+                content,
+                passphrase: passphrase,
+                is_currently_encrypted: false,
+                lifetime_in_secs: lifetime_in_secs || null
+            };
+            break;
+        case EncryptionMethod.FrontendEncryption:
+            let encrypted_content = CryptoJS.AES.encrypt(content, passphrase).toString();
+            request = {
+                title,
                 content: encrypted_content,
-                is_encrypted: "true",
-                lifetime_in_secs: lifetime_in_secs.toString()
+                passphrase: null,
+                is_currently_encrypted: true,
+                lifetime_in_secs: lifetime_in_secs || null
             };
-        }
+            break;
     }
-
 
     const result = await fetch(url, {
         method: "POST",
         mode: "cors",
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Content-Type": "application/json"
         },
-        body: new URLSearchParams(converted_val)
+        body: JSON.stringify(request)
     });
 
     if (result.ok) {
-        interface Response {
-            expired_at: {
-                "nanos_since_epoch": number,
-                "secs_since_epoch": number
-            },
-            id: string
-        }
-
-        const data: Response = await result.json();
-        const date_from_epoch = new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, TIME_CONFIG);
-        const readableDateTime = date_from_epoch;
+        const data: ResponseData = await result.json();
+        const readableDateTime = data.expired_at !== null
+            ? new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, TIME_CONFIG)
+            : "Never"
         return {
             is_ok: true,
             data: {
@@ -101,11 +87,14 @@ export async function post_note({ encryption, title, content, password, lifetime
     } else {
         return {
             is_ok: false,
-            data,
+            data: {
+                expiryTime: "",
+                id: 0
+            },
             error: {
                 ...error,
                 serverError: true,
             }
         }
     }
-};
+}

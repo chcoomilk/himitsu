@@ -4,17 +4,17 @@ interface Props {
   show: boolean,
   setShow: (mode: boolean) => void,
   data: {
-    id: string,
+    id: number,
     expiryTime: string,
-    password: string,
+    passphrase: string,
   },
 }
 
-const ModalOnNewNote = ({ show, setShow, data: { id, expiryTime, password } }: Props) => {
+const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: Props) => {
   const close = () => setShow(false);
 
   return (
-    <Modal show={show} onHide={close} centered contentClassName="smaller-font">
+    <Modal show={show} onHide={close} centered contentClassName="fs-4">
       <Modal.Header closeButton closeVariant="white">
         <Modal.Title>Saved!</Modal.Title>
       </Modal.Header>
@@ -30,26 +30,37 @@ const ModalOnNewNote = ({ show, setShow, data: { id, expiryTime, password } }: P
                 aria-describedby="basic-addon2"
                 readOnly
               />
-              <Button variant="outline-light" id="button-addon2" onClick={() => navigator.clipboard.writeText(id.toString())}>Copy</Button>
+              <Button
+                variant="outline-light"
+                id="button-addon2"
+                onClick={() => navigator.clipboard.writeText(id.toString())}>
+                <i className="bi bi-journals" />
+              </Button>
             </InputGroup>
           </Form.Group>
 
           {
-            password
+            passphrase
               ? (
-                <Form.Group className="mb-3" controlId="formReadOnlyPassword">
+                <Form.Group className="mb-3" controlId="formReadOnlyPassphrase">
                   <Form.Label>
-                    Password
+                    Passphrase
                   </Form.Label>
                   <InputGroup className="mb-3">
                     <FormControl
                       type="password"
-                      value={password}
+                      value={passphrase}
                       aria-describedby="basic-addon2"
                       readOnly
-                      autoComplete="new-password"
+                      autoComplete="new-passphrase"
                     />
-                    <Button variant="outline-light" id="button-addon2" onClick={() => navigator.clipboard.writeText(password)}>Copy</Button>
+                    <Button
+                      variant="outline-light"
+                      id="button-addon2"
+                      onClick={() => navigator.clipboard.writeText(passphrase)}
+                    >
+                      <i className="bi bi-journals" />
+                    </Button>
                   </InputGroup>
                 </Form.Group>
               ) : (
@@ -80,4 +91,4 @@ const ModalOnNewNote = ({ show, setShow, data: { id, expiryTime, password } }: P
   );
 };
 
-export default ModalOnNewNote;
+export default NewNoteModal;
