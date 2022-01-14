@@ -51,8 +51,16 @@ input[type="number"] {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+}
+
+.himitsu-popups {
+  position: absolute;
+  top: 69px !important;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
 }
 
 .modal .modal-content,
@@ -63,22 +71,23 @@ input[type="number"] {
   border-style: none;
 }
 
-.accordion .accordion-button {
-  background-color: $input-bg-color-disabled;
-  color: $text-color-normal;
-}
+.accordion {
+  .accordion-button {
+    background-color: $input-bg-color-disabled;
+    color: $text-color-normal;
+  }
+  .accordion-button::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23e1e1e1'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+  }
 
-.accordion .collapsed {
-  background-color: $input-bg-color;
-  color: $text-color-normal;
-}
+  .collapsed {
+    background-color: $input-bg-color;
+    color: $text-color-normal;
+  }
 
-.accordion .accordion-item {
-  background-color: $input-bg-color-disabled;
-}
-
-.accordion .accordion-button::after {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23e1e1e1'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+  .accordion-item {
+    background-color: $input-bg-color-disabled;
+  }
 }
 
 .form-control,
@@ -95,7 +104,8 @@ input[type="number"] {
 }
 
 .btn-outline-light {
-  border-color: $input-border-color;
+  background-color: $input-bg-color;
+  border: 1px solid $input-border-color;
 }
 
 .navbar-dark {

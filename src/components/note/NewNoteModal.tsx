@@ -6,11 +6,11 @@ interface Props {
   data: {
     id: number,
     expiryTime: string,
-    password: string,
+    passphrase: string,
   },
 }
 
-const NewNoteModal = ({ show, setShow, data: { id, expiryTime, password } }: Props) => {
+const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: Props) => {
   const close = () => setShow(false);
 
   return (
@@ -30,26 +30,37 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, password } }: Pro
                 aria-describedby="basic-addon2"
                 readOnly
               />
-              <Button variant="outline-light" id="button-addon2" onClick={() => navigator.clipboard.writeText(id.toString())}>Copy</Button>
+              <Button
+                variant="outline-light"
+                id="button-addon2"
+                onClick={() => navigator.clipboard.writeText(id.toString())}>
+                <i className="bi bi-journals" />
+              </Button>
             </InputGroup>
           </Form.Group>
 
           {
-            password
+            passphrase
               ? (
-                <Form.Group className="mb-3" controlId="formReadOnlyPassword">
+                <Form.Group className="mb-3" controlId="formReadOnlyPassphrase">
                   <Form.Label>
-                    Password
+                    Passphrase
                   </Form.Label>
                   <InputGroup className="mb-3">
                     <FormControl
-                      type="password"
-                      value={password}
+                      type="passphrase"
+                      value={passphrase}
                       aria-describedby="basic-addon2"
                       readOnly
-                      autoComplete="new-password"
+                      autoComplete="new-passphrase"
                     />
-                    <Button variant="outline-light" id="button-addon2" onClick={() => navigator.clipboard.writeText(password)}>Copy</Button>
+                    <Button
+                      variant="outline-light"
+                      id="button-addon2"
+                      onClick={() => navigator.clipboard.writeText(passphrase)}
+                    >
+                      <i className="bi bi-journals" />
+                    </Button>
                   </InputGroup>
                 </Form.Group>
               ) : (

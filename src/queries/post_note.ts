@@ -1,6 +1,6 @@
 import { Result } from ".";
 import { BASE_URL, DefaultValue, TIME_CONFIG } from "../utils/constants";
-import { EncryptionMethod, ErrorKind } from "../utils/types";
+import { EncryptionMethod, Popup, BasicInfo } from "../utils/types";
 import CryptoJS from "crypto-js";
 
 interface NoteInfo {
@@ -12,20 +12,22 @@ interface Note {
     title: string,
     encryption: EncryptionMethod,
     content: string,
-    password: string,
+    passphrase: string,
     lifetime_in_secs: number,
 }
 
 interface Request {
     title: string,
-    encryption: boolean,
+    is_currently_encrypted: boolean,
     content: string,
-    password?: string,
-    lifetime_in_secs?: number | null,
+    passphrase: string | null,
+    lifetime_in_secs: number | null,
 }
 
-export async function post_note({ title, password, encryption, content, lifetime_in_secs }: Note): Promise<Result<NoteInfo>> {
-    let error: ErrorKind = DefaultValue.Error;
+type ResponseData = BasicInfo;
+
+export async function post_note({ title, passphrase, encryption, content, lifetime_in_secs }: Note): Promise<Result<NoteInfo>> {
+    let error: Popup = DefaultValue.Popups;
     let url = BASE_URL + "/notes/new/";
     let request: Request;
 
@@ -34,7 +36,8 @@ export async function post_note({ title, password, encryption, content, lifetime
             request = {
                 title,
                 content,
-                encryption: false,
+                passphrase: null,
+                is_currently_encrypted: false,
                 lifetime_in_secs: lifetime_in_secs || null
             };
             break;
@@ -42,17 +45,18 @@ export async function post_note({ title, password, encryption, content, lifetime
             request = {
                 title,
                 content,
-                password,
-                encryption: true,
+                passphrase: passphrase,
+                is_currently_encrypted: false,
                 lifetime_in_secs: lifetime_in_secs || null
             };
             break;
         case EncryptionMethod.FrontendEncryption:
-            let encrypted_content = CryptoJS.AES.encrypt(content, password).toString();
+            let encrypted_content = CryptoJS.AES.encrypt(content, passphrase).toString();
             request = {
                 title,
                 content: encrypted_content,
-                encryption: true,
+                passphrase: null,
+                is_currently_encrypted: true,
                 lifetime_in_secs: lifetime_in_secs || null
             };
             break;
@@ -68,19 +72,10 @@ export async function post_note({ title, password, encryption, content, lifetime
     });
 
     if (result.ok) {
-        interface Response {
-            expired_at: {
-                "nanos_since_epoch": number,
-                "secs_since_epoch": number
-            } | null,
-            id: number
-        }
-
-        const data: Response = await result.json();
-        const date_from_epoch = data.expired_at !== null 
+        const data: ResponseData = await result.json();
+        const readableDateTime = data.expired_at !== null
             ? new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, TIME_CONFIG)
             : "Never"
-        const readableDateTime = date_from_epoch;
         return {
             is_ok: true,
             data: {
@@ -102,4 +97,4 @@ export async function post_note({ title, password, encryption, content, lifetime
             }
         }
     }
-};
+}

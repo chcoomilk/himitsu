@@ -1,10 +1,17 @@
+import { useContext, useEffect } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { PATHS } from "../utils/constants";
+import { DefaultValue, PATHS } from "../utils/constants";
+import { StoreContext } from "../utils/context";
 
 const Home = () => {
+const { setPopups: setAlerts } = useContext(StoreContext);
+  useEffect(() => {
+    setAlerts(DefaultValue.Popups);
+  }, [setAlerts]);
+
   return (
-    <Container fluid className="himitsu-home text-center align-items-center">
+    <Container fluid className="text-center align-items-center">
       <Row className="align-items-center text-center">
         <Col>
           <h1 className="fs-0">himitsu</h1>

@@ -4,17 +4,16 @@ import { Spinner, Container } from "react-bootstrap";
 import { StoreContext } from "./utils/context";
 import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
-import { ErrorKind } from "./utils/types";
+import { Popup } from "./utils/types";
 
 import "./stylings/index.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import 'react-loading-skeleton/dist/skeleton.css'
+import "react-loading-skeleton/dist/skeleton.css";
 
 import Home from "./pages/Home";
 import NewNote from "./pages/notes/NewNote";
 import FindNote from "./pages/notes/FindNote";
-// const Home = lazy(() => import("./pages/Home"));
-const BasicAlerts = lazy(() => import("./components/BasicAlerts"))
+const Popups = lazy(() => import("./components/Popups"))
 const About = lazy(() => import("./pages/About"));
 const Navigation = lazy(() => import("./components/Navigation"))
 const Note = lazy(() => import("./pages/notes/Note"));
@@ -40,19 +39,19 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const [password, setPassword] = useState<string | null>(null);
-  const [alerts, setAlerts] = useState<ErrorKind>({
-    ...DefaultValue.Error,
+  const [passphrase, setPassphrase] = useState<string | null>(null);
+  const [popups, setPopups] = useState<Popup>({
+    ...DefaultValue.Popups,
   });
 
   return (
     <Router>
       <StoreContext.Provider
         value={{
-          setPassword,
-          alerts,
-          setAlerts,
-          password
+          setPassphrase,
+          popups,
+          setPopups,
+          passphrase
         }}
       >
         <QueryClientProvider client={queryClient}>
@@ -72,8 +71,8 @@ function App() {
             </Spinner>
           }>
             <Navigation />
+            <Popups popups={popups} setPopups={setPopups} />
             <Container className="himitsu">
-              <BasicAlerts alerts={alerts} setAlerts={setAlerts} />
               <Routes>
                 <Route path={PATHS.home} element={<Home />} />
                 <Route path={PATHS.about} element={<About />} />

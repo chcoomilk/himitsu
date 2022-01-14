@@ -1,20 +1,21 @@
-import { ErrorKind } from "./types";
+import { Popup } from "./types";
 
 if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL set in .env");
 
 export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
 
 
-const Error: ErrorKind = {
+const Popups: Popup = {
     notFound: false,
     serverError: false,
-    wrongPassword: false,
+    wrongPassphrase: false,
     invalidId: false,
-    passwordNotRequired: false,
+    passphraseNotRequired: false,
+    noteDeletion: null,
 };
 
 export const DefaultValue = {
-    Error,
+    Popups,
 };
 
 export const PATHS = {

@@ -1,27 +1,19 @@
 import { Result } from ".";
 import { BASE_URL, DefaultValue } from "../utils/constants";
+import { BasicInfo } from "../utils/types";
 
-interface Param {
+interface Params {
     id: number
 }
 
-interface ResponseData {
-    "encryption": boolean,
-    "decryptable": boolean,
-    "expired_at": {
-        "nanos_since_epoch": number,
-        "secs_since_epoch": number
-    } | null,
-    "id": number,
-    "title": string
-}
+type ResponseData = BasicInfo;
 
-export const get_note_info = async ({ id }: Param): Promise<Result<ResponseData>> => {
+export const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
     let url = BASE_URL + "/notes/" + id;
     let data: ResponseData = {
         id: 0,
-        encryption: false,
-        decryptable: false,
+        frontend_encryption: false,
+        backend_encryption: false,
         title: "",
         expired_at: null
     };
@@ -38,7 +30,7 @@ export const get_note_info = async ({ id }: Param): Promise<Result<ResponseData>
         data = await response.json();
         return {
             is_ok: true,
-            error: DefaultValue.Error,
+            error: DefaultValue.Popups,
             data,
         }
     } else {
@@ -46,7 +38,7 @@ export const get_note_info = async ({ id }: Param): Promise<Result<ResponseData>
             return {
                 is_ok: false,
                 error: {
-                    ...DefaultValue.Error,
+                    ...DefaultValue.Popups,
                     notFound: true
                 },
                 data
@@ -55,7 +47,7 @@ export const get_note_info = async ({ id }: Param): Promise<Result<ResponseData>
             return {
                 is_ok: false,
                 error: {
-                    ...DefaultValue.Error,
+                    ...DefaultValue.Popups,
                     serverError: true
                 },
                 data

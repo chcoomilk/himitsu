@@ -1,19 +1,37 @@
 export interface ErrorKind {
   notFound: boolean,
-  wrongPassword: boolean,
+  wrongPassphrase: boolean,
   serverError: boolean,
   invalidId: boolean,
-  passwordNotRequired: boolean,
+  passphraseNotRequired: boolean,
 }
+
+export interface UserResponseInfo {
+  noteDeletion: number | null,
+}
+
+export interface Popup extends ErrorKind, UserResponseInfo {};
 
 export interface BasicNote {
   id: number,
   title: string,
   content: string,
+  is_already_decrypted: boolean | null,
   expiryTime: string,
   creationTime: string,
-  decrypted: boolean,
-  fetched: boolean,
+  lastUpdateTime: string,
+  passphrase: string | null,
+}
+
+export interface BasicInfo {
+  "frontend_encryption": boolean,
+  "backend_encryption": boolean,
+  "expired_at": {
+    "nanos_since_epoch": number,
+    "secs_since_epoch": number
+  } | null,
+  "id": number,
+  "title": string
 }
 
 export enum EncryptionMethod {

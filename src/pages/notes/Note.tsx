@@ -1,23 +1,24 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import { Button, Col, Container, Row, Stack } from "react-bootstrap";
 import { useMutation } from "react-query";
 import { useParams } from "react-router";
 import { useNavigate } from "react-router-dom";
 import cryptojs from "crypto-js";
 
-import PasswordModal from "../../components/note/PasswordModal";
+import PassphraseModal from "../../components/note/PassphraseModal";
 import NoteResult from "../../components/note/NoteResult";
 import useTitle from "../../custom-hooks/useTitle";
 import { get_note } from "../../queries/get_note";
-import { DefaultValue, PATHS, TIME_CONFIG } from "../../utils/constants";
+import { PATHS, TIME_CONFIG } from "../../utils/constants";
 import { StoreContext } from "../../utils/context";
 import { generate_face } from "../../utils/generate_face";
 import { BasicNote } from "../../utils/types";
 import { get_note_info } from "../../queries/get_note_info";
+import { delete_note } from "../../queries";
 
 interface Modal {
   showModal: boolean,
-  password: string | null,
+  passphrase: string | null,
 }
 
 const Note = () => {
@@ -32,58 +33,79 @@ const Note = () => {
     id = _id
   }
 
-  const { password, setAlerts } = useContext(StoreContext);
-
-  useEffect(() => {
-    return () => {
-      setAlerts(DefaultValue.Error);
-    };
-  }, [setAlerts]);
+  const { passphrase, setPopups } = useContext(StoreContext);
 
   const [note, setNote] = useState<BasicNote>({
     id: +id,
     title: "",
     content: "",
-    decrypted: true,
+    is_already_decrypted: null,
     creationTime: "",
     expiryTime: "",
-    fetched: false,
+    lastUpdateTime: "",
+    passphrase: "",
   });
   const [modalDecrypt, setModalDecrypt] = useState<Modal>({
     showModal: false,
-    password: null,
+    passphrase: null,
   });
   const [modalMutate, setModalMutate] = useState<Modal>({
     showModal: false,
-    password: null
+    passphrase: null
+  });
+  const [modalDelete, setModalDelete] = useState<Modal>({
+    showModal: false,
+    passphrase: null
   });
 
   const setTitle = useTitle("Loading...");
 
-  const { mutate, isLoading } = useMutation(get_note, {
+  const { mutate: del_note, isLoading: is_deleting, isSuccess: is_deleted } = useMutation(delete_note, {
+    onSuccess: ({ is_ok, data, error }) => {
+      if (is_ok) {
+        setPopups(prev => {
+          return {
+            ...prev,
+            noteDeletion: data.id
+          };
+        });
+      } else {
+        setPopups(error);
+      }
+    }
+  });
+
+  const { mutate: mutate_get_note, isLoading, isSuccess } = useMutation(get_note, {
     onSuccess: result => {
       if (result.is_ok) {
         let data = result.data;
+
         const readableExpiryTime = data.expired_at
           ? new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, TIME_CONFIG)
           : "Never";
+
         const readableCreationTime = new Date(data.created_at.secs_since_epoch * 1000)
           .toLocaleString(undefined, TIME_CONFIG);
+
+        const readableUpdateTime = new Date(data.updated_at.secs_since_epoch * 1000)
+          .toLocaleString(undefined, TIME_CONFIG);
+
         setNote({
           id: data.id,
           title: data.title,
           content: data.content,
-          decrypted: data.decrypted,
+          is_already_decrypted: !data.frontend_encryption,
+          passphrase: modalMutate.passphrase,
+          lastUpdateTime: readableUpdateTime,
           expiryTime: readableExpiryTime,
           creationTime: readableCreationTime,
-          fetched: true,
         });
         setTitle(data.title);
       } else {
         setTitle(generate_face());
-        setAlerts(result.error);
+        setPopups(result.error);
 
-        if (result.error.wrongPassword) {
+        if (result.error.wrongPassphrase) {
           setModalMutate(prev => {
             return {
               ...prev,
@@ -95,7 +117,7 @@ const Note = () => {
     },
     onError: () => {
       setTitle(generate_face());
-      setAlerts(value => {
+      setPopups(value => {
         return {
           ...value,
           serverError: true
@@ -104,13 +126,18 @@ const Note = () => {
     },
   });
 
-  const { mutate: inf_mut, isLoading: inf_is_loading } = useMutation(get_note_info, {
+  const { mutate: mutate_get_info, isLoading: is_info_loading } = useMutation(get_note_info, {
     onSuccess: result => {
       if (result.is_ok) {
-        if (result.data.decryptable) {
-          if (password !== null) {
-            mutate({ id: +id, password });
+        if (result.data.backend_encryption) {
+          if (passphrase !== null) {
+            mutate_get_note({ id: +id, passphrase });
           } else {
+            console.log("ok, throw me some numbers");
+            console.log("set title to \"ok, give me your password!\"");
+            setTitle("ok, give me your password!");
+            console.log("my password?\nOUT WITH IT\noralcumshot\nyeah that fits");
+
             setModalMutate(prev => {
               return {
                 ...prev,
@@ -119,71 +146,87 @@ const Note = () => {
             });
           }
         } else {
-          if (!result.data.encryption && password !== null) {
-            setAlerts(prev => {
+          if (!result.data.frontend_encryption && passphrase !== null) {
+            setPopups(prev => {
               return {
                 ...prev,
-                passwordNotRequired: true
+                passphraseNotRequired: true
               };
             });
           }
 
-          mutate({ id: +id, password: null });
+          mutate_get_note({ id: +id, passphrase: null });
         }
       } else {
-        setAlerts(result.error)
+        setPopups(result.error)
       }
-    }
+    },
+    onError: () => {
+      setTitle(generate_face());
+      setPopups(value => {
+        return {
+          ...value,
+          serverError: true
+        };
+      })
+    },
   });
 
-  const try_decrypt = useCallback((password: string): void => {
-    let content = cryptojs.AES.decrypt(note.content, password).toString(cryptojs.enc.Utf8);
+  const try_decrypt = useCallback((passphrase: string): void => {
+    let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
     if (content === "") {
-      setAlerts(prev => {
+      setPopups(prev => {
         return {
           ...prev,
-          wrongPassword: true,
+          wrongPassphrase: true,
         };
       });
       setModalDecrypt({
-        password: null,
+        passphrase: null,
         showModal: true,
       });
     } else {
-      setAlerts(prev => {
+      setPopups(prev => {
         return {
           ...prev,
-          wrongPassword: false,
+          wrongPassphrase: false,
         };
       });
       setModalDecrypt({
-        password: null,
+        passphrase: null,
         showModal: false,
       });
       setNote(prev => {
         return {
           ...prev,
-          decrypted: true,
+          passphrase,
+          is_already_decrypted: true,
           content
         };
       });
     }
-  }, [note.content, setAlerts]);
+  }, [note.content, setPopups]);
 
   useEffect(() => {
-    inf_mut({ id: +id });
-  }, [id, inf_mut]);
+    mutate_get_info({ id: +id });
+  }, [id, mutate_get_info]);
 
   useEffect(() => {
-    if (!note.decrypted && modalDecrypt.password !== null) {
-      try_decrypt(modalDecrypt.password);
+    if (modalMutate.passphrase !== null) {
+      mutate_get_note({ id: +id, passphrase: modalMutate.passphrase });
     }
-  }, [note.decrypted, modalDecrypt.password, try_decrypt]);
+  }, [id, modalMutate.passphrase, mutate_get_note]);
 
   useEffect(() => {
-    if (!note.decrypted) {
-      if (password !== null) {
-        try_decrypt(password);
+    if (modalDecrypt.passphrase !== null) {
+      try_decrypt(modalDecrypt.passphrase);
+    }
+  }, [modalDecrypt.passphrase, try_decrypt]);
+
+  useEffect(() => {
+    if (isSuccess && note.is_already_decrypted !== null && !note.is_already_decrypted) {
+      if (passphrase) {
+        try_decrypt(passphrase);
       } else {
         setModalDecrypt(prev => {
           return {
@@ -192,49 +235,101 @@ const Note = () => {
           };
         });
       }
-    } else {
-      setModalDecrypt(prev => {
-        return {
-          ...prev,
-          showModal: false
-        };
-      });
     }
-  }, [note.decrypted, password, try_decrypt]);
+  }, [isSuccess, note.is_already_decrypted, passphrase, try_decrypt, setModalDecrypt]);
 
   useEffect(() => {
-    if (modalMutate.password !== null) {
-      mutate({ id: +id, password: modalMutate.password });
+    if (modalDelete.passphrase) {
+      if (modalDelete.passphrase === note.passphrase) {
+        del_note({ id: +id, passphrase: note.passphrase });
+      } else {
+        setModalDelete({
+          showModal: false,
+          passphrase: null,
+        });
+        setPopups(prev => {
+          return {
+            ...prev,
+            wrongPassphrase: true,
+          }
+        });
+      }
     }
-  }, [id, modalMutate.password, mutate]);
+  }, [modalDelete.passphrase, note.passphrase, del_note, id, setPopups]);
 
-  return (
-    <Container fluid>
-
-      <PasswordModal
-        show={modalDecrypt.showModal}
-        setShow={(show) => setModalDecrypt(prev => {
-          return { ...prev, showModal: show };
-        })}
-        setPassword={(password) => setModalDecrypt(prev => {
-          return { ...prev, password: password };
-        })} />
-
-      <PasswordModal
-        show={modalMutate.showModal}
-        setShow={(show) => setModalMutate(prev => {
-          return { ...prev, showModal: show };
-        })}
-        setPassword={(password) => setModalMutate(prev => {
-          return { ...prev, password: password };
-        })} />
-
-      <NoteResult data={note} isLoading={inf_is_loading || isLoading} whenRetry={() => setModalDecrypt(prev => {
+  const handleRetry = () => {
+    isSuccess
+      ? setModalDecrypt(prev => {
         return {
           ...prev,
           showModal: true,
         };
-      })} />
+      })
+      : setModalMutate(prev => {
+        return {
+          ...prev,
+          showModal: true
+        }
+      });
+  };
+
+  const handleDelete = () => {
+    setModalDelete(prev => {
+      return {
+        ...prev,
+        showModal: true
+      };
+    });
+  };
+
+  return (
+    <Container fluid>
+
+      <PassphraseModal
+        show={modalDecrypt.showModal}
+        setShow={(show) => setModalDecrypt(prev => {
+          return { ...prev, showModal: show };
+        })}
+        setPassphrase={(passphrase) => setModalDecrypt(prev => {
+          return { ...prev, passphrase: passphrase };
+        })} />
+
+      <PassphraseModal
+        show={modalMutate.showModal}
+        setShow={(show) => setModalMutate(prev => {
+          return { ...prev, showModal: show };
+        })}
+        setPassphrase={(passphrase) => setModalMutate(prev => {
+          return { ...prev, passphrase: passphrase };
+        })} />
+
+      <PassphraseModal
+        title={`Confirm to delete "${note.title}"`}
+        show={modalDelete.showModal}
+        setShow={(show) => setModalDelete(prev => {
+          return { ...prev, showModal: show };
+        })}
+        setPassphrase={(passphrase) => setModalDelete(prev => {
+          return { ...prev, passphrase: passphrase };
+        })} />
+
+      <Row>
+        <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
+          <NoteResult data={note} isLoading={is_info_loading || isLoading} />
+          <Stack direction="horizontal" gap={3}>
+            <Button size="lg" className="ms-auto" variant="outline-danger" disabled={is_deleting || is_deleted} onClick={handleDelete}>
+              <i className="bi bi-trash"></i>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline-danger"
+              disabled={note.is_already_decrypted === null ? false : note.is_already_decrypted}
+              onClick={handleRetry}
+            >
+              Retry</Button>
+          </Stack>
+        </Col>
+      </Row>
     </Container>
   );
 };

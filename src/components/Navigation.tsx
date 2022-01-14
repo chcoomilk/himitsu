@@ -4,11 +4,12 @@ import { PATHS } from "../utils/constants";
 
 const Navigation = () => {
   return (
-    <Navbar collapseOnSelect variant="dark" sticky="top" className="fs-3">
+    <Navbar variant="dark" sticky="top" className="pb-0 pt-2">
       <Container>
-        <Navbar.Brand className="fs-3">
+        <Navbar.Brand className="py-0 m-0">
           <Nav>
             <Nav.Link
+              className="py-0 fs-3"
               as={NavLink}
               to={PATHS.home}
             >
@@ -21,6 +22,7 @@ const Navigation = () => {
           <Nav className="me-auto"></Nav>
           <Nav>
             <Nav.Link
+              className="py-0 fs-3"
               as={NavLink}
               to={PATHS.about}
             >

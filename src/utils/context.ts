@@ -1,19 +1,19 @@
 import React from "react";
 import { DefaultValue } from "./constants";
-import { ErrorKind } from "./types";
+import { Popup } from "./types";
 
 interface Store {
-  setPassword(password: string | null): void,
-  alerts: ErrorKind,
-  setAlerts: React.Dispatch<React.SetStateAction<ErrorKind>>,
-  password: string | null,
+  setPassphrase(passphrase: string | null): void,
+  popups: Popup,
+  setPopups: React.Dispatch<React.SetStateAction<Popup>>,
+  passphrase: string | null,
 }
 
 export const StoreContext = React.createContext<Store>({
-  setPassword: () => { },
-  setAlerts: () => { },
-  alerts: {
-    ...DefaultValue.Error
+  setPassphrase: () => { },
+  setPopups: () => { },
+  popups: {
+    ...DefaultValue.Popups
   },
-  password: null,
+  passphrase: null,
 });
