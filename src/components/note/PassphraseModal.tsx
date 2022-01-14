@@ -12,6 +12,9 @@ const PassphraseModal = ({ title, show, setShow, setPassphrase }: Props) => {
   const [form, setForm] = useState({
     passphrase: ""
   });
+  const [formState, setFormState] = useState({
+    passphrase: true
+  });
 
   useEffect(() => {
     setForm({
@@ -40,7 +43,7 @@ const PassphraseModal = ({ title, show, setShow, setPassphrase }: Props) => {
             </Form.Label>
             <Col>
               <FormControl
-                type="passphrase"
+                type={formState.passphrase ? "password" : "text"}
                 autoComplete="current-passphrase"
                 onChange={e => setForm((prev) => {
                   return {
@@ -51,6 +54,15 @@ const PassphraseModal = ({ title, show, setShow, setPassphrase }: Props) => {
                 value={form.passphrase}
                 aria-describedby="basic-addon2"
               />
+              <Button
+                size="sm"
+                variant="outline-light"
+                onClick={() => setFormState(prev => {
+                  return {
+                    passphrase: !prev.passphrase
+                  };
+                })}
+              ></Button>
             </Col>
           </Form.Group>
         </Modal.Body>

@@ -48,7 +48,7 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: P
                   </Form.Label>
                   <InputGroup className="mb-3">
                     <FormControl
-                      type="passphrase"
+                      type="password"
                       value={passphrase}
                       aria-describedby="basic-addon2"
                       readOnly
