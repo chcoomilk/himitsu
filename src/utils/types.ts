@@ -12,11 +12,12 @@ export interface UserResponseInfo {
 
 export interface Popup extends ErrorKind, UserResponseInfo {};
 
-export interface BasicNote {
+export interface Note {
   id: number,
   title: string,
   content: string,
   is_already_decrypted: boolean | null,
+  encryption: EncryptionMethod,
   expiryTime: string,
   creationTime: string,
   lastUpdateTime: string,

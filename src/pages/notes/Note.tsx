@@ -12,7 +12,7 @@ import { get_note } from "../../queries/get_note";
 import { PATHS, TIME_CONFIG } from "../../utils/constants";
 import { StoreContext } from "../../utils/context";
 import { generate_face } from "../../utils/generate_face";
-import { BasicNote } from "../../utils/types";
+import { EncryptionMethod, Note } from "../../utils/types";
 import { get_note_info } from "../../queries/get_note_info";
 import { delete_note } from "../../queries";
 
@@ -35,11 +35,12 @@ const Note = () => {
 
   const { passphrase, setPopups } = useContext(StoreContext);
 
-  const [note, setNote] = useState<BasicNote>({
+  const [note, setNote] = useState<Note>({
     id: +id,
     title: "",
     content: "",
     is_already_decrypted: null,
+    encryption: EncryptionMethod.NoEncryption,
     creationTime: "",
     expiryTime: "",
     lastUpdateTime: "",
@@ -80,21 +81,27 @@ const Note = () => {
       if (result.is_ok) {
         let data = result.data;
 
-        const readableExpiryTime = data.expired_at
+        let readableExpiryTime = data.expired_at
           ? new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, TIME_CONFIG)
           : "Never";
 
-        const readableCreationTime = new Date(data.created_at.secs_since_epoch * 1000)
+        let readableCreationTime = new Date(data.created_at.secs_since_epoch * 1000)
           .toLocaleString(undefined, TIME_CONFIG);
 
-        const readableUpdateTime = new Date(data.updated_at.secs_since_epoch * 1000)
+        let readableUpdateTime = new Date(data.updated_at.secs_since_epoch * 1000)
           .toLocaleString(undefined, TIME_CONFIG);
+
+        let encryption: EncryptionMethod;
+        if (data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
+        else if (data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
+        else encryption = EncryptionMethod.NoEncryption;
 
         setNote({
           id: data.id,
           title: data.title,
           content: data.content,
           is_already_decrypted: !data.frontend_encryption,
+          encryption,
           passphrase: modalMutate.passphrase,
           lastUpdateTime: readableUpdateTime,
           expiryTime: readableExpiryTime,
@@ -274,12 +281,14 @@ const Note = () => {
   };
 
   const handleDelete = () => {
-    setModalDelete(prev => {
-      return {
-        ...prev,
-        showModal: true
-      };
-    });
+    note.encryption === EncryptionMethod.NoEncryption
+      ? del_note({ id: +id, passphrase: null })
+      : setModalDelete(prev => {
+        return {
+          ...prev,
+          showModal: true
+        };
+      });
   };
 
   return (
