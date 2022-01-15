@@ -12,7 +12,7 @@ export interface UserResponseInfo {
 
 export interface Popup extends ErrorKind, UserResponseInfo {};
 
-export interface Note {
+export interface NoteType {
   id: number,
   title: string,
   content: string,

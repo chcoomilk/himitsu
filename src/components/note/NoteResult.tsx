@@ -1,9 +1,9 @@
 import { Form } from "react-bootstrap";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import { Note } from "../../utils/types";
+import { NoteType } from "../../utils/types";
 
 interface Props {
-  data: Note,
+  data: NoteType,
   isLoading: boolean,
 }
 

@@ -12,7 +12,7 @@ import { get_note } from "../../queries/get_note";
 import { PATHS, TIME_CONFIG } from "../../utils/constants";
 import { StoreContext } from "../../utils/context";
 import { generate_face } from "../../utils/generate_face";
-import { EncryptionMethod, Note } from "../../utils/types";
+import { EncryptionMethod, NoteType } from "../../utils/types";
 import { get_note_info } from "../../queries/get_note_info";
 import { delete_note } from "../../queries";
 
@@ -21,7 +21,7 @@ interface Modal {
   passphrase: string | null,
 }
 
-const Note = () => {
+const NotePage = () => {
   let { _id } = useParams();
   let navigate = useNavigate();
   let id: string;
@@ -35,7 +35,7 @@ const Note = () => {
 
   const { passphrase, setPopups } = useContext(StoreContext);
 
-  const [note, setNote] = useState<Note>({
+  const [note, setNote] = useState<NoteType>({
     id: +id,
     title: "",
     content: "",
@@ -343,4 +343,4 @@ const Note = () => {
   );
 };
 
-export default Note;
+export default NoteType;
