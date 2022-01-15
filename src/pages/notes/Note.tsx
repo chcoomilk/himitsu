@@ -343,4 +343,4 @@ const NotePage = () => {
   );
 };
 
-export default NoteType;
+export default NotePage;
