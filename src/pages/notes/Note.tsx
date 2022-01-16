@@ -129,7 +129,7 @@ const NotePage = () => {
     },
   });
 
-  const { mutate: mutate_get_info } = useMutation(get_note_info, {
+  const { mutate: mutate_get_info, isLoading: is_info_loading } = useMutation(get_note_info, {
     onSuccess: result => {
       if (result.is_ok) {
         let encryption: EncryptionMethod;
@@ -336,7 +336,7 @@ const NotePage = () => {
 
       <Row>
         <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
-          <NoteResult data={note || { ...DefaultValue.Note, id: +id }} isLoading={isLoading} />
+          <NoteResult data={note || { ...DefaultValue.Note, id: +id }} isLoading={isLoading || is_info_loading} />
           <Stack direction="horizontal" gap={3}>
             <Button
               size="lg"
