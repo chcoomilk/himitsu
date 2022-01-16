@@ -16,7 +16,7 @@ export interface NoteType {
   id: number,
   title: string,
   content: string,
-  is_already_decrypted: boolean | null,
+  already_decrypted: boolean,
   encryption: EncryptionMethod,
   expiryTime: string,
   creationTime: string,

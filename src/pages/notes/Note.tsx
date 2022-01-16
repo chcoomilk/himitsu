@@ -9,12 +9,12 @@ import PassphraseModal from "../../components/note/PassphraseModal";
 import NoteResult from "../../components/note/NoteResult";
 import useTitle from "../../custom-hooks/useTitle";
 import { get_note } from "../../queries/get_note";
-import { PATHS, TIME_CONFIG } from "../../utils/constants";
+import { DefaultValue, PATHS, TIME_CONFIG } from "../../utils/constants";
 import { StoreContext } from "../../utils/context";
-import { generate_face } from "../../utils/generate_face";
 import { EncryptionMethod, NoteType } from "../../utils/types";
 import { get_note_info } from "../../queries/get_note_info";
 import { delete_note } from "../../queries";
+import { generate_face } from "../../utils/functions";
 
 interface Modal {
   showModal: boolean,
@@ -26,26 +26,22 @@ const NotePage = () => {
   let navigate = useNavigate();
   let id: string;
 
+  const { passphrase: passphrase_context, setPopups } = useContext(StoreContext);
+
   if (typeof _id === "undefined" || isNaN(+_id)) {
     id = "";
+    setPopups(prev => {
+      return {
+        ...prev,
+        invalidId: true
+      };
+    });
     navigate(PATHS.find_note);
   } else {
-    id = _id
+    id = _id;
   }
 
-  const { passphrase, setPopups } = useContext(StoreContext);
-
-  const [note, setNote] = useState<NoteType>({
-    id: +id,
-    title: "",
-    content: "",
-    is_already_decrypted: null,
-    encryption: EncryptionMethod.NoEncryption,
-    creationTime: "",
-    expiryTime: "",
-    lastUpdateTime: "",
-    passphrase: "",
-  });
+  const [note, setNote] = useState<NoteType | null>(null);
   const [modalDecrypt, setModalDecrypt] = useState<Modal>({
     showModal: false,
     passphrase: null,
@@ -92,17 +88,17 @@ const NotePage = () => {
           .toLocaleString(undefined, TIME_CONFIG);
 
         let encryption: EncryptionMethod;
-        if (data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
-        else if (data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
+        if (result.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
+        else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
         else encryption = EncryptionMethod.NoEncryption;
 
         setNote({
           id: data.id,
           title: data.title,
           content: data.content,
-          is_already_decrypted: !data.frontend_encryption,
+          already_decrypted: !data.frontend_encryption,
           encryption,
-          passphrase: modalMutate.passphrase,
+          passphrase: passphrase_context || modalMutate.passphrase,
           lastUpdateTime: readableUpdateTime,
           expiryTime: readableExpiryTime,
           creationTime: readableCreationTime,
@@ -133,12 +129,23 @@ const NotePage = () => {
     },
   });
 
-  const { mutate: mutate_get_info, isLoading: is_info_loading } = useMutation(get_note_info, {
+  const { mutate: mutate_get_info } = useMutation(get_note_info, {
     onSuccess: result => {
       if (result.is_ok) {
+        let encryption: EncryptionMethod;
+        if (result.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
+        else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
+        else encryption = EncryptionMethod.NoEncryption;
+
+        setNote({
+          ...DefaultValue.Note,
+          encryption,
+          title: result.data.title,
+        });
+
         if (result.data.backend_encryption) {
-          if (passphrase !== null) {
-            mutate_get_note({ id: +id, passphrase });
+          if (passphrase_context !== null) {
+            mutate_get_note({ id: +id, passphrase: passphrase_context });
           } else {
             console.log("ok, throw me some numbers");
             console.log("set title to \"ok, give me your password!\"");
@@ -153,7 +160,7 @@ const NotePage = () => {
             });
           }
         } else {
-          if (!result.data.frontend_encryption && passphrase !== null) {
+          if (!result.data.frontend_encryption && passphrase_context !== null) {
             setPopups(prev => {
               return {
                 ...prev,
@@ -179,20 +186,9 @@ const NotePage = () => {
     },
   });
 
-  const try_decrypt = useCallback((passphrase: string): void => {
+  const try_decrypt = useCallback((note: NoteType, passphrase: string): void => {
     let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
-    if (content === "") {
-      setPopups(prev => {
-        return {
-          ...prev,
-          wrongPassphrase: true,
-        };
-      });
-      setModalDecrypt({
-        passphrase: null,
-        showModal: true,
-      });
-    } else {
+    if (content) {
       setPopups(prev => {
         return {
           ...prev,
@@ -203,16 +199,25 @@ const NotePage = () => {
         passphrase: null,
         showModal: false,
       });
-      setNote(prev => {
+      setNote({
+        ...note,
+        passphrase,
+        already_decrypted: true,
+        content
+      });
+    } else {
+      setPopups(prev => {
         return {
           ...prev,
-          passphrase,
-          is_already_decrypted: true,
-          content
+          wrongPassphrase: true,
         };
       });
+      setModalDecrypt({
+        passphrase: null,
+        showModal: true,
+      });
     }
-  }, [note.content, setPopups]);
+  }, [setPopups]);
 
   useEffect(() => {
     mutate_get_info({ id: +id });
@@ -225,15 +230,15 @@ const NotePage = () => {
   }, [id, modalMutate.passphrase, mutate_get_note]);
 
   useEffect(() => {
-    if (modalDecrypt.passphrase !== null) {
-      try_decrypt(modalDecrypt.passphrase);
+    if (modalDecrypt.passphrase !== null && note) {
+      try_decrypt(note, modalDecrypt.passphrase);
     }
-  }, [modalDecrypt.passphrase, try_decrypt]);
+  }, [note, modalDecrypt.passphrase, try_decrypt]);
 
   useEffect(() => {
-    if (isSuccess && note.is_already_decrypted !== null && !note.is_already_decrypted) {
-      if (passphrase) {
-        try_decrypt(passphrase);
+    if (isSuccess && note && note.encryption === EncryptionMethod.FrontendEncryption && !note.already_decrypted) {
+      if (passphrase_context) {
+        try_decrypt(note, passphrase_context);
       } else {
         setModalDecrypt(prev => {
           return {
@@ -243,10 +248,10 @@ const NotePage = () => {
         });
       }
     }
-  }, [isSuccess, note.is_already_decrypted, passphrase, try_decrypt, setModalDecrypt]);
+  }, [isSuccess, note, passphrase_context, try_decrypt, setModalDecrypt]);
 
   useEffect(() => {
-    if (modalDelete.passphrase) {
+    if (modalDelete.passphrase && note) {
       if (modalDelete.passphrase === note.passphrase) {
         del_note({ id: +id, passphrase: note.passphrase });
       } else {
@@ -262,26 +267,28 @@ const NotePage = () => {
         });
       }
     }
-  }, [modalDelete.passphrase, note.passphrase, del_note, id, setPopups]);
+  }, [modalDelete.passphrase, note, del_note, id, setPopups]);
 
   const handleRetry = () => {
-    isSuccess
-      ? setModalDecrypt(prev => {
-        return {
-          ...prev,
-          showModal: true,
-        };
-      })
-      : setModalMutate(prev => {
+    if (note?.encryption === EncryptionMethod.BackendEncryption) {
+      setModalMutate(prev => {
         return {
           ...prev,
           showModal: true
         }
       });
+    } else {
+      setModalDecrypt(prev => {
+        return {
+          ...prev,
+          showModal: true,
+        };
+      });
+    }
   };
 
   const handleDelete = () => {
-    note.encryption === EncryptionMethod.NoEncryption
+    (isSuccess && note) && note.encryption === EncryptionMethod.NoEncryption
       ? del_note({ id: +id, passphrase: null })
       : setModalDelete(prev => {
         return {
@@ -299,8 +306,9 @@ const NotePage = () => {
         setShow={(show) => setModalDecrypt(prev => {
           return { ...prev, showModal: show };
         })}
-        setPassphrase={(passphrase) => setModalDecrypt(prev => {
-          return { ...prev, passphrase: passphrase };
+        setPassphrase={(passphrase) => setModalDecrypt({
+          passphrase,
+          showModal: false,
         })} />
 
       <PassphraseModal
@@ -308,34 +316,51 @@ const NotePage = () => {
         setShow={(show) => setModalMutate(prev => {
           return { ...prev, showModal: show };
         })}
-        setPassphrase={(passphrase) => setModalMutate(prev => {
-          return { ...prev, passphrase: passphrase };
-        })} />
+        setPassphrase={(passphrase) => {
+          setModalMutate({
+            passphrase,
+            showModal: false,
+          })
+        }} />
 
       <PassphraseModal
-        title={`Confirm to delete "${note.title}"`}
+        title={`Confirm to delete "${note?.title || DefaultValue.Note.title}"`}
         show={modalDelete.showModal}
         setShow={(show) => setModalDelete(prev => {
           return { ...prev, showModal: show };
         })}
-        setPassphrase={(passphrase) => setModalDelete(prev => {
-          return { ...prev, passphrase: passphrase };
+        setPassphrase={(passphrase) => setModalDelete({
+          passphrase,
+          showModal: false,
         })} />
 
       <Row>
         <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
-          <NoteResult data={note} isLoading={is_info_loading || isLoading} />
+          <NoteResult data={note || { ...DefaultValue.Note, id: +id }} isLoading={isLoading} />
           <Stack direction="horizontal" gap={3}>
-            <Button size="lg" className="ms-auto" variant="outline-danger" disabled={is_deleting || is_deleted} onClick={handleDelete}>
+            <Button
+              size="lg"
+              className="ms-auto"
+              variant="danger"
+              disabled={
+                (isLoading) ||
+                (note === null ? true : !note.already_decrypted) || 
+                (is_deleting || is_deleted)
+              }
+              onClick={handleDelete}>
               <i className="bi bi-trash"></i>
             </Button>
             <Button
               size="lg"
-              variant="outline-danger"
-              disabled={note.is_already_decrypted === null ? false : note.is_already_decrypted}
+              variant="outline-warning"
+              disabled={
+                (isLoading) ||
+                (note === null ? true : note.already_decrypted)
+              }
               onClick={handleRetry}
             >
-              Retry</Button>
+              <i className="bi bi-arrow-counterclockwise"></i>
+            </Button>
           </Stack>
         </Col>
       </Row>

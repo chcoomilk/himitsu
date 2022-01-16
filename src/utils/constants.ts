@@ -1,4 +1,4 @@
-import { Popup } from "./types";
+import { EncryptionMethod, NoteType, Popup } from "./types";
 
 if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL set in .env");
 
@@ -14,8 +14,21 @@ const Popups: Popup = {
     noteDeletion: null,
 };
 
+const Note: NoteType = {
+    id: 0,
+    title: "",
+    content: "",
+    already_decrypted: false,
+    encryption: EncryptionMethod.NoEncryption,
+    creationTime: "",
+    expiryTime: "",
+    lastUpdateTime: "",
+    passphrase: "",
+  }
+
 export const DefaultValue = {
     Popups,
+    Note,
 };
 
 export const PATHS = {
