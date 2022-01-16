@@ -30,7 +30,7 @@ const NoteResult = (props: Props) => {
         <Form.Group controlId="formBasicDescription" className="mb-3 pb-2">
           <Form.Label>Description</Form.Label>
           {
-            props.isLoading
+            props.isLoading || !props.data.already_decrypted
               ? <Skeleton height={100} />
               : <Form.Control
                 as="textarea"
