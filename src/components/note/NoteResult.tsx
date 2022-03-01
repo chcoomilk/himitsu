@@ -12,10 +12,10 @@ const NoteResult = (props: Props) => {
   const note = props.data;
 
   let readonly_form = props.isLoading ? {
-    title: <Skeleton height={25} />,
+    title: <Skeleton height={35} />,
     description: <Skeleton height={100} />,
-    created_at: <Skeleton height={25} />,
-    expired_at: <Skeleton height={25} />
+    created_at: <Skeleton height={35} />,
+    expired_at: <Skeleton height={35} />
   } : {
     title: <Form.Control
       type="text"
@@ -42,11 +42,11 @@ const NoteResult = (props: Props) => {
       value={note.expiryTime}
       readOnly
     />,
-  }
+  };
 
   return (
     <Form noValidate>
-      <SkeletonTheme duration={3.5} baseColor="#24282e" highlightColor="#303541">
+      <SkeletonTheme duration={1.5} baseColor="#24282e" highlightColor="#a8a8a8">
         <Form.Group controlId="formBasicTitle" className="mb-3 pb-2">
           <Form.Label>Title</Form.Label>
           {readonly_form.title}

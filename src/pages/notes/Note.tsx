@@ -324,7 +324,7 @@ const NotePage = () => {
         }} />
 
       <PassphraseModal
-        title={`Confirm to delete "${note?.title || DefaultValue.Note.title}"`}
+        title={`Confirm to delete${note?.title ? `: "${note.title}"` : ` note #${_id}`}`}
         show={modalDelete.showModal}
         setShow={(show) => setModalDelete(prev => {
           return { ...prev, showModal: show };
