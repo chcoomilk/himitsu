@@ -1,6 +1,5 @@
 import { Form } from "react-bootstrap";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import { generate_face } from "../../utils/functions";
 import { NoteType } from "../../utils/types";
 
 interface Props {
@@ -27,7 +26,7 @@ const NoteResult = (props: Props) => {
       as="textarea"
       name="content"
       rows={3}
-      value={props.data.already_decrypted ? note.content : generate_face()}
+      value={note.content}
       readOnly
     />,
     created_at: <Form.Control

@@ -12,17 +12,24 @@ import useTitle from "../../custom-hooks/useTitle";
 const BasicNoteSchema = {
   title: yup.string(),
   content: yup.string().required(),
-  passphrase: yup.string().required().min(4).max(1024),
+  passphrase: yup.object().shape({
+    value: yup.string()
+      .min(4, "passphrase must be at least 4 characters")
+      .max(1024, "passphrase must be at least 1024 characters")
+      .required("a passphrase is needed to encrypt your data"),
+    visible: yup.boolean().required(),
+  }),
   duration: yup.object().shape({
     day: yup.number().positive(),
     hour: yup.number().positive(),
     minute: yup.number().positive(),
-    second: yup.number().when(["day", "hour", "minute"], {
-      is: (d: number, h: number, m: number) => !(d || h || m),
-      then: yup
-        .number()
-        .min(30, "Duration must be greater or equals to 30 seconds"),
-    })
+    second: yup.number()
+      .when(["day", "hour", "minute"], {
+        is: (d: number, h: number, m: number) => !(d || h || m),
+        then: yup
+          .number()
+          .min(30, "Duration must be greater or equals to 30 seconds"),
+      })
   }),
 };
 
@@ -42,7 +49,10 @@ const NewNote = () => {
     initialValues: {
       title: "",
       content: "",
-      passphrase: "",
+      passphrase: {
+        value: "",
+        visible: false,
+      },
       duration: {
         day: "",
         hour: "",
@@ -66,13 +76,13 @@ const NewNote = () => {
         case EncryptionMethod.NoEncryption:
           const NoEncryptionSchema = yup.object().shape({
             ...BasicNoteSchema,
-            passphrase: yup.string(),
+            // passphrase: yup.string(),
           });
           return NoEncryptionSchema;
       }
     },
 
-    onSubmit: (val, { resetForm }) => {
+    onSubmit: (val, { resetForm, setSubmitting }) => {
       let duration_in_secs: number = +val.duration.second;
       if (val.duration.day) {
         duration_in_secs += +val.duration.day * 86400;
@@ -89,7 +99,7 @@ const NewNote = () => {
         title: val.title,
         content: val.content,
         lifetime_in_secs: duration_in_secs,
-        passphrase: val.passphrase
+        passphrase: val.passphrase.value
       })
         .then(result => {
           if (result && result.is_ok) {
@@ -97,7 +107,7 @@ const NewNote = () => {
             setNoteResult({
               expiryTime: data.expiryTime,
               id: data.id,
-              passphrase: val.passphrase
+              passphrase: val.passphrase.value
             });
             setShowModal(true);
             resetForm();
@@ -112,18 +122,14 @@ const NewNote = () => {
               serverError: true
             };
           });
+        }).finally(() => {
+          setSubmitting(false);
         });
     }
   });
 
-  const [formState, setFormState] = useState({
-    password: {
-      toggleType: true
-    }
-  });
-
   return (
-    <Container fluid>
+    <Container className="my-3" fluid>
       <NewNoteModal show={showModal} setShow={setShowModal} data={{ ...noteResult }} />
       <Row>
         <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
@@ -181,6 +187,7 @@ const NewNote = () => {
                   onChange={formik.handleChange}
                   isInvalid={formik.touched.duration?.day && !!formik.errors.duration?.day}
                 />
+                <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.day}</FormControl.Feedback>
                 <FormControl
                   aria-label="Hour"
                   type="text"
@@ -190,6 +197,7 @@ const NewNote = () => {
                   onChange={formik.handleChange}
                   isInvalid={formik.touched.duration?.hour && !!formik.errors.duration?.hour}
                 />
+                <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.hour}</FormControl.Feedback>
                 <FormControl
                   aria-label="Minute"
                   type="text"
@@ -199,6 +207,7 @@ const NewNote = () => {
                   onChange={formik.handleChange}
                   isInvalid={formik.touched.duration?.minute && !!formik.errors.duration?.minute}
                 />
+                <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.minute}</FormControl.Feedback>
                 <FormControl
                   aria-label="Second"
                   type="text"
@@ -211,7 +220,7 @@ const NewNote = () => {
                 <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.second}</FormControl.Feedback>
               </InputGroup>
               <Form.Text muted>
-                Omit these fields to set it permanent
+                Omit these duration fields to set it permanent
               </Form.Text>
             </Form.Group>
 
@@ -222,15 +231,16 @@ const NewNote = () => {
               </Form.Text>
               <InputGroup>
                 <Form.Control
-                  type={formState.password.toggleType ? "password" : "text"}
-                  name="passphrase"
+                  aria-label="Passphrase"
+                  name="passphrase.value"
+                  type={formik.values.passphrase.visible ? "text" : "password"}
                   placeholder="Enter super secret passphrase"
-                  value={formik.values.passphrase}
+                  value={formik.values.passphrase.value}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   disabled={encryption === EncryptionMethod.NoEncryption}
                   isInvalid={encryption !== EncryptionMethod.NoEncryption
-                    ? (formik.touched.passphrase && !!formik.errors.passphrase)
+                    ? (formik.touched.passphrase?.value && !!formik.errors.passphrase?.value)
                     : undefined
                   }
                   autoComplete="new-passphrase"
@@ -238,16 +248,10 @@ const NewNote = () => {
                 <Button
                   size="sm"
                   variant="outline-light"
-                  onClick={() => setFormState(prev => {
-                    return {
-                      password: {
-                        toggleType: !prev.password.toggleType
-                      },
-                    };
-                  })}
+                  onClick={() => formik.setFieldValue("passphrase.visible", !formik.values.passphrase.visible)}
                 >
                   {
-                    formState.password.toggleType ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />
+                    formik.values.passphrase.visible ? <i className="bi bi-eye-slash" /> : <i className="bi bi-eye" />
                   }
                 </Button>
                 <DropdownButton
@@ -270,7 +274,7 @@ const NewNote = () => {
                   </Dropdown.Item>
                   <Dropdown.Item onClick={() => setEncryption(EncryptionMethod.NoEncryption)} href="#">No Encryption</Dropdown.Item>
                 </DropdownButton>
-                <Form.Control.Feedback type="invalid" tooltip>{formik.errors.passphrase}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid" tooltip>{formik.errors.passphrase?.value}</Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
             <Stack direction="horizontal" gap={3}>

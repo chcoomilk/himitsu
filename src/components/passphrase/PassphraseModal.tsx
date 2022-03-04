@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Form, Modal, Button, InputGroup } from "react-bootstrap";
 
 interface Props {
@@ -10,23 +10,23 @@ interface Props {
 
 const PassphraseModal = ({ title, show, setShow, setPassphrase }: Props) => {
   const [form, setForm] = useState({
-    passphrase: ""
+    passphrase: {
+      mask: true,
+      value: "",
+    }
   });
-  const [formState, setFormState] = useState({
-    passphrase: true
-  });
-
-  useEffect(() => {
-    setForm({
-      passphrase: ""
-    });
-  }, []);
 
   return (
     <Modal show={show} onHide={() => setShow(false)} centered className="fs-4">
       <Form onSubmit={(e) => {
         e.preventDefault();
-        setPassphrase(form.passphrase);
+        setPassphrase(form.passphrase.value);
+        setForm({
+          passphrase: {
+            mask: true,
+            value: ""
+          }
+        });
         setShow(false);
       }}>
         <Modal.Header closeButton closeVariant="white">
@@ -43,34 +43,41 @@ const PassphraseModal = ({ title, show, setShow, setPassphrase }: Props) => {
             </Form.Label>
             <InputGroup>
               <Form.Control
-                type={formState.passphrase ? "password" : "text"}
+                type={form.passphrase.mask ? "password" : "text"}
                 autoComplete="current-passphrase"
-                onChange={e => setForm((prev) => {
+                onChange={e => setForm(prev => {
                   return {
                     ...prev,
-                    passphrase: e.target.value
+                    passphrase: {
+                      value: e.target.value,
+                      mask: prev.passphrase.mask
+                    }
                   }
                 })}
-                value={form.passphrase}
+                value={form.passphrase.value}
                 aria-describedby="basic-addon2"
               />
               <Button
                 size="sm"
                 variant="outline-light"
-                onClick={() => setFormState(prev => {
+                onClick={() => setForm(prev => {
                   return {
-                    passphrase: !prev.passphrase
+                    ...prev,
+                    passphrase: {
+                      mask: !prev.passphrase.mask,
+                      value: prev.passphrase.value
+                    }
                   };
                 })}
               >
-                {formState.passphrase ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}
+                {form.passphrase.mask ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}
               </Button>
             </InputGroup>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" type="submit">
-            OK!
+            Enter
           </Button>
         </Modal.Footer>
       </Form>

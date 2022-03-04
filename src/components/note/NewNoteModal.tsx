@@ -1,4 +1,5 @@
 import { Button, Form, FormControl, InputGroup, Modal } from "react-bootstrap";
+import PassphraseInputGroup from "../passphrase/PassphraseInputGroup";
 
 interface Props {
   show: boolean,
@@ -43,17 +44,47 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: P
             passphrase
               ? (
                 <Form.Group className="mb-3" controlId="formReadOnlyPassphrase">
-                  <Form.Label>
+                  <PassphraseInputGroup
+                    name="passphrase"
+                    value={passphrase}
+                    readOnly
+                    jsx_elements={
+                      <>
+                        <Button
+                          variant="outline-light"
+                          id="button-addon2"
+                          onClick={() => navigator.clipboard.writeText(passphrase)}
+                        >
+                          <i className="bi bi-journals" />
+                        </Button>
+                      </>
+                    }
+                  />
+                  {/* <Form.Label>
                     Passphrase
                   </Form.Label>
                   <InputGroup className="mb-3">
-                    <FormControl
-                      type="password"
+                    <Form.Control
+                      type={form.passphrase.mask ? "password" : "text"}
                       value={passphrase}
                       aria-describedby="basic-addon2"
                       readOnly
                       autoComplete="new-passphrase"
                     />
+                    <Button
+                      size="sm"
+                      variant="outline-light"
+                      onClick={() => setForm(prev => {
+                        return {
+                          ...prev,
+                          passphrase: {
+                            mask: !prev.passphrase.mask
+                          }
+                        };
+                      })}
+                    >
+                      {form.passphrase.mask ? <i className="bi bi-eye-slash" /> : <i className="bi bi-eye" />}
+                    </Button>
                     <Button
                       variant="outline-light"
                       id="button-addon2"
@@ -61,7 +92,7 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: P
                     >
                       <i className="bi bi-journals" />
                     </Button>
-                  </InputGroup>
+                  </InputGroup> */}
                 </Form.Group>
               ) : (
                 null
