@@ -48,51 +48,16 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: P
                     name="passphrase"
                     value={passphrase}
                     readOnly
-                    jsx_elements={
-                      <>
-                        <Button
-                          variant="outline-light"
-                          id="button-addon2"
-                          onClick={() => navigator.clipboard.writeText(passphrase)}
-                        >
-                          <i className="bi bi-journals" />
-                        </Button>
-                      </>
+                    jsxAddons={
+                      <Button
+                        variant="outline-light"
+                        id="button-addon2"
+                        onClick={() => navigator.clipboard.writeText(passphrase)}
+                      >
+                        <i className="bi bi-journals" />
+                      </Button>
                     }
                   />
-                  {/* <Form.Label>
-                    Passphrase
-                  </Form.Label>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      type={form.passphrase.mask ? "password" : "text"}
-                      value={passphrase}
-                      aria-describedby="basic-addon2"
-                      readOnly
-                      autoComplete="new-passphrase"
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline-light"
-                      onClick={() => setForm(prev => {
-                        return {
-                          ...prev,
-                          passphrase: {
-                            mask: !prev.passphrase.mask
-                          }
-                        };
-                      })}
-                    >
-                      {form.passphrase.mask ? <i className="bi bi-eye-slash" /> : <i className="bi bi-eye" />}
-                    </Button>
-                    <Button
-                      variant="outline-light"
-                      id="button-addon2"
-                      onClick={() => navigator.clipboard.writeText(passphrase)}
-                    >
-                      <i className="bi bi-journals" />
-                    </Button>
-                  </InputGroup> */}
                 </Form.Group>
               ) : (
                 null
@@ -113,11 +78,6 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: P
           </Form.Group>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={close}>
-          Ok
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };

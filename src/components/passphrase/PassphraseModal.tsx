@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Form, Modal, Button, InputGroup } from "react-bootstrap";
+// import PassphraseInputGroup from "./PassphraseInputGroup";
 
 interface Props {
   title?: string,
@@ -38,6 +39,19 @@ const PassphraseModal = ({ title, show, setShow, setPassphrase }: Props) => {
         </Modal.Header>
         <Modal.Body>
           <Form.Group className="mb-3 fs-4" controlId="formPassphrase">
+            {/* <PassphraseInputGroup
+              onChange={e => setForm(prev => {
+                return {
+                  ...prev,
+                  passphrase: {
+                    value: e.target.value,
+                    mask: prev.passphrase.mask
+                  }
+                }
+              })}
+              value={form.passphrase.value}
+              name="Passphrase"
+            /> */}
             <Form.Label >
               Passphrase
             </Form.Label>

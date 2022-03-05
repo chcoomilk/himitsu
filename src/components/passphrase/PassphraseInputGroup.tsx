@@ -4,17 +4,30 @@ import { Button, Form, InputGroup } from "react-bootstrap";
 type Props = {
   value: string,
   name: string,
-  onChange?: (e: React.ChangeEvent) => void,
-  onBlur?: (e: React.ChangeEvent) => void,
+  // React.ChangeEventHandler<FormControlElement>
+  onChange?: (e: any) => void,
+  onBlur?: (e: any) => void,
   onError?: string,
   isInvalid?: boolean,
   readOnly?: boolean,
-  jsx_elements?: JSX.Element,
+  disabled?: boolean,
+  jsxAddons?: JSX.Element,
 }
 
-const PassphraseInputGroup = ({ value, onChange, onBlur, onError, isInvalid, name, jsx_elements, readOnly }: Props) => {
+const PassphraseInputGroup = ({
+  value,
+  onChange,
+  onBlur,
+  onError,
+  isInvalid,
+  name,
+  jsxAddons,
+  readOnly,
+  disabled,
+}: Props) => {
   const [mask, setMask] = useState(true);
-
+  console.log(readOnly);
+  
   return (
     <>
       <Form.Label >
@@ -32,6 +45,7 @@ const PassphraseInputGroup = ({ value, onChange, onBlur, onError, isInvalid, nam
           isInvalid={isInvalid}
           value={value}
           aria-describedby="basic-addon2"
+          disabled={disabled}
         />
         <Button
           size="sm"
@@ -41,7 +55,7 @@ const PassphraseInputGroup = ({ value, onChange, onBlur, onError, isInvalid, nam
           {mask ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}
         </Button>
         {
-          jsx_elements
+          jsxAddons
         }
         <Form.Control.Feedback type="invalid" tooltip>{onError}</Form.Control.Feedback>
       </InputGroup>

@@ -1,12 +1,11 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Button, Col, Container, Row, Stack } from "react-bootstrap";
+import { Button, Col, Container, Form, Row, Stack } from "react-bootstrap";
 import { useMutation } from "react-query";
 import { useParams } from "react-router";
 import { useNavigate } from "react-router-dom";
 import cryptojs from "crypto-js";
 
 import PassphraseModal from "../../components/passphrase/PassphraseModal";
-import NoteResult from "../../components/note/NoteResult";
 import useTitle from "../../custom-hooks/useTitle";
 import { get_note } from "../../queries/get_note";
 import { DefaultValue, PATHS, TIME_CONFIG } from "../../utils/constants";
@@ -15,6 +14,7 @@ import { EncryptionMethod, NoteType } from "../../utils/types";
 import { get_note_info } from "../../queries/get_note_info";
 import { delete_note } from "../../queries";
 import { generate_face } from "../../utils/functions";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 interface Modal {
   showModal: boolean,
@@ -340,32 +340,91 @@ const NotePage = () => {
 
       <Row>
         <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
-          <NoteResult data={note || { ...DefaultValue.Note, id: checkedId }} isLoading={isLoading || is_info_loading} />
-          <Stack direction="horizontal" gap={3}>
-            <Button
-              size="lg"
-              className="ms-auto"
-              variant="danger"
-              disabled={
-                (isLoading) ||
-                (note === null ? true : !note.already_decrypted) ||
-                (is_deleting || is_deleted)
-              }
-              onClick={handleDelete}>
-              <i className="bi bi-trash"></i>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline-warning"
-              disabled={
-                (isLoading) ||
-                (note === null ? true : note.already_decrypted)
-              }
-              onClick={handleRetry}
-            >
-              <i className="bi bi-arrow-counterclockwise"></i>
-            </Button>
-          </Stack>
+          <Form noValidate>
+            <SkeletonTheme duration={1.5} baseColor="#24282e" highlightColor="#a8a8a8">
+
+              <Form.Group controlId="formBasicTitle" className="mb-3 pb-2">
+                <Form.Label>Title</Form.Label>
+                {
+                  is_info_loading
+                    ? <Skeleton height={35} />
+                    : <Form.Control
+                      type="text"
+                      name="expires"
+                      value={note?.title}
+                      readOnly
+                    />
+                }
+              </Form.Group>
+
+              <Form.Group controlId="formBasicDescription" className="mb-3 pb-2">
+                <Form.Label>Description</Form.Label>
+                {
+                  isLoading
+                    ? <Skeleton height={100} />
+                    : <Form.Control
+                      type="text"
+                      name="expires"
+                      value={note?.content}
+                      readOnly
+                    />
+                }
+              </Form.Group>
+
+              <Form.Group controlId="formBasicCreatedAt" className="mb-3 pb-2">
+                <Form.Label>Created at</Form.Label>
+                {
+                  isLoading
+                    ? <Skeleton height={35} />
+                    : <Form.Control
+                      type="text"
+                      name="expires"
+                      value={note?.creationTime}
+                      readOnly
+                    />
+                }
+              </Form.Group>
+
+              <Form.Group controlId="formBasicExpiresAt" className="mb-3 pb-2">
+                <Form.Label>Expires at</Form.Label>
+                {
+                  isLoading
+                    ? <Skeleton height={35} />
+                    : <Form.Control
+                      type="text"
+                      name="expires"
+                      value={note?.expiryTime}
+                      readOnly
+                    />
+                }
+              </Form.Group>
+            </SkeletonTheme>
+            <Stack className="mt-5" direction="horizontal" gap={3}>
+              <Button
+                size="lg"
+                className="ms-auto"
+                variant="danger"
+                disabled={
+                  (isLoading) ||
+                  (note === null ? true : !note.already_decrypted) ||
+                  (is_deleting || is_deleted)
+                }
+                onClick={handleDelete}>
+                <i className="bi bi-trash"></i>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline-warning"
+                disabled={
+                  (isLoading) ||
+                  (note === null ? true : note.already_decrypted)
+                }
+                onClick={handleRetry}
+              >
+                <i className="bi bi-arrow-counterclockwise"></i>
+              </Button>
+            </Stack>
+          </Form>
         </Col>
       </Row>
     </Container>
