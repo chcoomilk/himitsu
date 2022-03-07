@@ -41,6 +41,7 @@ const NotePage = () => {
     showModal: false,
     passphrase: null
   });
+  // const [overallHasStoppedFetching, setOverallHasStoppedFetching] = useState(true);
 
   const setTitle = useTitle("Loading...");
 
@@ -360,7 +361,7 @@ const NotePage = () => {
               <Form.Group controlId="formBasicDescription" className="mb-3 pb-2">
                 <Form.Label>Description</Form.Label>
                 {
-                  isLoading
+                  is_info_loading || isLoading
                     ? <Skeleton height={100} />
                     : <Form.Control
                       type="text"
@@ -374,7 +375,7 @@ const NotePage = () => {
               <Form.Group controlId="formBasicCreatedAt" className="mb-3 pb-2">
                 <Form.Label>Created at</Form.Label>
                 {
-                  isLoading
+                  is_info_loading || isLoading
                     ? <Skeleton height={35} />
                     : <Form.Control
                       type="text"
@@ -388,7 +389,7 @@ const NotePage = () => {
               <Form.Group controlId="formBasicExpiresAt" className="mb-3 pb-2">
                 <Form.Label>Expires at</Form.Label>
                 {
-                  isLoading
+                  is_info_loading || isLoading
                     ? <Skeleton height={35} />
                     : <Form.Control
                       type="text"
