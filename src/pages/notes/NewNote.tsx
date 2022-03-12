@@ -76,7 +76,10 @@ const NewNote = () => {
         case EncryptionMethod.NoEncryption:
           const NoEncryptionSchema = yup.object().shape({
             ...BasicNoteSchema,
-            // passphrase: yup.string(),
+            passphrase: yup.object().shape({
+              value: yup.string(),
+              visible: yup.boolean().required(),
+            })
           });
           return NoEncryptionSchema;
       }
