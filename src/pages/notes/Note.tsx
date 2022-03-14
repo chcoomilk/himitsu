@@ -364,6 +364,7 @@ const NotePage = () => {
                   is_info_loading || isLoading
                     ? <Skeleton height={100} />
                     : <Form.Control
+                      as="textarea"
                       type="text"
                       name="expires"
                       value={note?.content}
