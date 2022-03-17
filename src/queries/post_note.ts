@@ -1,7 +1,8 @@
 import { Result } from ".";
-import { BASE_URL, DefaultValue, TIME_CONFIG } from "../utils/constants";
+import { BASE_URL, DefaultValue } from "../utils/constants";
 import { EncryptionMethod, Popup, BasicInfo } from "../utils/types";
 import CryptoJS from "crypto-js";
+import { into_readable_datetime } from "../utils/functions";
 
 interface NoteInfo {
     id: number,
@@ -74,7 +75,7 @@ export async function post_note({ title, passphrase, encryption, content, lifeti
     if (result.ok) {
         const data: ResponseData = await result.json();
         const readableDateTime = data.expired_at !== null
-            ? new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, TIME_CONFIG)
+            ? into_readable_datetime(data.expired_at.secs_since_epoch)
             : "Never"
         return {
             is_ok: true,

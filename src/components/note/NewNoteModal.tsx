@@ -41,27 +41,15 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: P
           </Form.Group>
 
           {
-            passphrase
-              ? (
-                <Form.Group className="mb-3" controlId="formReadOnlyPassphrase">
-                  <PassphraseInputGroup
-                    name="passphrase"
-                    value={passphrase}
-                    readOnly
-                    jsxAddons={
-                      <Button
-                        variant="outline-light"
-                        id="button-addon2"
-                        onClick={() => navigator.clipboard.writeText(passphrase)}
-                      >
-                        <i className="bi bi-journals" />
-                      </Button>
-                    }
-                  />
-                </Form.Group>
-              ) : (
-                null
-              )
+            passphrase && (
+              <Form.Group className="mb-3" controlId="formReadOnlyPassphrase">
+                <PassphraseInputGroup
+                  name="passphrase"
+                  value={passphrase}
+                  readOnly
+                />
+              </Form.Group>
+            )
           }
 
           <Form.Group className="mb-3" controlId="formReadOnlyExpiryTime">

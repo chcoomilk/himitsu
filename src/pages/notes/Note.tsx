@@ -8,12 +8,12 @@ import cryptojs from "crypto-js";
 import PassphraseModal from "../../components/passphrase/PassphraseModal";
 import useTitle from "../../custom-hooks/useTitle";
 import { get_note } from "../../queries/get_note";
-import { DefaultValue, PATHS, TIME_CONFIG } from "../../utils/constants";
+import { DefaultValue, PATHS } from "../../utils/constants";
 import { StoreContext } from "../../utils/context";
 import { EncryptionMethod, NoteType } from "../../utils/types";
 import { get_note_info } from "../../queries/get_note_info";
 import { delete_note } from "../../queries";
-import { generate_face } from "../../utils/functions";
+import { generate_face, into_readable_datetime } from "../../utils/functions";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 interface Modal {
@@ -66,14 +66,12 @@ const NotePage = () => {
         let data = result.data;
 
         let readableExpiryTime = data.expired_at
-          ? new Date(data.expired_at.secs_since_epoch * 1000).toLocaleString(undefined, TIME_CONFIG)
+          ? into_readable_datetime(data.expired_at.secs_since_epoch)
           : "Never";
 
-        let readableCreationTime = new Date(data.created_at.secs_since_epoch * 1000)
-          .toLocaleString(undefined, TIME_CONFIG);
+        let readableCreationTime = into_readable_datetime(data.created_at.secs_since_epoch);
 
-        let readableUpdateTime = new Date(data.updated_at.secs_since_epoch * 1000)
-          .toLocaleString(undefined, TIME_CONFIG);
+        let readableUpdateTime = into_readable_datetime(data.updated_at.secs_since_epoch);
 
         let encryption: EncryptionMethod;
         if (result.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
