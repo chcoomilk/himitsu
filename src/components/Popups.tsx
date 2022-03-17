@@ -9,7 +9,7 @@ interface Props {
 }
 
 const Popups = ({ popups, setPopups }: Props) => {
-  const EXISTENCE_MP = 2;
+  const MULTIPLIER = 2;
 
   useEffect(() => {
     if (popups.passphraseNotRequired) {
@@ -20,7 +20,7 @@ const Popups = ({ popups, setPopups }: Props) => {
             passphraseNotRequired: false,
           }
         });
-      }, 1500 * EXISTENCE_MP);
+      }, 1500 * MULTIPLIER);
       return () => clearTimeout(timer);
     }
   }, [popups.passphraseNotRequired, setPopups]);
@@ -34,7 +34,7 @@ const Popups = ({ popups, setPopups }: Props) => {
             wrongPassphrase: false,
           }
         });
-      }, 2000 * EXISTENCE_MP);
+      }, 2000 * MULTIPLIER);
       return () => clearTimeout(timer);
     }
   }, [popups.wrongPassphrase, setPopups]);
@@ -48,7 +48,7 @@ const Popups = ({ popups, setPopups }: Props) => {
             noteDeletion: null,
           }
         });
-      }, 2000 * EXISTENCE_MP);
+      }, 2000 * MULTIPLIER);
       return () => clearTimeout(timer);
     }
   }, [popups.noteDeletion, setPopups]);

@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import { useContext } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap"
+import { Button, Col, Container, Form, Row, Stack } from "react-bootstrap"
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import PassphraseInputGroup from "../../components/passphrase/PassphraseInputGroup";
@@ -49,31 +49,19 @@ const FindNote = () => {
               <Form.Control.Feedback type="invalid" tooltip>{formik.errors.ID}</Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group controlId="formBasicPassphrase" className="position-relative mb-1">
+            <Form.Group controlId="formBasicPassphrase" className="mb-1">
               <PassphraseInputGroup
                 name="passphrase"
                 value={formik.values.passphrase || ""}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                onError={formik.errors.passphrase}
+                errorMessage={formik.errors.passphrase}
                 isInvalid={formik.touched.passphrase && !!formik.errors.passphrase}
               />
-              {/* <Form.Label>Passphrase</Form.Label>
-              <Form.Control
-                type="password"
-                name="passphrase"
-                placeholder="Enter super secret passphrase"
-                autoComplete="on"
-                value={formik.values.passphrase || ""}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                isInvalid={formik.touched.passphrase && !!formik.errors.passphrase}
-              />
-              <Form.Control.Feedback type="invalid" tooltip>{formik.errors.passphrase}</Form.Control.Feedback> */}
             </Form.Group>
-            <div className="text-center">
-              <Button type="submit" variant="outline-primary" className="mt-3" size="lg">Find</Button>
-            </div>
+            <Stack direction="horizontal" gap={3}>
+              <Button type="submit" variant="primary" className="mx-auto mt-3" size="lg">Find</Button>
+            </Stack>
           </Form>
         </Col>
       </Row>
