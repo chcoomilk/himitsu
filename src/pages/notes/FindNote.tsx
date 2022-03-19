@@ -1,11 +1,11 @@
 import { useFormik } from "formik";
-import { useContext } from "react";
-import { Button, Col, Container, Form, Row, Stack } from "react-bootstrap"
+import { useContext, useEffect } from "react";
+import { Button, Col, Container, Form, OverlayTrigger, Row, Stack, Tooltip } from "react-bootstrap"
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import PassphraseInputGroup from "../../components/passphrase/PassphraseInputGroup";
 import useTitle from "../../custom-hooks/useTitle";
-import { PATHS } from "../../utils/constants";
+import { DefaultValue, PATHS } from "../../utils/constants";
 import { StoreContext } from "../../utils/context";
 
 const schema = yup.object().shape({
@@ -15,7 +15,8 @@ const schema = yup.object().shape({
 
 const FindNote = () => {
   const navigate = useNavigate();
-  const { setPassphrase } = useContext(StoreContext);
+  const { setPassphrase, setPopups } = useContext(StoreContext);
+  useTitle("Find");
 
   const formik = useFormik({
     validationSchema: schema,
@@ -28,14 +29,17 @@ const FindNote = () => {
       navigate(PATHS.note_detail + "/" + val.ID);
     }
   });
-  useTitle("Find");
+
+  useEffect(() => {
+    setPopups(DefaultValue.Popups);
+  }, [setPopups]);
 
   return (
     <Container fluid>
       <Row>
         <Col xxl={{ span: 4, offset: 4 }} md={{ span: 6, offset: 3 }}>
           <Form noValidate onSubmit={formik.handleSubmit}>
-            <Form.Group controlId="formBasicId" className="position-relative mb-3">
+            <Form.Group controlId="formBasicId" className="position-relative mb-4">
               <Form.Label>ID</Form.Label>
               <Form.Control
                 type="text"
@@ -49,7 +53,7 @@ const FindNote = () => {
               <Form.Control.Feedback type="invalid" tooltip>{formik.errors.ID}</Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group controlId="formBasicPassphrase" className="mb-1">
+            <Form.Group controlId="formBasicPassphrase" className="mb-4">
               <PassphraseInputGroup
                 name="passphrase"
                 value={formik.values.passphrase || ""}
@@ -60,7 +64,12 @@ const FindNote = () => {
               />
             </Form.Group>
             <Stack direction="horizontal" gap={3}>
-              <Button type="submit" variant="primary" className="mx-auto mt-3" size="lg">Find</Button>
+              <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">...work in progress</Tooltip>}>
+                <span className="d-inline-block ms-auto">
+                  <Button variant="outline-warning" className="ms-auto" size="lg" disabled><i className="bi bi-type"></i></Button>
+                </span>
+              </OverlayTrigger>
+              <Button type="submit" variant="primary" size="lg">Find</Button>
             </Stack>
           </Form>
         </Col>

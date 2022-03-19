@@ -29,6 +29,12 @@ const Note: NoteType = {
 export const DefaultValue = {
     Popups,
     Note,
+    Pages: {
+        NewNote: {
+            NAME: "NewNote",
+            RESULT_STATE_NAME: "NewNoteNoteResult",
+        }
+    }
 };
 
 export const PATHS = {

@@ -342,7 +342,7 @@ const NotePage = () => {
           <Form noValidate>
             <SkeletonTheme duration={1.5} baseColor="#24282e" highlightColor="#a8a8a8">
 
-              <Form.Group controlId="formBasicTitle" className="mb-3 pb-2">
+              <Form.Group controlId="formBasicTitle" className="mb-4">
                 <Form.Label>Title</Form.Label>
                 {
                   is_info_loading
@@ -356,7 +356,7 @@ const NotePage = () => {
                 }
               </Form.Group>
 
-              <Form.Group controlId="formBasicDescription" className="mb-3 pb-2">
+              <Form.Group controlId="formBasicDescription" className="mb-4">
                 <Form.Label>Description</Form.Label>
                 {
                   is_info_loading || isLoading
@@ -371,7 +371,7 @@ const NotePage = () => {
                 }
               </Form.Group>
 
-              <Form.Group controlId="formBasicCreatedAt" className="mb-3 pb-2">
+              <Form.Group controlId="formBasicCreatedAt" className="mb-4">
                 <Form.Label>Created at</Form.Label>
                 {
                   is_info_loading || isLoading
@@ -385,7 +385,7 @@ const NotePage = () => {
                 }
               </Form.Group>
 
-              <Form.Group controlId="formBasicExpiresAt" className="mb-3 pb-2">
+              <Form.Group controlId="formBasicExpiresAt" className="mb-4">
                 <Form.Label>Expires at</Form.Label>
                 {
                   is_info_loading || isLoading
@@ -399,7 +399,7 @@ const NotePage = () => {
                 }
               </Form.Group>
             </SkeletonTheme>
-            <Stack className="mt-5" direction="horizontal" gap={3}>
+            <Stack direction="horizontal" gap={3}>
               <Button
                 size="lg"
                 className="ms-auto"
