@@ -13,7 +13,7 @@ const Navigation = () => {
               as={NavLink}
               to={PATHS.home}
             >
-              <i className="bi bi-box-arrow-left"></i>
+              <i className="bi bi-hash"></i>
             </Nav.Link>
           </Nav>
         </Navbar.Brand>
@@ -26,7 +26,7 @@ const Navigation = () => {
               as={NavLink}
               to={PATHS.about}
             >
-              <i className="bi bi-hash"></i>
+              <i className="bi bi-exclamation-circle"></i>
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>

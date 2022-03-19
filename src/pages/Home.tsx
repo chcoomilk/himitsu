@@ -5,7 +5,7 @@ import { DefaultValue, PATHS } from "../utils/constants";
 import { StoreContext } from "../utils/context";
 
 const Home = () => {
-const { setPopups: setAlerts } = useContext(StoreContext);
+  const { setPopups: setAlerts } = useContext(StoreContext);
   useEffect(() => {
     setAlerts(DefaultValue.Popups);
   }, [setAlerts]);
@@ -15,7 +15,7 @@ const { setPopups: setAlerts } = useContext(StoreContext);
       <Row className="align-items-center text-center">
         <Col>
           <h1 className="fs-0">himitsu</h1>
-          <p className="fs-4">Onii-chan's simple, secure, and private <span className="text-nowrap">( ͡° ͜ʖ ͡°)</span> note sharing web app</p>
+          <p className="fs-4">Onii-chan's simple, secure, and private note sharing web app</p>
         </Col>
       </Row>
       <Row className="mt-2">
@@ -25,6 +25,9 @@ const { setPopups: setAlerts } = useContext(StoreContext);
               size="lg"
               variant="success"
               className="mx-2"
+              onClick={(_) => {
+                window.localStorage.removeItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
+              }}
             >Add</Button>
           </Link>
           <Link to={PATHS.find_note}>

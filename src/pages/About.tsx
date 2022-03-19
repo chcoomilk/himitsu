@@ -60,7 +60,7 @@ const About = () => {
 
                 <p>
                   Below is basically brief of explanations about this web app.
-                  If you have any more questions {" "} 
+                  If you have any more questions {" "}
                   <small className="text-nowrap" style={{ fontSize: "0.4em" }}>
                     ...i will not answer any of them *dabs away*
                   </small>
@@ -94,6 +94,7 @@ const About = () => {
                   If the server platform decides to log all incoming requests,
                   they can only see the encrypted strings of data.
                   And of course, the decryption will also be done on the client side.
+                  This is great if you don't trust the server you're sending the data to.
                 </p>
               </Accordion.Body>
             </Accordion.Item>
@@ -114,9 +115,13 @@ const About = () => {
             <Accordion.Item eventKey="3">
               <Accordion.Header>Which encryption method should I choose?</Accordion.Header>
               <Accordion.Body>
-                <p className="fs-6">
+                <h2>
+                  It depends..
+                </h2>
+                <p className="fs-6 mt-4">
                   If you are planning to save it for a long period of time. I recommend choosing backend encryption,
-                  because it's just much harder to get to. Otherwise, choose frontend.. or none so everyone can
+                  because it's just much harder to get to.
+                  Otherwise, choose frontend if you don't feel you can trust the server.. or none so everyone can
                   see your little secret you dirty pig
                 </p>
                 <Image fluid src={disgusted} alt="ew" />

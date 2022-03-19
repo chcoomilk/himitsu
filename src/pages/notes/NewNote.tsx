@@ -1,13 +1,16 @@
 import { useFormik } from "formik";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Form, Row, Col, Container, DropdownButton, Dropdown, InputGroup, FormControl, Stack } from "react-bootstrap";
 import * as yup from "yup";
+import { useMutation } from "react-query";
+import * as changeCase from "change-case";
+
 import NewNoteModal from "../../components/note/NewNoteModal";
 import { StoreContext } from "../../utils/context";
 import { EncryptionMethod } from "../../utils/types";
-import { useMutation } from "react-query";
 import { post_note } from "../../queries/post_note";
 import useTitle from "../../custom-hooks/useTitle";
+import { DefaultValue } from "../../utils/constants";
 
 const BasicNoteSchema = {
   title: yup.string(),
@@ -35,15 +38,20 @@ const BasicNoteSchema = {
 
 const NewNote = () => {
   const { setPopups: setAlerts } = useContext(StoreContext);
-  const [showModal, setShowModal] = useState(false);
   const [noteResult, setNoteResult] = useState({
     id: 0,
     expiryTime: "uwu",
     passphrase: "",
+    fetched: false,
   });
   const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.BackendEncryption);
-  useTitle("New note");
+  useTitle(changeCase.capitalCase(DefaultValue.Pages.NewNote.NAME));
   const { mutateAsync } = useMutation(post_note);
+
+  useEffect(() => {
+    const res = window.localStorage.getItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
+    if (res) setNoteResult(JSON.parse(res));
+  }, [setNoteResult]);
 
   const formik = useFormik({
     initialValues: {
@@ -107,12 +115,14 @@ const NewNote = () => {
         .then(result => {
           if (result && result.is_ok) {
             let data = result.data;
-            setNoteResult({
+            const res = {
               expiryTime: data.expiryTime,
               id: data.id,
-              passphrase: val.passphrase.value
-            });
-            setShowModal(true);
+              passphrase: val.passphrase.value,
+              fetched: true,
+            };
+            setNoteResult(res);
+            window.localStorage.setItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME, JSON.stringify(res));
             resetForm();
           } else {
             setAlerts(result.error);
@@ -133,11 +143,20 @@ const NewNote = () => {
 
   return (
     <Container className="my-3" fluid>
-      <NewNoteModal show={showModal} setShow={setShowModal} data={{ ...noteResult }} />
+      <NewNoteModal show={noteResult.fetched} setShow={(show) => setNoteResult(prev => {
+        if (!show) {
+          window.localStorage.removeItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
+        }
+
+        return {
+          ...prev,
+          fetched: show,
+        };
+      })} data={{ ...noteResult }} />
       <Row>
         <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
           <Form noValidate onSubmit={formik.handleSubmit}>
-            <Form.Group controlId="formBasicTitle" className="position-relative mb-5">
+            <Form.Group controlId="formBasicTitle" className="position-relative mb-4">
               <Form.Label>Title</Form.Label>
               <Form.Text muted>
                 {" "}(unencrypted)
@@ -155,7 +174,7 @@ const NewNote = () => {
               <Form.Control.Feedback type="invalid" tooltip>{formik.errors.title}</Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group controlId="formBasicDescription" className="position-relative mb-5">
+            <Form.Group controlId="formBasicDescription" className="position-relative mb-4">
               <Form.Label>Secret</Form.Label>
               <Form.Text muted>
                 {` (${!encryption ? "unencrypted" : "encrypted"})`}
@@ -173,7 +192,7 @@ const NewNote = () => {
               <Form.Control.Feedback type="invalid" tooltip>{formik.errors.content}</Form.Control.Feedback>
             </Form.Group>
 
-            <Form.Group controlId="formBasicDuration" className="mb-3">
+            <Form.Group controlId="formBasicDuration" className="mb-4">
               <Form.Label>
                 Duration
               </Form.Label>
@@ -227,7 +246,7 @@ const NewNote = () => {
               </Form.Text>
             </Form.Group>
 
-            <Form.Group controlId="formBasicPassphrase" className="position-relative mb-5">
+            <Form.Group controlId="formBasicPassphrase" className="position-relative mb-4">
               <Form.Label>Passphrase</Form.Label>
               <Form.Text muted>
                 {` (${EncryptionMethod[encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')})`}
@@ -280,7 +299,7 @@ const NewNote = () => {
                 <Form.Control.Feedback type="invalid" tooltip>{formik.errors.passphrase?.value}</Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
-            <Stack direction="horizontal" gap={3}>
+            <Stack className="mb-2" direction="horizontal" gap={3}>
               <Button className="ms-auto" size="lg" variant="outline-danger" onClick={formik.handleReset} disabled={formik.isSubmitting}>Reset</Button>
               <Button size="lg" variant="success" type="submit" disabled={formik.isSubmitting}>{formik.isSubmitting ? "Saving" : "Save"}</Button>
             </Stack>

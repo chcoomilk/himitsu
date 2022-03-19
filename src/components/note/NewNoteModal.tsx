@@ -1,4 +1,5 @@
-import { Button, Form, FormControl, InputGroup, Modal } from "react-bootstrap";
+import { Button, Form, FormControl, InputGroup, Modal, Stack } from "react-bootstrap";
+import CopyButton from "../button/CopyButton";
 import PassphraseInputGroup from "../passphrase/PassphraseInputGroup";
 
 interface Props {
@@ -12,10 +13,11 @@ interface Props {
 }
 
 const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: Props) => {
-  const close = () => setShow(false);
+  const handleClose = () => setShow(false);
+  const handleCopyAll = () => navigator.clipboard.writeText(`ID ${id.toString()}\nPassphrase ${passphrase}`);
 
   return (
-    <Modal show={show} onHide={close} centered contentClassName="fs-4">
+    <Modal show={show} onHide={handleClose} centered contentClassName="fs-4">
       <Modal.Header closeButton closeVariant="white">
         <Modal.Title>Saved!</Modal.Title>
       </Modal.Header>
@@ -31,12 +33,7 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: P
                 aria-describedby="basic-addon2"
                 readOnly
               />
-              <Button
-                variant="outline-light"
-                id="button-addon2"
-                onClick={() => navigator.clipboard.writeText(id.toString())}>
-                <i className="bi bi-journals" />
-              </Button>
+              <CopyButton value={id.toString()} />
             </InputGroup>
           </Form.Group>
 
@@ -64,6 +61,10 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: P
               />
             </InputGroup>
           </Form.Group>
+          <Stack direction="horizontal" gap={3}>
+              <Button className="ms-auto" variant="outline-warning" onClick={handleCopyAll}>Copy</Button>
+              <Button variant="primary" onClick={handleClose}>Okay</Button>
+            </Stack>
         </Form>
       </Modal.Body>
     </Modal>

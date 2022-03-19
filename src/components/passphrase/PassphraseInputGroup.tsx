@@ -1,5 +1,6 @@
-import { useRef, useState } from "react";
-import { Button, Form, InputGroup, Overlay, Tooltip } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Form, InputGroup } from "react-bootstrap";
+import CopyButton from "../button/CopyButton";
 
 type Props = {
   value: string,
@@ -23,15 +24,6 @@ const PassphraseInputGroup = ({
   disabled,
 }: Props) => {
   const [mask, setMask] = useState(true);
-  const [tooltip, setTooltip] = useState(false);
-  const target = useRef(null);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(value)
-    setTooltip(true);
-    let timer = setTimeout(() => setTooltip(false), 1200);
-    return () => clearTimeout(timer);
-  };
 
   const togglePasswordVisibility = () => setMask(!mask);
 
@@ -62,26 +54,7 @@ const PassphraseInputGroup = ({
           {mask ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}
         </Button>
         {
-          readOnly && (
-            <>
-              <Button
-                size="sm"
-                variant="outline-light"
-                id="button-addon2"
-                onClick={handleCopy}
-                ref={target}
-              >
-                <i className="bi bi-journals" />
-              </Button>
-              <Overlay target={target.current} show={tooltip} placement="right">
-                {(props) => (
-                  <Tooltip {...props}>
-                    Copied!
-                  </Tooltip>
-                )}
-              </Overlay>
-            </>
-          )
+          readOnly && <CopyButton value={value} />
         }
         <Form.Control.Feedback type="invalid" tooltip>{errorMessage}</Form.Control.Feedback>
       </InputGroup>
