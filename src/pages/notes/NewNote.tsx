@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import { useContext, useState } from "react";
-import { Button, Form, Row, Col, Container, DropdownButton, Dropdown, InputGroup, FormControl, Stack } from "react-bootstrap";
+import { Button, Form, Row, Col, DropdownButton, Dropdown, InputGroup, FormControl, Stack } from "react-bootstrap";
 import * as yup from "yup";
 import { useMutation } from "react-query";
 import * as changeCase from "change-case";
@@ -137,7 +137,7 @@ const NewNote = () => {
   });
 
   return (
-    <Container className="mb-3" fluid>
+    <Row className="mb-3">
       <NewNoteModal
         control={{
           show: noteResult.fetched,
@@ -302,7 +302,7 @@ const NewNote = () => {
           </Form>
         </Col>
       </Row>
-    </Container >
+    </Row>
   );
 };
 

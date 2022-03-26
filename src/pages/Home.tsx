@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { DefaultValue, PATHS } from "../utils/constants";
 import { StoreContext } from "../utils/context";
@@ -11,7 +11,7 @@ const Home = () => {
   }, [setAlerts]);
 
   return (
-    <Container fluid className="text-center align-items-center">
+    <Row className="text-center align-items-center">
       <Row className="align-items-center text-center">
         <Col>
           <h1 className="fs-0">himitsu</h1>
@@ -39,7 +39,7 @@ const Home = () => {
           </Link>
         </Col>
       </Row>
-    </Container>
+    </Row>
   );
 };
 
