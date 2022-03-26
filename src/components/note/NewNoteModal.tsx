@@ -1,10 +1,14 @@
+import { useEffect, useState } from "react";
 import { Button, Form, FormControl, InputGroup, Modal, Stack } from "react-bootstrap";
+import { DefaultValue } from "../../utils/constants";
 import CopyButton from "../button/CopyButton";
 import PassphraseInputGroup from "../passphrase/PassphraseInputGroup";
 
 interface Props {
-  show: boolean,
-  setShow: (mode: boolean) => void,
+  control?: {
+    show: boolean,
+    setShow: (mode: boolean) => void,
+  }
   data: {
     id: number,
     expiryTime: string,
@@ -12,12 +16,26 @@ interface Props {
   },
 }
 
-const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: Props) => {
-  const handleClose = () => setShow(false);
+const NewNoteModal = ({ control, data: { id, expiryTime, passphrase } }: Props) => {
+  const [showSelf, setShowSelf] = useState(true);
+  useEffect(() => setShowSelf(control ? control.show : true), [control]);
+
+  let handleClose = () => { };
+  control
+    ? handleClose = () => {
+      window.localStorage.removeItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
+      control.setShow(false);
+    }
+    : handleClose = () => {
+      window.localStorage.removeItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
+      setShowSelf(false);
+    };
+  ;
+
   const handleCopyAll = () => navigator.clipboard.writeText(`ID ${id.toString()}\nPassphrase ${passphrase}`);
 
   return (
-    <Modal show={show} onHide={handleClose} centered contentClassName="fs-4">
+    <Modal show={showSelf} onHide={handleClose} centered contentClassName="fs-4">
       <Modal.Header closeButton closeVariant="white">
         <Modal.Title>Saved!</Modal.Title>
       </Modal.Header>
@@ -62,9 +80,9 @@ const NewNoteModal = ({ show, setShow, data: { id, expiryTime, passphrase } }: P
             </InputGroup>
           </Form.Group>
           <Stack direction="horizontal" gap={3}>
-              <Button className="ms-auto" variant="outline-warning" onClick={handleCopyAll}>Copy</Button>
-              <Button variant="primary" onClick={handleClose}>Okay</Button>
-            </Stack>
+            <Button className="ms-auto" variant="outline-warning" onClick={handleCopyAll}>Copy</Button>
+            <Button variant="primary" onClick={handleClose}>Okay</Button>
+          </Stack>
         </Form>
       </Modal.Body>
     </Modal>
