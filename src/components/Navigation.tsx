@@ -4,7 +4,7 @@ import { PATHS } from "../utils/constants";
 
 const Navigation = () => {
   return (
-    <Navbar variant="dark" sticky="top" className="pb-0 pt-2">
+    <Navbar variant="dark" sticky="top">
       <Container>
         <Navbar.Brand className="py-0 m-0">
           <Nav>
@@ -31,7 +31,7 @@ const Navigation = () => {
           </Nav>
         </Navbar.Collapse>
       </Container>
-    </Navbar >
+    </Navbar>
   );
 };
 

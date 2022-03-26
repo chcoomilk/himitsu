@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Button, Col, Container, Form, Row, Stack } from "react-bootstrap";
+import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { useMutation } from "react-query";
 import { useParams } from "react-router";
 import { useNavigate } from "react-router-dom";
@@ -302,8 +302,7 @@ const NotePage = () => {
   };
 
   return (
-    <Container fluid>
-
+    <Row className="mb-3">
       <PassphraseModal
         show={modalDecrypt.showModal}
         setShow={(show) => setModalDecrypt(prev => {
@@ -427,7 +426,7 @@ const NotePage = () => {
           </Form>
         </Col>
       </Row>
-    </Container>
+    </Row>
   );
 };
 

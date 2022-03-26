@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
-import { useContext, useEffect, useState } from "react";
-import { Button, Form, Row, Col, Container, DropdownButton, Dropdown, InputGroup, FormControl, Stack } from "react-bootstrap";
+import { useContext, useState } from "react";
+import { Button, Form, Row, Col, DropdownButton, Dropdown, InputGroup, FormControl, Stack } from "react-bootstrap";
 import * as yup from "yup";
 import { useMutation } from "react-query";
 import * as changeCase from "change-case";
@@ -47,11 +47,6 @@ const NewNote = () => {
   const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.BackendEncryption);
   useTitle(changeCase.capitalCase(DefaultValue.Pages.NewNote.NAME));
   const { mutateAsync } = useMutation(post_note);
-
-  useEffect(() => {
-    const res = window.localStorage.getItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
-    if (res) setNoteResult(JSON.parse(res));
-  }, [setNoteResult]);
 
   const formik = useFormik({
     initialValues: {
@@ -142,17 +137,18 @@ const NewNote = () => {
   });
 
   return (
-    <Container className="my-3" fluid>
-      <NewNoteModal show={noteResult.fetched} setShow={(show) => setNoteResult(prev => {
-        if (!show) {
-          window.localStorage.removeItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
-        }
-
-        return {
-          ...prev,
-          fetched: show,
-        };
-      })} data={{ ...noteResult }} />
+    <Row className="mb-3">
+      <NewNoteModal
+        control={{
+          show: noteResult.fetched,
+          setShow: (show) => setNoteResult(prev => {
+            return {
+              ...prev,
+              fetched: show,
+            };
+          })
+        }}
+        data={{ ...noteResult }} />
       <Row>
         <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
           <Form noValidate onSubmit={formik.handleSubmit}>
@@ -306,7 +302,7 @@ const NewNote = () => {
           </Form>
         </Col>
       </Row>
-    </Container >
+    </Row>
   );
 };
 

@@ -13,6 +13,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Home from "./pages/Home";
 import NewNote from "./pages/notes/NewNote";
 import FindNote from "./pages/notes/FindNote";
+import NewNoteModal from "./components/note/NewNoteModal";
+import NotFound from "./pages/404";
 const Popups = lazy(() => import("./components/Popups"))
 const About = lazy(() => import("./pages/About"));
 const Navigation = lazy(() => import("./components/Navigation"))
@@ -73,14 +75,23 @@ function App() {
             <Navigation />
             <Popups popups={popups} setPopups={setPopups} />
             <Container className="himitsu">
+              {
+                window.localStorage.getItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME)
+                  ? <NewNoteModal
+                    data={JSON.parse(
+                      window.localStorage.getItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME) || "There has to be something!"
+                    )} />
+                  : null
+              }
               <Routes>
                 <Route path={PATHS.home} element={<Home />} />
+                <Route path={"/404"} element={<NotFound />} />
                 <Route path={PATHS.about} element={<About />} />
                 <Route path={PATHS.new_note} element={<NewNote />} />
                 <Route path={PATHS.find_note} element={<FindNote />} />
                 <Route path={PATHS.note_detail + "/:_id"} element={<Note />} />
                 <Route path="*" element={
-                  <Navigate to="/" />
+                  <Navigate to="/404" />
                 } />
               </Routes>
             </Container>
