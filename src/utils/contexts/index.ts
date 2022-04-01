@@ -1,12 +1,13 @@
 import React from "react";
-import { DefaultValue } from "./constants";
-import { Popup } from "./types";
+import { DefaultValue } from "../constants";
+import { Popup } from "../types";
+import theme from "./theme";
 
 interface Store {
   setPassphrase(passphrase: string | null): void,
-  popups: Popup,
-  setPopups: React.Dispatch<React.SetStateAction<Popup>>,
   passphrase: string | null,
+  setPopups: React.Dispatch<React.SetStateAction<Popup>>,
+  popups: Popup,
 }
 
 export const StoreContext = React.createContext<Store>({
@@ -17,3 +18,5 @@ export const StoreContext = React.createContext<Store>({
   },
   passphrase: null,
 });
+
+export const ThemeContext = theme;

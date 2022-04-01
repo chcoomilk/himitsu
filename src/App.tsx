@@ -1,10 +1,10 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
 import { Spinner, Container } from "react-bootstrap";
-import { StoreContext } from "./utils/context";
+import { StoreContext } from "./utils/contexts";
 import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
-import { Popup } from "./utils/types";
+import { AppTheme, Popup } from "./utils/types";
 
 import "bootstrap/scss/bootstrap.scss";
 import "./stylings/index.scss";
@@ -47,6 +47,27 @@ function App() {
   const [popups, setPopups] = useState<Popup>({
     ...DefaultValue.Popups,
   });
+
+  useEffect(() => {
+    const theme = window.localStorage.getItem("theme");
+    if (theme) {
+      switch (theme) {
+        case AppTheme.Normal:
+          break;
+
+        case AppTheme.Black:
+          window.document.documentElement.setAttribute("data-theme", "black");
+          break;
+
+        case AppTheme.Light:
+          window.document.documentElement.setAttribute("data-theme", "light");
+          break;       
+
+        default:
+          break;
+      }
+    }
+  }, []);
 
   return (
     <Router>

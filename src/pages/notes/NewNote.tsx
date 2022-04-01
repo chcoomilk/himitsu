@@ -6,7 +6,7 @@ import { useMutation } from "react-query";
 import * as changeCase from "change-case";
 
 import NewNoteModal from "../../components/note/NewNoteModal";
-import { StoreContext } from "../../utils/context";
+import { StoreContext } from "../../utils/contexts";
 import { EncryptionMethod } from "../../utils/types";
 import { post_note } from "../../queries/post_note";
 import useTitle from "../../custom-hooks/useTitle";

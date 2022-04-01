@@ -6,7 +6,7 @@ import * as yup from "yup";
 import PassphraseInputGroup from "../../components/passphrase/PassphraseInputGroup";
 import useTitle from "../../custom-hooks/useTitle";
 import { DefaultValue, PATHS } from "../../utils/constants";
-import { StoreContext } from "../../utils/context";
+import { StoreContext } from "../../utils/contexts";
 
 const schema = yup.object().shape({
   ID: yup.number().required(),

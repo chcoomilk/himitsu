@@ -1,0 +1,89 @@
+html[data-theme="light"] {
+  $default-bg-color: white;
+  $input-bg-color: white;
+  $input-bg-color-disabled: scale-color($input-bg-color, $lightness: -20%);
+  $input-border-color: rgb(200, 200, 200);
+  $text-color-normal: black;
+  $text-color-darken: scale-color($text-color-normal, $lightness: -10%);
+
+  body {
+    background-color: $default-bg-color;
+    color: $text-color-normal;
+  }
+
+  a {
+    color: $text-color-normal;
+  }
+
+  a:hover {
+    color: $text-color-darken;
+  }
+
+  .modal .modal-content,
+  .modal .modal-header,
+  .modal .modal-footer {
+    background-color: $default-bg-color;
+    color: $text-color-normal;
+    border-style: none;
+  }
+
+  .accordion {
+    .accordion-button {
+      background-color: $input-bg-color-disabled;
+      color: $text-color-normal;
+    }
+    .accordion-button::after {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000000'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    }
+
+    .collapsed {
+      background-color: $input-bg-color;
+      color: $text-color-normal;
+    }
+
+    .accordion-item {
+      background-color: $input-bg-color-disabled;
+    }
+  }
+
+  .form-control,
+  .form-control[readonly],
+  .form-control:focus {
+    background-color: $input-bg-color;
+    border: 1px solid $input-border-color;
+    color: $text-color-normal;
+  }
+
+  .form-control:disabled {
+    background-color: $input-bg-color-disabled;
+    color: $text-color-normal;
+  }
+
+  .btn-outline-light {
+    color: $text-color-normal;
+    background-color: $input-bg-color;
+    border: 1px solid $input-border-color;
+  }
+
+  .navbar-dark {
+    background-color: $default-bg-color;
+  }
+
+  input.form-range::-moz-range-track {
+    background-color: $input-bg-color;
+  }
+
+  input.form-range::-ms-track {
+    background-color: $input-bg-color;
+  }
+
+  input.form-range::-webkit-slider-runnable-track {
+    background-color: $input-bg-color;
+  }
+
+  span.input-group-text {
+    background-color: $input-bg-color-disabled;
+    border: 1px solid $input-border-color;
+    color: $text-color-normal;
+  }
+}

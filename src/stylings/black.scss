@@ -1,0 +1,90 @@
+html[data-theme="black"] {
+    $default-bg-color: black;
+    $input-bg-color: rgb(8, 8, 8);
+    $input-bg-color-disabled: scale-color($input-bg-color, $lightness: 10%);
+
+    body {
+        background-color: $default-bg-color;
+        color: $text-color-normal;
+    }
+
+    .navbar-dark {
+        background-color: $default-bg-color;
+    }
+
+    .modal .modal-content,
+    .modal .modal-header,
+    .modal .modal-footer {
+        background-color: $default-bg-color;
+        color: $text-color-normal;
+        border-style: none;
+    }
+
+    .accordion {
+        .accordion-button {
+            background-color: $input-bg-color-disabled;
+            color: $text-color-normal;
+        }
+
+        .collapsed {
+            background-color: $input-bg-color;
+            color: $text-color-normal;
+        }
+
+        .accordion-item {
+            background-color: $input-bg-color-disabled;
+        }
+    }
+
+    .form-control,
+    .form-control[readonly],
+    .form-control:focus {
+        background-color: $input-bg-color;
+        border: 1px solid $input-border-color;
+        color: $text-color-normal;
+    }
+
+    .form-control:disabled {
+        background-color: $input-bg-color-disabled;
+        color: $text-color-normal;
+    }
+
+    .btn-outline-light {
+        &:hover {
+            color: $text-color-darken;
+        }
+
+        &:active {
+            background-color: $input-bg-color;
+        }
+
+        background-color: $input-bg-color;
+        border: 1px solid $input-border-color;
+    }
+
+    .dropdown-menu-dark {
+        background-color: $input-bg-color;
+    }
+
+    .navbar-dark {
+        background-color: $default-bg-color;
+    }
+
+    input.form-range::-moz-range-track {
+        background-color: $input-bg-color;
+    }
+
+    input.form-range::-ms-track {
+        background-color: $input-bg-color;
+    }
+
+    input.form-range::-webkit-slider-runnable-track {
+        background-color: $input-bg-color;
+    }
+
+    span.input-group-text {
+        background-color: $input-bg-color-disabled;
+        border: 1px solid $input-border-color;
+        color: $text-color-normal;
+    }
+}
