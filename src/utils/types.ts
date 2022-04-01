@@ -40,3 +40,9 @@ export enum EncryptionMethod {
   FrontendEncryption,
   BackendEncryption,
 }
+
+export enum AppTheme {
+  Normal = "normal",
+  Black = "black",
+  Light = "light",
+}

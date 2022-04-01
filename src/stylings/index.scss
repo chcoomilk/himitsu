@@ -1,34 +1,9 @@
 $font-size-base: 1.1rem;
 
-@import "~bootstrap/scss/bootstrap";
-
 .fs-0 {
   font-size: $font-size-base * 3.25;
 }
-$default-bg-color: rgb(40, 44, 52);
-$input-bg-color: rgb(36, 40, 46);
-$input-bg-color-disabled: scale-color($input-bg-color, $lightness: -20%);
-$input-border-color: rgba(65, 65, 65, 0.24);
-$text-color-normal: rgb(210, 210, 210);
-$text-color-darken: scale-color($text-color-normal, $lightness: -10%);
 
-a {
-  color: $text-color-normal;
-}
-
-a:hover {
-  color: $text-color-darken;
-}
-
-html,
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
-    "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: $default-bg-color;
-  color: $text-color-normal;
-}
 // For hiding vertical arrows in number input
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -61,6 +36,39 @@ input[type="number"] {
   margin-right: auto;
   left: 0;
   right: 0;
+}
+
+html {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// variables
+
+$default-bg-color: rgb(40, 44, 52);
+$input-bg-color: rgb(36, 40, 46);
+$input-bg-color-disabled: scale-color($input-bg-color, $lightness: -20%);
+$input-border-color: rgba(65, 65, 65, 0.24);
+$text-color-normal: rgb(210, 210, 210);
+$text-color-darken: scale-color($text-color-normal, $lightness: -10%);
+
+//
+
+// items
+
+body {
+  background-color: $default-bg-color;
+  color: $text-color-normal;
+}
+
+a {
+  color: $text-color-normal;
+}
+
+a:hover {
+  color: $text-color-darken;
 }
 
 .modal .modal-content,
@@ -130,6 +138,8 @@ span.input-group-text {
   color: $text-color-normal;
 }
 
+//
+
 a#special-alert-link {
   color: rgb(5, 81, 96);
 }
@@ -137,3 +147,6 @@ a#special-alert-link {
 a#special-alert-link:hover {
   color: rgb(65, 141, 156);
 }
+
+@import "./light.scss";
+@import "./black.scss";

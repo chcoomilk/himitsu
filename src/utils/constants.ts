@@ -4,7 +4,6 @@ if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No 
 
 export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
 
-
 const Popups: Popup = {
     notFound: false,
     serverError: false,
@@ -24,7 +23,7 @@ const Note: NoteType = {
     expiryTime: "",
     lastUpdateTime: "",
     passphrase: "",
-  }
+}
 
 export const DefaultValue = {
     Popups,
@@ -43,6 +42,7 @@ export const PATHS = {
     new_note: "/new",
     find_note: "/find",
     note_detail: "/n",
+    settings: "/settings"
 }
 
 export const TIME_CONFIG: Intl.DateTimeFormatOptions | undefined = {

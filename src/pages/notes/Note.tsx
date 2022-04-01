@@ -9,7 +9,7 @@ import PassphraseModal from "../../components/passphrase/PassphraseModal";
 import useTitle from "../../custom-hooks/useTitle";
 import { get_note } from "../../queries/get_note";
 import { DefaultValue, PATHS } from "../../utils/constants";
-import { StoreContext } from "../../utils/context";
+import { StoreContext } from "../../utils/contexts";
 import { EncryptionMethod, NoteType } from "../../utils/types";
 import { get_note_info } from "../../queries/get_note_info";
 import { delete_note } from "../../queries";

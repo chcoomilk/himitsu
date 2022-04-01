@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { Button, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { DefaultValue, PATHS } from "../utils/constants";
-import { StoreContext } from "../utils/context";
+import { StoreContext } from "../utils/contexts";
 
 const Home = () => {
   const { setPopups: setAlerts } = useContext(StoreContext);
