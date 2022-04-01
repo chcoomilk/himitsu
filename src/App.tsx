@@ -6,6 +6,7 @@ import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 import { Popup } from "./utils/types";
 
+import "bootstrap/scss/bootstrap.scss";
 import "./stylings/index.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -19,6 +20,7 @@ const Popups = lazy(() => import("./components/Popups"))
 const About = lazy(() => import("./pages/About"));
 const Navigation = lazy(() => import("./components/Navigation"))
 const Note = lazy(() => import("./pages/notes/Note"));
+const Settings = lazy(() => import("./pages/Settings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -90,6 +92,7 @@ function App() {
                 <Route path={PATHS.new_note} element={<NewNote />} />
                 <Route path={PATHS.find_note} element={<FindNote />} />
                 <Route path={PATHS.note_detail + "/:_id"} element={<Note />} />
+                <Route path={PATHS.settings} element={<Settings />} />
                 <Route path="*" element={
                   <Navigate to="/404" />
                 } />
