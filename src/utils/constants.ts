@@ -43,6 +43,7 @@ export const PATHS = {
     new_note: "/new",
     find_note: "/find",
     note_detail: "/n",
+    settings: "/settings"
 }
 
 export const TIME_CONFIG: Intl.DateTimeFormatOptions | undefined = {
