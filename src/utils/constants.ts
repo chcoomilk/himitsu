@@ -1,6 +1,7 @@
 import { EncryptionMethod, NoteType, Popup } from "./types";
 
-if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL set in .env");
+if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL was set in .env");
+if (typeof process.env.REACT_APP_URL === "undefined") console.error("No React app URL was set in .env");
 
 export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
 

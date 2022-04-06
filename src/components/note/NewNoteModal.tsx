@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Form, FormControl, InputGroup, Modal, Stack } from "react-bootstrap";
-import { DefaultValue } from "../../utils/constants";
+import { DefaultValue, PATHS } from "../../utils/constants";
 import CopyButton from "../button/CopyButton";
 import PassphraseInputGroup from "../passphrase/PassphraseInputGroup";
 
@@ -32,7 +32,7 @@ const NewNoteModal = ({ control, data: { id, expiryTime, passphrase } }: Props) 
     };
   ;
 
-  const handleCopyAll = () => navigator.clipboard.writeText(`ID ${id.toString()}\nPassphrase ${passphrase}`);
+  const handleCopyAll = () => navigator.clipboard.writeText(`${process.env.REACT_APP_URL + PATHS.note_detail + `/${id.toString()}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
 
   return (
     <Modal show={showSelf} onHide={handleClose} centered contentClassName="fs-4">
