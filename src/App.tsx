@@ -37,8 +37,15 @@ const queryClient = new QueryClient({
         });
 
         return await response.json();
-      }
-    }
+      },
+      keepPreviousData: true,
+      retry: (failureCount) => {
+        if (failureCount <= 10) return true;
+        else return false;
+      },
+      retryDelay: 6000,
+      cacheTime: Infinity,
+    },
   }
 });
 
@@ -47,27 +54,32 @@ function App() {
   const [popups, setPopups] = useState<Popup>({
     ...DefaultValue.Popups,
   });
+  const [theme, setTheme] = useState<AppTheme>(AppTheme.Normal);
 
   useEffect(() => {
-    const theme = window.localStorage.getItem("theme");
-    if (theme) {
-      switch (theme) {
+    const savedTheme = window.localStorage.getItem("theme");
+    if (savedTheme) {
+      switch (savedTheme) {
         case AppTheme.Normal:
+          setTheme(AppTheme.Normal);
+          window.document.documentElement.removeAttribute("data-theme");
           break;
 
         case AppTheme.Black:
+          setTheme(AppTheme.Black);
           window.document.documentElement.setAttribute("data-theme", "black");
           break;
 
         case AppTheme.Light:
+          setTheme(AppTheme.Light);
           window.document.documentElement.setAttribute("data-theme", "light");
-          break;       
+          break;
 
         default:
           break;
       }
     }
-  }, []);
+  }, [theme]);
 
   return (
     <Router>
@@ -95,7 +107,7 @@ function App() {
               <span className="visually-hidden">Loading...</span>
             </Spinner>
           }>
-            <Navigation />
+            <Navigation theme={theme} />
             <Popups popups={popups} setPopups={setPopups} />
             <Container className="himitsu">
               {
@@ -113,7 +125,7 @@ function App() {
                 <Route path={PATHS.new_note} element={<NewNote />} />
                 <Route path={PATHS.find_note} element={<FindNote />} />
                 <Route path={PATHS.note_detail + "/:_id"} element={<Note />} />
-                <Route path={PATHS.settings} element={<Settings />} />
+                <Route path={PATHS.settings} element={<Settings theme={theme} setTheme={setTheme} />} />
                 <Route path="*" element={
                   <Navigate to="/404" />
                 } />

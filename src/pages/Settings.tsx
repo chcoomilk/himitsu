@@ -1,45 +1,16 @@
-import { useEffect, useState } from "react";
 import { Col, Row, Form } from "react-bootstrap";
 import { AppTheme } from "../utils/types";
 import * as changeCase from "change-case";
 
-const Settings = () => {
-  const [theme, setTheme] = useState<AppTheme>(AppTheme.Normal);
+type Parameter = {
+  theme: AppTheme,
+  setTheme: React.Dispatch<React.SetStateAction<AppTheme>>,
+}
 
-  useEffect(() => {
-    const savedTheme = window.localStorage.getItem("theme");
-    if (savedTheme) {
-      switch (savedTheme) {
-        case AppTheme.Normal:
-          setTheme(AppTheme.Normal);
-          break;
-
-        case AppTheme.Black:
-          setTheme(AppTheme.Black);
-          break;
-
-        case AppTheme.Light:
-          setTheme(AppTheme.Light);
-          break;
-
-        default:
-          setTheme(AppTheme.Normal);
-          break;
-      }
-    } else {
-      setTheme(AppTheme.Normal);
-    }
-  }, [setTheme]);
-
-  useEffect(() => {
-    console.log(theme);
-
-    changeTheme(theme);
-  }, [theme]);
-
+const Settings = ({ theme, setTheme }: Parameter) => {
   const changeTheme = (t: AppTheme) => {
+    setTheme(t);
     window.localStorage.setItem("theme", t);
-    window.document.documentElement.setAttribute("data-theme", t);
   };
 
   return (
@@ -63,7 +34,7 @@ const Settings = () => {
                       checked={theme === value}
                       id={value}
                       label={changeCase.capitalCase(value)}
-                      onChange={_ => setTheme(value)}
+                      onChange={_ => changeTheme(value)}
                     />
                   );
                 })

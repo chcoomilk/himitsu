@@ -1,15 +1,8 @@
-import { useContext, useEffect } from "react";
 import { Button, Col, Row, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { DefaultValue, PATHS } from "../utils/constants";
-import { StoreContext } from "../utils/contexts";
 
 const Home = () => {
-  const { setPopups: setAlerts } = useContext(StoreContext);
-  useEffect(() => {
-    setAlerts(DefaultValue.Popups);
-  }, [setAlerts]);
-
   return (
     <Row className="text-center align-items-center">
       <Col>

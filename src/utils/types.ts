@@ -4,13 +4,14 @@ export interface ErrorKind {
   serverError: boolean,
   invalidId: boolean,
   passphraseNotRequired: boolean,
+  tooManyRequests: boolean,
 }
 
-export interface UserResponseInfo {
+export interface UserActionInfo {
   noteDeletion: number | null,
 }
 
-export interface Popup extends ErrorKind, UserResponseInfo {};
+export interface Popup extends ErrorKind, UserActionInfo {};
 
 export interface NoteType {
   id: number,
