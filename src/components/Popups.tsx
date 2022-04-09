@@ -137,6 +137,22 @@ const Popups = ({ popups, setPopups }: Props) => {
           Service is unresponsive at the moment, please try again later.
         </p>
       </Alert>
+
+      <Alert
+        variant="warning"
+        show={popups.tooManyRequests} onClose={() => setPopups((previousValue) => {
+          return { ...previousValue, tooManyRequests: false };
+        })}
+        dismissible
+      >
+        <Alert.Heading>
+          <i className="bi bi-pause-circle"></i> {" "}
+          Slow down!
+        </Alert.Heading>
+        <p>
+          You're not trying to break the fooken server, are'ya?.
+        </p>
+      </Alert>
     </Container>
   );
 };

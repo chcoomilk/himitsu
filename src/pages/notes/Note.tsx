@@ -115,6 +115,7 @@ const NotePage = () => {
     },
   });
 
+  // useQuery("")
   const { mutate: mutate_get_info, isLoading: is_info_loading } = useMutation(get_note_info, {
     onSuccess: result => {
       if (result.is_ok) {

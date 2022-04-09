@@ -2,9 +2,13 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 import { PATHS } from "../utils/constants";
 
-const Navigation = () => {
+type Parameter = {
+  theme: String
+}
+
+const Navigation = ({theme}: Parameter) => {
   return (
-    <Navbar variant={window.localStorage.getItem("theme") === "light" ? "light" : "dark"} sticky="top">
+    <Navbar variant={theme === "light" ? "light" : "dark"} sticky="top">
       <Container>
         <Navbar.Brand className="py-0 m-0">
           <Nav>

@@ -12,6 +12,7 @@ const Popups: Popup = {
     invalidId: false,
     passphraseNotRequired: false,
     noteDeletion: null,
+    tooManyRequests: false,
 };
 
 const Note: NoteType = {
