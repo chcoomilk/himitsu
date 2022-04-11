@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Row, Stack } from "react-bootstrap";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useParams } from "react-router";
 import { useNavigate } from "react-router-dom";
 import cryptojs from "crypto-js";
@@ -10,9 +10,9 @@ import useTitle from "../../custom-hooks/useTitle";
 import { get_note } from "../../queries/get_note";
 import { DefaultValue, PATHS } from "../../utils/constants";
 import { StoreContext } from "../../utils/contexts";
-import { EncryptionMethod, NoteType } from "../../utils/types";
+import { BasicInfo, EncryptionMethod, NoteType } from "../../utils/types";
 import { get_note_info } from "../../queries/get_note_info";
-import { delete_note } from "../../queries";
+import { delete_note, Result } from "../../queries";
 import { generate_face, into_readable_datetime } from "../../utils/functions";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
@@ -24,7 +24,7 @@ interface Modal {
 const NotePage = () => {
   let { _id } = useParams();
   let navigate = useNavigate();
-  const [checkedId, setCheckedId] = useState<number>(0);
+  const [checkedId, setCheckedId] = useState<number | null>(null);
 
   const { passphrase: passphrase_context, setPopups } = useContext(StoreContext);
 
@@ -41,7 +41,6 @@ const NotePage = () => {
     showModal: false,
     passphrase: null
   });
-  // const [overallHasStoppedFetching, setOverallHasStoppedFetching] = useState(true);
 
   const setTitle = useTitle("Loading...");
 
@@ -115,64 +114,127 @@ const NotePage = () => {
     },
   });
 
-  // useQuery("")
-  const { mutate: mutate_get_info, isLoading: is_info_loading } = useMutation(get_note_info, {
-    onSuccess: result => {
-      if (result.is_ok) {
-        let encryption: EncryptionMethod;
-        if (result.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
-        else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
-        else encryption = EncryptionMethod.NoEncryption;
+  const {
+    data: note_info,
+    isLoading: is_info_loading,
+    isError: info_error
+  } = useQuery<Result<BasicInfo>>(
+    ["note_info", checkedId],
+    () => get_note_info<BasicInfo>({ id: checkedId || 0 }),
+  );
 
-        setNote({
-          ...DefaultValue.Note,
-          encryption,
-          title: result.data.title,
-          content: generate_face(),
-        });
+  useEffect(() => {
+    if (note_info && note_info.is_ok) {
+      let encryption: EncryptionMethod;
+      if (note_info.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
+      else if (note_info.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
+      else encryption = EncryptionMethod.NoEncryption;
 
-        if (result.data.backend_encryption) {
-          if (passphrase_context !== null) {
-            mutate_get_note({ id: result.data.id, passphrase: passphrase_context });
-          } else {
-            console.log("ok, throw me some numbers");
-            console.log("set title to \"ok, give me your password!\"");
-            setTitle("ok, give me your password!");
-            console.log("my password?\nOUT WITH IT\noralcumshot\nyeah that fits");
+      setNote({
+        ...DefaultValue.Note,
+        encryption,
+        title: note_info.data.title,
+        content: generate_face(),
+      });
 
-            setModalMutate(prev => {
-              return {
-                ...prev,
-                showModal: true
-              };
-            });
-          }
+      if (note_info.data.backend_encryption) {
+        if (passphrase_context !== null) {
+          mutate_get_note({ id: note_info.data.id, passphrase: passphrase_context });
         } else {
-          if (!result.data.frontend_encryption && passphrase_context !== null) {
-            setPopups(prev => {
-              return {
-                ...prev,
-                passphraseNotRequired: true
-              };
-            });
-          }
+          console.log("ok, throw me some numbers");
+          console.log("set title to \"ok, give me your password!\"");
+          setTitle("ok, give me your password!");
+          console.log("my password?\nOUT WITH IT\noralcumshot\nyeah that fits");
 
-          mutate_get_note({ id: result.data.id, passphrase: null });
+          setModalMutate(prev => {
+            return {
+              ...prev,
+              showModal: true
+            };
+          });
         }
       } else {
-        setPopups(result.error)
+        if (!note_info.data.frontend_encryption && passphrase_context !== null) {
+          setPopups(prev => {
+            return {
+              ...prev,
+              passphraseNotRequired: true
+            };
+          });
+        }
+
+        mutate_get_note({ id: note_info.data.id, passphrase: null });
       }
-    },
-    onError: () => {
+    } else {
+      if (info_error) {
+        setPopups((prev) => {
+          return note_info?.error || {
+            ...prev,
+            serverError: true,
+          };
+        });
+      }
       setTitle(generate_face());
-      setPopups(value => {
-        return {
-          ...value,
-          serverError: true
-        };
-      })
-    },
-  });
+    }
+  }, [note_info]);
+
+  // const { mutate: mutate_get_info, isLoading: is_info_loading } = useMutation(get_note_info, {
+  //   onSuccess: result => {
+  //     if (result.is_ok) {
+  //       let encryption: EncryptionMethod;
+  //       if (result.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
+  //       else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
+  //       else encryption = EncryptionMethod.NoEncryption;
+
+  //       setNote({
+  //         ...DefaultValue.Note,
+  //         encryption,
+  //         title: result.data.title,
+  //         content: generate_face(),
+  //       });
+
+  //       if (result.data.backend_encryption) {
+  //         if (passphrase_context !== null) {
+  //           mutate_get_note({ id: result.data.id, passphrase: passphrase_context });
+  //         } else {
+  //           console.log("ok, throw me some numbers");
+  //           console.log("set title to \"ok, give me your password!\"");
+  //           setTitle("ok, give me your password!");
+  //           console.log("my password?\nOUT WITH IT\noralcumshot\nyeah that fits");
+
+  //           setModalMutate(prev => {
+  //             return {
+  //               ...prev,
+  //               showModal: true
+  //             };
+  //           });
+  //         }
+  //       } else {
+  //         if (!result.data.frontend_encryption && passphrase_context !== null) {
+  //           setPopups(prev => {
+  //             return {
+  //               ...prev,
+  //               passphraseNotRequired: true
+  //             };
+  //           });
+  //         }
+
+  //         mutate_get_note({ id: result.data.id, passphrase: null });
+  //       }
+  //     } else {
+  //       setPopups(result.error)
+  //     }
+  //   },
+  //   onError: () => {
+  //     setTitle(generate_face());
+  //     setPopups(value => {
+  //       return {
+  //         ...value,
+  //         serverError: true
+  //       };
+  //     })
+  //   },
+  // });
 
   const try_decrypt = useCallback((note: NoteType, passphrase: string): void => {
     let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
@@ -219,13 +281,13 @@ const NotePage = () => {
       navigate(PATHS.find_note);
     } else {
       setCheckedId(+_id);
-      mutate_get_info({ id: +_id });
+      // mutate_get_info({ id: +_id });
     }
-  }, [_id, navigate, setPopups, mutate_get_info]);
+  }, [_id, navigate, setPopups/*, mutate_get_info*/]);
 
   // try to decrypt note on backend
   useEffect(() => {
-    if (modalMutate.passphrase !== null) {
+    if (modalMutate.passphrase !== null && checkedId) {
       mutate_get_note({ id: checkedId, passphrase: modalMutate.passphrase });
     }
   }, [checkedId, modalMutate.passphrase, mutate_get_note]);
@@ -255,7 +317,7 @@ const NotePage = () => {
 
   // delete confirmation 
   useEffect(() => {
-    if (modalDelete.passphrase && note) {
+    if (modalDelete.passphrase && note && checkedId) {
       if (modalDelete.passphrase === note.passphrase) {
         del_note({ id: checkedId, passphrase: note.passphrase });
       } else {
@@ -292,7 +354,7 @@ const NotePage = () => {
   };
 
   const handleDelete = () => {
-    (isSuccess && note) && note.encryption === EncryptionMethod.NoEncryption
+    (isSuccess && note && checkedId) && note.encryption === EncryptionMethod.NoEncryption
       ? del_note({ id: checkedId, passphrase: null })
       : setModalDelete(prev => {
         return {
