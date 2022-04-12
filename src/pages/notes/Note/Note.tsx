@@ -1,31 +1,29 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
-import { useParams } from "react-router";
-import { useNavigate } from "react-router-dom";
 import cryptojs from "crypto-js";
-
-import PassphraseModal from "../../components/passphrase/PassphraseModal";
-import useTitle from "../../custom-hooks/useTitle";
-import { get_note } from "../../queries/get_note";
-import { DefaultValue, PATHS } from "../../utils/constants";
-import { StoreContext } from "../../utils/contexts";
-import { NoteInfo, EncryptionMethod, NoteType } from "../../utils/types";
-import { get_note_info } from "../../queries/get_note_info";
-import { delete_note, Result } from "../../queries";
-import { generate_face, into_readable_datetime } from "../../utils/functions";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+
+import PassphraseModal from "../../../components/passphrase/PassphraseModal";
+import useTitle from "../../../custom-hooks/useTitle";
+import { get_note } from "../../../queries/get_note";
+import { DefaultValue } from "../../../utils/constants";
+import { StoreContext } from "../../../utils/contexts";
+import { NoteInfo, EncryptionMethod, NoteType } from "../../../utils/types";
+import { get_note_info } from "../../../queries/get_note_info";
+import { delete_note, Result } from "../../../queries";
+import { generate_face, into_readable_datetime } from "../../../utils/functions";
 
 interface Modal {
   showModal: boolean,
   passphrase: string | null,
 }
 
-const NotePage = () => {
-  let { _id } = useParams();
-  let navigate = useNavigate();
-  const [checkedId, setCheckedId] = useState<number | null>(null);
+interface Props {
+  id: number
+}
 
+const Result = ({ id }: Props) => {
   const { passphrase: passphrase_context, setPopups } = useContext(StoreContext);
 
   const [note, setNote] = useState<NoteType | null>(null);
@@ -116,12 +114,11 @@ const NotePage = () => {
 
   const {
     data: note_info,
+    isLoading: is_info_loading,
     isError: info_error,
-    isPreviousData: is_info_called,
-    isFetching: is_info_loading,
   } = useQuery<Result<NoteInfo>>(
-    ["note_info", checkedId],
-    () => get_note_info({ id: checkedId }),
+    ["note_info", id],
+    () => get_note_info({ id }),
   );
 
   useEffect(() => {
@@ -142,7 +139,10 @@ const NotePage = () => {
         if (passphrase_context !== null) {
           mutate_get_note({ id: note_info.data.id, passphrase: passphrase_context });
         } else {
-          setTitle("🔒 Locked " + generate_face());
+          console.log("ok, throw me some numbers");
+          console.log("set title to \"ok, give me your password!\"");
+          setTitle("ok, give me your password!");
+          console.log("my password?\nOUT WITH IT\noralcumshot\nyeah that fits");
 
           setModalMutate(prev => {
             return {
@@ -174,65 +174,7 @@ const NotePage = () => {
       }
       setTitle(generate_face());
     }
-  }, [note_info, is_info_called, info_error, mutate_get_note, passphrase_context, setPopups, setTitle]);
-
-  // const { mutate: mutate_get_info, isLoading: is_info_loading } = useMutation(get_note_info, {
-  //   onSuccess: result => {
-  //     if (result.is_ok) {
-  //       let encryption: EncryptionMethod;
-  //       if (result.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
-  //       else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
-  //       else encryption = EncryptionMethod.NoEncryption;
-
-  //       setNote({
-  //         ...DefaultValue.Note,
-  //         encryption,
-  //         title: result.data.title,
-  //         content: generate_face(),
-  //       });
-
-  //       if (result.data.backend_encryption) {
-  //         if (passphrase_context !== null) {
-  //           mutate_get_note({ id: result.data.id, passphrase: passphrase_context });
-  //         } else {
-  //           console.log("ok, throw me some numbers");
-  //           console.log("set title to \"ok, give me your password!\"");
-  //           setTitle("ok, give me your password!");
-  //           console.log("my password?\nOUT WITH IT\noralcumshot\nyeah that fits");
-
-  //           setModalMutate(prev => {
-  //             return {
-  //               ...prev,
-  //               showModal: true
-  //             };
-  //           });
-  //         }
-  //       } else {
-  //         if (!result.data.frontend_encryption && passphrase_context !== null) {
-  //           setPopups(prev => {
-  //             return {
-  //               ...prev,
-  //               passphraseNotRequired: true
-  //             };
-  //           });
-  //         }
-
-  //         mutate_get_note({ id: result.data.id, passphrase: null });
-  //       }
-  //     } else {
-  //       setPopups(result.error)
-  //     }
-  //   },
-  //   onError: () => {
-  //     setTitle(generate_face());
-  //     setPopups(value => {
-  //       return {
-  //         ...value,
-  //         serverError: true
-  //       };
-  //     })
-  //   },
-  // });
+  }, [note_info]);
 
   const try_decrypt = useCallback((note: NoteType, passphrase: string): void => {
     let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
@@ -267,28 +209,12 @@ const NotePage = () => {
     }
   }, [setPopups]);
 
-  // check _id whence useParameter is availabe
-  useEffect(() => {
-    if (typeof _id === "undefined" || isNaN(+_id)) {
-      setPopups(prev => {
-        return {
-          ...prev,
-          invalidId: true
-        };
-      });
-      navigate(PATHS.find_note);
-    } else {
-      setCheckedId(+_id);
-      // mutate_get_info({ id: +_id });
-    }
-  }, [_id, navigate, setPopups/*, mutate_get_info*/]);
-
   // try to decrypt note on backend
   useEffect(() => {
-    if (modalMutate.passphrase !== null && checkedId) {
-      mutate_get_note({ id: checkedId, passphrase: modalMutate.passphrase });
+    if (modalMutate.passphrase !== null && id) {
+      mutate_get_note({ id: id, passphrase: modalMutate.passphrase });
     }
-  }, [checkedId, modalMutate.passphrase, mutate_get_note]);
+  }, [id, modalMutate.passphrase, mutate_get_note]);
 
   // try to decrypt note on frontend
   useEffect(() => {
@@ -315,9 +241,9 @@ const NotePage = () => {
 
   // delete confirmation 
   useEffect(() => {
-    if (modalDelete.passphrase && note && checkedId) {
+    if (modalDelete.passphrase && note && id) {
       if (modalDelete.passphrase === note.passphrase) {
-        del_note({ id: checkedId, passphrase: note.passphrase });
+        del_note({ id: id, passphrase: note.passphrase });
       } else {
         setModalDelete({
           showModal: false,
@@ -331,7 +257,7 @@ const NotePage = () => {
         });
       }
     }
-  }, [modalDelete.passphrase, note, del_note, checkedId, setPopups]);
+  }, [modalDelete.passphrase, note, del_note, id, setPopups]);
 
   const handleRetry = () => {
     if (note?.encryption === EncryptionMethod.BackendEncryption) {
@@ -352,8 +278,8 @@ const NotePage = () => {
   };
 
   const handleDelete = () => {
-    (isSuccess && note && checkedId) && note.encryption === EncryptionMethod.NoEncryption
-      ? del_note({ id: checkedId, passphrase: null })
+    (isSuccess && note && id) && note.encryption === EncryptionMethod.NoEncryption
+      ? del_note({ id: id, passphrase: null })
       : setModalDelete(prev => {
         return {
           ...prev,
@@ -387,7 +313,7 @@ const NotePage = () => {
         }} />
 
       <PassphraseModal
-        title={`Confirm to delete ${note?.title ? `"${note.title}"` : `note #${_id}`}`}
+        title={`Confirm to delete ${note?.title ? `"${note.title}"` : `note #${id}`}`}
         show={modalDelete.showModal}
         setShow={(show) => setModalDelete(prev => {
           return { ...prev, showModal: show };
@@ -410,7 +336,7 @@ const NotePage = () => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.title : DefaultValue.Note.title}
+                      value={note?.title}
                       readOnly
                     />
                 }
@@ -425,7 +351,7 @@ const NotePage = () => {
                       as="textarea"
                       type="text"
                       name="expires"
-                      value={note ? note.content : DefaultValue.Note.content}
+                      value={note?.content}
                       readOnly
                     />
                 }
@@ -439,7 +365,7 @@ const NotePage = () => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.creationTime : DefaultValue.Note.creationTime}
+                      value={note?.creationTime}
                       readOnly
                     />
                 }
@@ -453,7 +379,7 @@ const NotePage = () => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.expiryTime : DefaultValue.Note.expiryTime}
+                      value={note?.expiryTime}
                       readOnly
                     />
                 }
@@ -491,4 +417,4 @@ const NotePage = () => {
   );
 };
 
-export default NotePage;
+export default Result;

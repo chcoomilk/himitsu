@@ -1,24 +1,31 @@
 import { Result } from ".";
 import { BASE_URL, DefaultValue } from "../utils/constants";
-import { BasicInfo } from "../utils/types";
+import { NoteInfo } from "../utils/types";
 
 interface Params {
-    id: number
+    id: number | null
 }
 
-type ResponseData = BasicInfo;
+type ResponseData = NoteInfo;
 
 // i swear to god, there was no documentation about throwing error here will be caught in useQuery
 // albeit Promise<Result<T>> does look pretty cool...
-export const get_note_info = async <T>({ id }: Params): Promise<Result<T>> => {
+export const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
+    // returns early because page first has to initialize with id that hasn't been checked
+    if (id === null) return {
+        error: DefaultValue.Popups,
+        is_ok: false,
+        data: DefaultValue.NoteInfo,
+    };
+    
     let url = BASE_URL + "/notes/" + id;
-    // let data: ResponseData = {
-    //     id: 0,
-    //     frontend_encryption: false,
-    //     backend_encryption: false,
-    //     title: "",
-    //     expired_at: null
-    // };
+    let data: ResponseData = {
+        id: 0,
+        frontend_encryption: false,
+        backend_encryption: false,
+        title: "",
+        expired_at: null
+    };
     let response = await fetch(url, {
         method: "GET",
         mode: "cors",
@@ -27,8 +34,8 @@ export const get_note_info = async <T>({ id }: Params): Promise<Result<T>> => {
         },
     });
 
-    let data: T = await response.json();
     if (response.ok) {
+        let data = await response.json();
         return {
             is_ok: true,
             error: DefaultValue.Popups,

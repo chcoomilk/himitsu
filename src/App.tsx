@@ -35,7 +35,7 @@ const queryClient = new QueryClient({
             "Content-Type": "application/json"
           },
         });
-
+        
         return await response.json();
       },
       keepPreviousData: true,
@@ -45,6 +45,9 @@ const queryClient = new QueryClient({
       },
       retryDelay: 6000,
       cacheTime: Infinity,
+      staleTime: Infinity,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
     },
   }
 });

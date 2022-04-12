@@ -6,7 +6,7 @@ const useTitle = (initialTitle: string) => {
 
   useEffect(() => {
     const defaultTitle = "himitsu";
-    if (title) {
+    if (title.trim().replace(" ", () => { return ""; })) {
       document.title = `${title} | ${defaultTitle} `;
     } else {
       document.title = `${generate_face()} | ${defaultTitle} `;

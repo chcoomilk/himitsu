@@ -25,7 +25,7 @@ export interface NoteType {
   passphrase: string | null,
 }
 
-export interface BasicInfo {
+export interface NoteInfo {
   "frontend_encryption": boolean,
   "backend_encryption": boolean,
   "expired_at": {

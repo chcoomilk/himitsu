@@ -1,4 +1,4 @@
-import { EncryptionMethod, NoteType, Popup } from "./types";
+import { EncryptionMethod, NoteInfo, NoteType, Popup } from "./types";
 
 if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL was set in .env");
 if (typeof process.env.REACT_APP_URL === "undefined") console.error("No React app URL was set in .env");
@@ -27,9 +27,21 @@ const Note: NoteType = {
     passphrase: "",
 }
 
+const DefNoteInfo: NoteInfo = {
+    id: 0,
+    title: "",
+    backend_encryption: false,
+    expired_at: {
+        nanos_since_epoch: 0,
+        secs_since_epoch: 0,
+    },
+    frontend_encryption: false,
+}
+
 export const DefaultValue = {
     Popups,
     Note,
+    NoteInfo: DefNoteInfo,
     Pages: {
         NewNote: {
             NAME: "NewNote",
@@ -44,7 +56,8 @@ export const PATHS = {
     new_note: "/new",
     find_note: "/find",
     note_detail: "/n",
-    settings: "/settings"
+    settings: "/settings",
+    not_found: "/404",
 }
 
 export const TIME_CONFIG: Intl.DateTimeFormatOptions | undefined = {
