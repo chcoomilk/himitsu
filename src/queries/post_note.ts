@@ -1,10 +1,10 @@
 import { Result } from ".";
 import { BASE_URL, DefaultValue } from "../utils/constants";
-import { EncryptionMethod, Popup, BasicInfo } from "../utils/types";
+import { EncryptionMethod, Popup, NoteInfo as ResponseData } from "../utils/types";
 import CryptoJS from "crypto-js";
 import { into_readable_datetime } from "../utils/functions";
 
-interface NoteInfo {
+interface CurrentNoteInfoReturnType {
     id: number,
     expiryTime: string,
 }
@@ -25,9 +25,13 @@ interface Request {
     lifetime_in_secs: number | null,
 }
 
-type ResponseData = BasicInfo;
-
-export async function post_note({ title, passphrase, encryption, content, lifetime_in_secs }: Note): Promise<Result<NoteInfo>> {
+export async function post_note({
+    title,
+    passphrase,
+    encryption,
+    content,
+    lifetime_in_secs }: Note
+): Promise<Result<CurrentNoteInfoReturnType>> {
     let error: Popup = DefaultValue.Popups;
     let url = BASE_URL + "/notes/new/";
     let request: Request;
