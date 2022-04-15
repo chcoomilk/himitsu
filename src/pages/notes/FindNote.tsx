@@ -15,7 +15,7 @@ const schema = yup.object().shape({
 
 const FindNote = () => {
   const navigate = useNavigate();
-  const { setPassphrase, setPopups } = useContext(StoreContext);
+  const { setPassphrase, setAlerts } = useContext(StoreContext);
   useTitle("Find");
 
   const formik = useFormik({
@@ -31,8 +31,8 @@ const FindNote = () => {
   });
 
   useEffect(() => {
-    setPopups(DefaultValue.Popups);
-  }, [setPopups]);
+    setAlerts(DefaultValue.Alerts);
+  }, [setAlerts]);
 
   return (
     <Row>

@@ -7,12 +7,10 @@ import cryptojs from "crypto-js";
 
 import PassphraseModal from "../../components/passphrase/PassphraseModal";
 import useTitle from "../../custom-hooks/useTitle";
-import { get_note } from "../../queries/get_note";
 import { DefaultValue, PATHS } from "../../utils/constants";
 import { StoreContext } from "../../utils/contexts";
 import { NoteInfo, EncryptionMethod, NoteType } from "../../utils/types";
-import { get_note_info } from "../../queries/get_note_info";
-import { delete_note, Result } from "../../queries";
+import { get_note, get_note_info, delete_note, Result } from "../../queries";
 import { generate_face, into_readable_datetime } from "../../utils/functions";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
@@ -26,7 +24,7 @@ const NotePage = () => {
   let navigate = useNavigate();
   const [checkedId, setCheckedId] = useState<number | null>(null);
 
-  const { passphrase: passphrase_context, setPopups } = useContext(StoreContext);
+  const { passphrase: passphrase_context, setAlerts } = useContext(StoreContext);
 
   const [note, setNote] = useState<NoteType | null>(null);
   const [modalDecrypt, setModalDecrypt] = useState<Modal>({
@@ -47,14 +45,14 @@ const NotePage = () => {
   const { mutate: del_note, isLoading: is_deleting, isSuccess: is_deleted } = useMutation(delete_note, {
     onSuccess: ({ is_ok, data, error }) => {
       if (is_ok) {
-        setPopups(prev => {
+        setAlerts(prev => {
           return {
             ...prev,
             noteDeletion: data.id
           };
         });
       } else {
-        setPopups(error);
+        setAlerts(error);
       }
     }
   });
@@ -91,7 +89,7 @@ const NotePage = () => {
         setTitle(data.title.trim().replace(" ", () => { return ""; }) ? data.title : "Note");
       } else {
         setTitle(generate_face());
-        setPopups(result.error);
+        setAlerts(result.error);
 
         if (result.error.wrongPassphrase) {
           setModalMutate(prev => {
@@ -105,7 +103,7 @@ const NotePage = () => {
     },
     onError: () => {
       setTitle(generate_face());
-      setPopups(value => {
+      setAlerts(value => {
         return {
           ...value,
           serverError: true
@@ -125,119 +123,65 @@ const NotePage = () => {
   );
 
   useEffect(() => {
-    if (note_info && note_info.is_ok) {
-      let encryption: EncryptionMethod;
-      if (note_info.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
-      else if (note_info.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
-      else encryption = EncryptionMethod.NoEncryption;
+    setAlerts((prev) => {
+      return {
+        ...prev,
+        serverError: true,
+      };
+    });
+    setTitle(generate_face());
+  }, [info_error]);
 
-      setNote({
-        ...DefaultValue.Note,
-        encryption,
-        title: note_info.data.title,
-        content: generate_face(),
-      });
+  useEffect(() => {
+    if (note_info) {
+      if (note_info.is_ok) {
+        let encryption: EncryptionMethod;
+        if (note_info.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
+        else if (note_info.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
+        else encryption = EncryptionMethod.NoEncryption;
 
-      if (note_info.data.backend_encryption) {
-        if (passphrase_context !== null) {
-          mutate_get_note({ id: note_info.data.id, passphrase: passphrase_context });
+        setNote({
+          ...DefaultValue.Note,
+          encryption,
+          title: note_info.data.title,
+          content: generate_face(),
+        });
+
+        if (note_info.data.backend_encryption) {
+          if (passphrase_context !== null) {
+            mutate_get_note({ id: note_info.data.id, passphrase: passphrase_context });
+          } else {
+            setTitle("🔒 Locked " + generate_face());
+
+            setModalMutate(prev => {
+              return {
+                ...prev,
+                showModal: true
+              };
+            });
+          }
         } else {
-          setTitle("🔒 Locked " + generate_face());
+          if (!note_info.data.frontend_encryption && passphrase_context !== null) {
+            setAlerts(prev => {
+              return {
+                ...prev,
+                passphraseNotRequired: true
+              };
+            });
+          }
 
-          setModalMutate(prev => {
-            return {
-              ...prev,
-              showModal: true
-            };
-          });
+          mutate_get_note({ id: note_info.data.id, passphrase: null });
         }
       } else {
-        if (!note_info.data.frontend_encryption && passphrase_context !== null) {
-          setPopups(prev => {
-            return {
-              ...prev,
-              passphraseNotRequired: true
-            };
-          });
-        }
-
-        mutate_get_note({ id: note_info.data.id, passphrase: null });
+        setAlerts(note_info.error);
       }
-    } else {
-      if (info_error) {
-        setPopups((prev) => {
-          return note_info?.error || {
-            ...prev,
-            serverError: true,
-          };
-        });
-      }
-      setTitle(generate_face());
     }
-  }, [note_info, is_info_called, info_error, mutate_get_note, passphrase_context, setPopups, setTitle]);
-
-  // const { mutate: mutate_get_info, isLoading: is_info_loading } = useMutation(get_note_info, {
-  //   onSuccess: result => {
-  //     if (result.is_ok) {
-  //       let encryption: EncryptionMethod;
-  //       if (result.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
-  //       else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
-  //       else encryption = EncryptionMethod.NoEncryption;
-
-  //       setNote({
-  //         ...DefaultValue.Note,
-  //         encryption,
-  //         title: result.data.title,
-  //         content: generate_face(),
-  //       });
-
-  //       if (result.data.backend_encryption) {
-  //         if (passphrase_context !== null) {
-  //           mutate_get_note({ id: result.data.id, passphrase: passphrase_context });
-  //         } else {
-  //           console.log("ok, throw me some numbers");
-  //           console.log("set title to \"ok, give me your password!\"");
-  //           setTitle("ok, give me your password!");
-  //           console.log("my password?\nOUT WITH IT\noralcumshot\nyeah that fits");
-
-  //           setModalMutate(prev => {
-  //             return {
-  //               ...prev,
-  //               showModal: true
-  //             };
-  //           });
-  //         }
-  //       } else {
-  //         if (!result.data.frontend_encryption && passphrase_context !== null) {
-  //           setPopups(prev => {
-  //             return {
-  //               ...prev,
-  //               passphraseNotRequired: true
-  //             };
-  //           });
-  //         }
-
-  //         mutate_get_note({ id: result.data.id, passphrase: null });
-  //       }
-  //     } else {
-  //       setPopups(result.error)
-  //     }
-  //   },
-  //   onError: () => {
-  //     setTitle(generate_face());
-  //     setPopups(value => {
-  //       return {
-  //         ...value,
-  //         serverError: true
-  //       };
-  //     })
-  //   },
-  // });
+  }, [note_info, is_info_called, info_error, mutate_get_note, passphrase_context, setAlerts, setTitle]);
 
   const try_decrypt = useCallback((note: NoteType, passphrase: string): void => {
     let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
     if (content) {
-      setPopups(prev => {
+      setAlerts(prev => {
         return {
           ...prev,
           wrongPassphrase: false,
@@ -254,7 +198,7 @@ const NotePage = () => {
         content
       });
     } else {
-      setPopups(prev => {
+      setAlerts(prev => {
         return {
           ...prev,
           wrongPassphrase: true,
@@ -265,12 +209,12 @@ const NotePage = () => {
         showModal: true,
       });
     }
-  }, [setPopups]);
+  }, [setAlerts]);
 
   // check _id whence useParameter is availabe
   useEffect(() => {
     if (typeof _id === "undefined" || isNaN(+_id)) {
-      setPopups(prev => {
+      setAlerts(prev => {
         return {
           ...prev,
           invalidId: true
@@ -279,9 +223,8 @@ const NotePage = () => {
       navigate(PATHS.find_note);
     } else {
       setCheckedId(+_id);
-      // mutate_get_info({ id: +_id });
     }
-  }, [_id, navigate, setPopups/*, mutate_get_info*/]);
+  }, [_id, navigate, setAlerts]);
 
   // try to decrypt note on backend
   useEffect(() => {
@@ -323,7 +266,7 @@ const NotePage = () => {
           showModal: false,
           passphrase: null,
         });
-        setPopups(prev => {
+        setAlerts(prev => {
           return {
             ...prev,
             wrongPassphrase: true,
@@ -331,7 +274,7 @@ const NotePage = () => {
         });
       }
     }
-  }, [modalDelete.passphrase, note, del_note, checkedId, setPopups]);
+  }, [modalDelete.passphrase, note, del_note, checkedId, setAlerts]);
 
   const handleRetry = () => {
     if (note?.encryption === EncryptionMethod.BackendEncryption) {

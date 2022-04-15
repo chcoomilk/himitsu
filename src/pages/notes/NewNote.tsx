@@ -8,9 +8,9 @@ import * as changeCase from "change-case";
 import NewNoteModal from "../../components/note/NewNoteModal";
 import { StoreContext } from "../../utils/contexts";
 import { EncryptionMethod } from "../../utils/types";
-import { post_note } from "../../queries/post_note";
 import useTitle from "../../custom-hooks/useTitle";
 import { DefaultValue } from "../../utils/constants";
+import { post_note } from "../../queries";
 
 const BasicNoteSchema = {
   title: yup.string(),
@@ -37,7 +37,7 @@ const BasicNoteSchema = {
 };
 
 const NewNote = () => {
-  const { setPopups: setAlerts } = useContext(StoreContext);
+  const { setAlerts } = useContext(StoreContext);
   const [noteResult, setNoteResult] = useState({
     id: 0,
     expiryTime: "uwu",

@@ -11,7 +11,8 @@ export interface UserActionInfo {
   noteDeletion: number | null,
 }
 
-export interface Popup extends ErrorKind, UserActionInfo {};
+// alert can be either error or just notification from response
+export type Alert = ErrorKind & UserActionInfo;
 
 export interface NoteType {
   id: number,

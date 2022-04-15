@@ -4,7 +4,7 @@ import { Spinner, Container } from "react-bootstrap";
 import { StoreContext } from "./utils/contexts";
 import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
-import { AppTheme, Popup } from "./utils/types";
+import { AppTheme, Alert, ErrorKind, UserActionInfo } from "./utils/types";
 
 import "bootstrap/scss/bootstrap.scss";
 import "./stylings/index.scss";
@@ -16,7 +16,7 @@ import NewNote from "./pages/notes/NewNote";
 import FindNote from "./pages/notes/FindNote";
 import NewNoteModal from "./components/note/NewNoteModal";
 import NotFound from "./pages/404";
-const Popups = lazy(() => import("./components/Popups"))
+const Alerts = lazy(() => import("./components/Alerts"))
 const About = lazy(() => import("./pages/About"));
 const Navigation = lazy(() => import("./components/Navigation"))
 const Note = lazy(() => import("./pages/notes/Note"));
@@ -54,10 +54,18 @@ const queryClient = new QueryClient({
 
 function App() {
   const [passphrase, setPassphrase] = useState<string | null>(null);
-  const [popups, setPopups] = useState<Popup>({
-    ...DefaultValue.Popups,
-  });
+  const [alertsContext, setAlertsContext] = useState<ErrorKind | UserActionInfo>(DefaultValue.Alerts);
+  const [propAlerts, setPropAlerts] = useState<Alert>(DefaultValue.Alerts);
   const [theme, setTheme] = useState<AppTheme>(AppTheme.Normal);
+
+  useEffect(() => {
+    setPropAlerts(prev => {
+      return {
+        ...prev,
+        ...alertsContext,
+      };
+    });
+  }, [alertsContext]);
 
   useEffect(() => {
     const savedTheme = window.localStorage.getItem("theme");
@@ -89,8 +97,8 @@ function App() {
       <StoreContext.Provider
         value={{
           setPassphrase,
-          popups,
-          setPopups,
+          alerts: propAlerts,
+          setAlerts: setAlertsContext,
           passphrase
         }}
       >
@@ -111,7 +119,7 @@ function App() {
             </Spinner>
           }>
             <Navigation theme={theme} />
-            <Popups popups={popups} setPopups={setPopups} />
+            <Alerts alerts={propAlerts} setAlerts={setPropAlerts} />
             <Container className="himitsu">
               {
                 window.localStorage.getItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME)
