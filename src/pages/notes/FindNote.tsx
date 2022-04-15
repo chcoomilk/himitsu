@@ -1,11 +1,11 @@
 import { useFormik } from "formik";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { Button, Col, Form, OverlayTrigger, Row, Stack, Tooltip } from "react-bootstrap"
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import PassphraseInputGroup from "../../components/passphrase/PassphraseInputGroup";
-import useTitle from "../../custom-hooks/useTitle";
-import { DefaultValue, PATHS } from "../../utils/constants";
+import { useTitle } from "../../custom-hooks";
+import { PATHS } from "../../utils/constants";
 import { StoreContext } from "../../utils/contexts";
 
 const schema = yup.object().shape({
@@ -15,7 +15,7 @@ const schema = yup.object().shape({
 
 const FindNote = () => {
   const navigate = useNavigate();
-  const { setPassphrase, setAlerts } = useContext(StoreContext);
+  const { setPassphrase } = useContext(StoreContext);
   useTitle("Find");
 
   const formik = useFormik({
@@ -29,10 +29,6 @@ const FindNote = () => {
       navigate(PATHS.note_detail + "/" + val.ID);
     }
   });
-
-  useEffect(() => {
-    setAlerts(DefaultValue.Alerts);
-  }, [setAlerts]);
 
   return (
     <Row>

@@ -6,13 +6,13 @@ import { useNavigate } from "react-router-dom";
 import cryptojs from "crypto-js";
 
 import PassphraseModal from "../../components/passphrase/PassphraseModal";
-import useTitle from "../../custom-hooks/useTitle";
 import { DefaultValue, PATHS } from "../../utils/constants";
 import { StoreContext } from "../../utils/contexts";
 import { NoteInfo, EncryptionMethod, NoteType } from "../../utils/types";
 import { get_note, get_note_info, delete_note, Result } from "../../queries";
 import { generate_face, into_readable_datetime } from "../../utils/functions";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { useTitle } from "../../custom-hooks";
 
 interface Modal {
   showModal: boolean,
@@ -123,14 +123,16 @@ const NotePage = () => {
   );
 
   useEffect(() => {
-    setAlerts((prev) => {
-      return {
-        ...prev,
-        serverError: true,
-      };
-    });
-    setTitle(generate_face());
-  }, [info_error]);
+    if (info_error) {
+      setAlerts((prev) => {
+        return {
+          ...prev,
+          serverError: true,
+        };
+      });
+      setTitle(generate_face());
+    }
+  }, [info_error, setAlerts, setTitle]);
 
   useEffect(() => {
     if (note_info) {

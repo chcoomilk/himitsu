@@ -8,9 +8,9 @@ import * as changeCase from "change-case";
 import NewNoteModal from "../../components/note/NewNoteModal";
 import { StoreContext } from "../../utils/contexts";
 import { EncryptionMethod } from "../../utils/types";
-import useTitle from "../../custom-hooks/useTitle";
 import { DefaultValue } from "../../utils/constants";
 import { post_note } from "../../queries";
+import { useTitle } from "../../custom-hooks";
 
 const BasicNoteSchema = {
   title: yup.string(),
