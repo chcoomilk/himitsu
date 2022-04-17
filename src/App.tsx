@@ -16,9 +16,9 @@ import NewNote from "./pages/notes/NewNote";
 import FindNote from "./pages/notes/FindNote";
 import NewNoteModal from "./components/note/NewNoteModal";
 import NotFound from "./pages/404";
-const Alerts = lazy(() => import("./components/Alerts"))
+const Alerts = lazy(() => import("./components/Alerts"));
 const About = lazy(() => import("./pages/About"));
-const Navigation = lazy(() => import("./components/Navigation"))
+const Navigation = lazy(() => import("./components/Navigation"));
 const Note = lazy(() => import("./pages/notes/Note"));
 const Settings = lazy(() => import("./pages/Settings"));
 
@@ -90,7 +90,7 @@ function App() {
           break;
       }
     }
-  }, [theme]);
+  }, [setTheme]);
 
   return (
     <Router>

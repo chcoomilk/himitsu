@@ -22,10 +22,10 @@ const FindNote = () => {
     validationSchema: schema,
     initialValues: {
       ID: "",
-      passphrase: undefined
+      passphrase: null
     },
     onSubmit: async (val) => {
-      setPassphrase(val.passphrase || null);
+      setPassphrase(val.passphrase);
       navigate(PATHS.note_detail + "/" + val.ID);
     }
   });
