@@ -15,11 +15,11 @@ import Home from "./pages/Home";
 import NewNote from "./pages/notes/NewNote";
 import FindNote from "./pages/notes/FindNote";
 import NewNoteModal from "./components/note/NewNoteModal";
-import NotFound from "./pages/404";
+import Note from "./pages/notes/Note";
+import Navigation from "./components/Navigation";
+const NotFound = lazy(() => import("./pages/404"));
 const Alerts = lazy(() => import("./components/Alerts"));
 const About = lazy(() => import("./pages/About"));
-const Navigation = lazy(() => import("./components/Navigation"));
-const Note = lazy(() => import("./pages/notes/Note"));
 const Settings = lazy(() => import("./pages/Settings"));
 
 const queryClient = new QueryClient({
@@ -35,7 +35,7 @@ const queryClient = new QueryClient({
             "Content-Type": "application/json"
           },
         });
-        
+
         return await response.json();
       },
       keepPreviousData: true,
@@ -58,6 +58,23 @@ function App() {
   const [propAlerts, setPropAlerts] = useState<Alert>(DefaultValue.Alerts);
   const [theme, setTheme] = useState<AppTheme>(AppTheme.Normal);
 
+  const parseTheme = (str: String): AppTheme => {
+    switch (str) {
+      case AppTheme.Normal:
+        return AppTheme.Normal;
+      case AppTheme.Black:
+        return AppTheme.Black;
+      case AppTheme.Light:
+        return AppTheme.Light;
+      default:
+        return AppTheme.Normal;
+    }
+  };
+
+  useEffect(() => {
+    window.document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   useEffect(() => {
     setPropAlerts(prev => {
       return {
@@ -68,27 +85,11 @@ function App() {
   }, [alertsContext]);
 
   useEffect(() => {
-    const savedTheme = window.localStorage.getItem("theme");
-    if (savedTheme) {
-      switch (savedTheme) {
-        case AppTheme.Normal:
-          setTheme(AppTheme.Normal);
-          window.document.documentElement.removeAttribute("data-theme");
-          break;
-
-        case AppTheme.Black:
-          setTheme(AppTheme.Black);
-          window.document.documentElement.setAttribute("data-theme", "black");
-          break;
-
-        case AppTheme.Light:
-          setTheme(AppTheme.Light);
-          window.document.documentElement.setAttribute("data-theme", "light");
-          break;
-
-        default:
-          break;
-      }
+    const savedThemeStr = window.localStorage.getItem("theme");
+    if (savedThemeStr) {
+      const savedTheme = parseTheme(savedThemeStr);
+      window.document.documentElement.setAttribute("data-theme", savedTheme);
+      setTheme(savedTheme);
     }
   }, [setTheme]);
 
@@ -103,6 +104,7 @@ function App() {
         }}
       >
         <QueryClientProvider client={queryClient}>
+          <Navigation theme={theme} />
           <Suspense fallback={
             <Spinner animation="border" role="status"
               style={{
@@ -118,7 +120,6 @@ function App() {
               <span className="visually-hidden">Loading...</span>
             </Spinner>
           }>
-            <Navigation theme={theme} />
             <Alerts alerts={propAlerts} setAlerts={setPropAlerts} />
             <Container className="himitsu">
               {
