@@ -1,26 +1,21 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { BrowserRouter as Router, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { Spinner, Container } from "react-bootstrap";
 import { StoreContext } from "./utils/contexts";
-import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
+import { BASE_URL, DefaultValue } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 import { AppTheme, Alert, ErrorKind, UserActionInfo } from "./utils/types";
+import { applyTheme, parseTheme } from "./theme";
 
 import "bootstrap/scss/bootstrap.scss";
 import "./stylings/index.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-loading-skeleton/dist/skeleton.css";
 
-import Home from "./pages/Home";
-import NewNote from "./pages/notes/NewNote";
-import FindNote from "./pages/notes/FindNote";
-import NewNoteModal from "./components/note/NewNoteModal";
-import Note from "./pages/notes/Note";
 import Navigation from "./components/Navigation";
-const NotFound = lazy(() => import("./pages/404"));
+import AppRoutes from "./RoutesConfig";
 const Alerts = lazy(() => import("./components/Alerts"));
-const About = lazy(() => import("./pages/About"));
-const Settings = lazy(() => import("./pages/Settings"));
+const NewNoteModal = lazy(() => import("./components/note/NewNoteModal"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -57,23 +52,23 @@ function App() {
   const [alertsContext, setAlertsContext] = useState<ErrorKind | UserActionInfo>(DefaultValue.Alerts);
   const [propAlerts, setPropAlerts] = useState<Alert>(DefaultValue.Alerts);
   const [theme, setTheme] = useState<AppTheme>(AppTheme.Normal);
-
-  const parseTheme = (str: String): AppTheme => {
-    switch (str) {
-      case AppTheme.Normal:
-        return AppTheme.Normal;
-      case AppTheme.Black:
-        return AppTheme.Black;
-      case AppTheme.Light:
-        return AppTheme.Light;
-      default:
-        return AppTheme.Normal;
-    }
-  };
+  const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
 
   useEffect(() => {
-    window.document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
+    if (theme === AppTheme.System) {
+      applyTheme(mqIsDark.matches ? AppTheme.Normal : AppTheme.Light);
+      mqIsDark.addEventListener("change", ({ matches, media }) => {
+        matches ? applyTheme(AppTheme.Normal) : applyTheme(AppTheme.Light);
+      });
+    } else {
+      mqIsDark.removeEventListener("change", () => { });
+      applyTheme(theme);
+    }
+
+    return () => {
+      mqIsDark.removeEventListener("change", () => { });
+    };
+  }, [theme, mqIsDark]);
 
   useEffect(() => {
     setPropAlerts(prev => {
@@ -88,7 +83,7 @@ function App() {
     const savedThemeStr = window.localStorage.getItem("theme");
     if (savedThemeStr) {
       const savedTheme = parseTheme(savedThemeStr);
-      window.document.documentElement.setAttribute("data-theme", savedTheme);
+      applyTheme(savedTheme);
       setTheme(savedTheme);
     }
   }, [setTheme]);
@@ -126,27 +121,18 @@ function App() {
                 window.localStorage.getItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME)
                   ? <NewNoteModal
                     data={JSON.parse(
-                      window.localStorage.getItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME) || "There has to be something!"
+                      window.localStorage.getItem(
+                        DefaultValue.Pages.NewNote.RESULT_STATE_NAME
+                      ) || "There's got to be something here!"
                     )} />
                   : null
               }
-              <Routes>
-                <Route path={PATHS.home} element={<Home />} />
-                <Route path={"/404"} element={<NotFound />} />
-                <Route path={PATHS.about} element={<About />} />
-                <Route path={PATHS.new_note} element={<NewNote />} />
-                <Route path={PATHS.find_note} element={<FindNote />} />
-                <Route path={PATHS.note_detail + "/:_id"} element={<Note />} />
-                <Route path={PATHS.settings} element={<Settings theme={theme} setTheme={setTheme} />} />
-                <Route path="*" element={
-                  <Navigate to="/404" />
-                } />
-              </Routes>
+              <AppRoutes theme={theme} setTheme={setTheme} />
             </Container>
           </Suspense>
         </QueryClientProvider>
       </StoreContext.Provider >
-    </Router >
+    </Router>
   );
 }
 

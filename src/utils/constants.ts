@@ -65,6 +65,7 @@ export const PATHS = {
     about: "/about",
     new_note: "/new",
     find_note: "/find",
+    notes: "/notes",
     note_detail: "/n",
     settings: "/settings",
     not_found: "/404",
