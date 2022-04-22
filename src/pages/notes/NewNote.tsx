@@ -166,6 +166,7 @@ const NewNote = () => {
                 onBlur={formik.handleBlur}
                 isInvalid={formik.touched.title && !!formik.errors.title}
                 autoComplete="off"
+                disabled
               />
               <Form.Control.Feedback type="invalid" tooltip>{formik.errors.title}</Form.Control.Feedback>
             </Form.Group>

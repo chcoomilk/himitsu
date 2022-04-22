@@ -5,7 +5,7 @@ import { StoreContext } from "./utils/contexts";
 import { BASE_URL, DefaultValue } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 import { AppTheme, Alert, ErrorKind, UserActionInfo } from "./utils/types";
-import { applyTheme, parseTheme } from "./theme";
+import { applyTheme, parseToTheme } from "./theme";
 
 import "bootstrap/scss/bootstrap.scss";
 import "./stylings/index.scss";
@@ -55,6 +55,12 @@ function App() {
   const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
 
   useEffect(() => {
+    const savedThemeStr = window.localStorage.getItem("theme");
+    const savedTheme = parseToTheme(savedThemeStr);
+    setTheme(savedTheme);
+  }, [setTheme]);
+
+  useEffect(() => {
     if (theme === AppTheme.System) {
       applyTheme(mqIsDark.matches ? AppTheme.Normal : AppTheme.Light);
       mqIsDark.addEventListener("change", ({ matches, media }) => {
@@ -79,15 +85,6 @@ function App() {
     });
   }, [alertsContext]);
 
-  useEffect(() => {
-    const savedThemeStr = window.localStorage.getItem("theme");
-    if (savedThemeStr) {
-      const savedTheme = parseTheme(savedThemeStr);
-      applyTheme(savedTheme);
-      setTheme(savedTheme);
-    }
-  }, [setTheme]);
-
   return (
     <Router>
       <StoreContext.Provider
@@ -99,7 +96,7 @@ function App() {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Navigation theme={theme} />
+          <Navigation theme={theme === AppTheme.System ? (mqIsDark.matches ? theme : AppTheme.Light) : theme} />
           <Suspense fallback={
             <Spinner animation="border" role="status"
               style={{

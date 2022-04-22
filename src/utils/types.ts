@@ -45,7 +45,7 @@ export enum EncryptionMethod {
 
 export enum AppTheme {
   System = "system default",
-  Normal = "normal",
+  Normal = "original",
   Black = "black",
   Light = "light",
 }
