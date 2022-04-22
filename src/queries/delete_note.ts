@@ -13,7 +13,7 @@ interface ResponseData {
 
 export default async function delete_note({ id, passphrase }: Params): Promise<Result<ResponseData>> {
     const url = BASE_URL + "/notes/" + id;
-    let error: ErrorKind = DefaultValue.NoError;
+    let error: ErrorKind = DefaultValue.errors;
     let data: ResponseData = { id: 0 };
 
     const response = await fetch(url, {

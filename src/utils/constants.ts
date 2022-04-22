@@ -1,11 +1,11 @@
-import { EncryptionMethod, NoteInfo, NoteType, Alert, ErrorKind } from "./types";
+import { EncryptionMethod, Note, Alert, ErrorKind, AppSetting, AppTheme } from "./types";
 
 if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL was set in .env");
 if (typeof process.env.REACT_APP_URL === "undefined") console.error("No React app URL was set in .env");
 
 export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
 
-const Alerts: Alert = {
+const alerts: Alert = {
     notFound: false,
     serverError: false,
     wrongPassphrase: false,
@@ -15,49 +15,45 @@ const Alerts: Alert = {
     noteDeletion: null,
 };
 
-const NoError: ErrorKind = {
+const errors: ErrorKind = {
     notFound: false,
     serverError: false,
     wrongPassphrase: false,
     invalidId: false,
     passphraseNotRequired: false,
     tooManyRequests: false,
-}
+};
 
-const Note: NoteType = {
+const note: Note = {
     id: 0,
     title: "",
     content: "",
-    already_decrypted: false,
+    decrypted: false,
     encryption: EncryptionMethod.NoEncryption,
     creationTime: "",
     expiryTime: "",
     lastUpdateTime: "",
     passphrase: "",
-}
+};
 
-const DefNoteInfo: NoteInfo = {
-    id: 0,
-    title: "",
-    backend_encryption: false,
-    expired_at: {
-        nanos_since_epoch: 0,
-        secs_since_epoch: 0,
-    },
-    frontend_encryption: false,
-}
+const settings: AppSetting = {
+    preferences: {
+        app_theme: AppTheme.System,
+        encryption: EncryptionMethod.BackendEncryption,
+    }
+};
 
 export const DefaultValue = {
-    Alerts,
-    NoError,
-    Note,
-    NoteInfo: DefNoteInfo,
-    Pages: {
+    alerts,
+    errors,
+    note,
+    pages: {
         NewNote: {
-            NAME: "NewNote",
-            RESULT_STATE_NAME: "NewNoteNoteResult",
+            name: "NewNote",
+            local_storage_name: "NewNoteNoteResult",
         }
-    }
+    },
+    settings,
 };
 
 export const PATHS = {

@@ -45,7 +45,7 @@ const NewNote = () => {
     fetched: false,
   });
   const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.BackendEncryption);
-  useTitle(changeCase.capitalCase(DefaultValue.Pages.NewNote.NAME));
+  useTitle(changeCase.capitalCase(DefaultValue.pages.NewNote.name));
   const { mutateAsync } = useMutation(post_note);
 
   const formik = useFormik({
@@ -117,7 +117,7 @@ const NewNote = () => {
               fetched: true,
             };
             setNoteResult(res);
-            window.localStorage.setItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME, JSON.stringify(res));
+            window.localStorage.setItem(DefaultValue.pages.NewNote.local_storage_name, JSON.stringify(res));
             resetForm();
           } else {
             setAlerts(result.error);

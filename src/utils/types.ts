@@ -11,14 +11,14 @@ export interface UserActionInfo {
   noteDeletion: number | null,
 }
 
-// alert can be either error or just notification from response
-export type Alert = ErrorKind & UserActionInfo;
+// alert can either be error or notification from response
+export type Alert = ErrorKind & UserActionInfo
 
-export interface NoteType {
+export interface Note {
   id: number,
   title: string,
   content: string,
-  already_decrypted: boolean,
+  decrypted: boolean,
   encryption: EncryptionMethod,
   expiryTime: string,
   creationTime: string,
@@ -48,4 +48,11 @@ export enum AppTheme {
   Normal = "original",
   Black = "black",
   Light = "light",
+}
+
+export type AppSetting = {
+  preferences: {
+    app_theme: AppTheme,
+    encryption: EncryptionMethod,
+  }
 }

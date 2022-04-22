@@ -29,7 +29,7 @@ interface ResponseData {
 
 const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<ResponseData>> => {
 	const url = BASE_URL + "/notes/" + id;
-	let error: ErrorKind = DefaultValue.NoError;
+	let error: ErrorKind = DefaultValue.errors;
 	let data: ResponseData = {
 		id: 0,
 		title: "",

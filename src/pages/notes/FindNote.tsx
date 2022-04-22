@@ -29,7 +29,7 @@ const FindNote = () => {
     },
     onSubmit: async (val) => {
       setPassphrase(val.passphrase);
-      navigate(PATHS.note_detail + "/" + val.ID);
+      navigate(PATHS.note_detail + "/" + val.ID, { state: { passphrase: val.passphrase } });
     },
   });
 

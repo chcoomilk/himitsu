@@ -13,11 +13,20 @@ type ResponseData = NoteInfo;
 const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
     // returns early because page first has to initialize with id that hasn't been checked
     if (id === null) return {
-        error: DefaultValue.NoError,
+        error: DefaultValue.errors,
         is_ok: false,
-        data: DefaultValue.NoteInfo,
+        data: {
+            id: 0,
+            title: "",
+            backend_encryption: false,
+            expired_at: {
+                nanos_since_epoch: 0,
+                secs_since_epoch: 0,
+            },
+            frontend_encryption: false,
+        },
     };
-    
+
     let url = BASE_URL + "/notes/" + id;
     let data: ResponseData = {
         id: 0,
@@ -38,7 +47,7 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
         let data = await response.json();
         return {
             is_ok: true,
-            error: DefaultValue.NoError,
+            error: DefaultValue.errors,
             data,
         }
     } else {
@@ -46,7 +55,7 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
             return {
                 is_ok: false,
                 error: {
-                    ...DefaultValue.NoError,
+                    ...DefaultValue.errors,
                     notFound: true
                 },
                 data,
@@ -55,7 +64,7 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
             return {
                 is_ok: false,
                 error: {
-                    ...DefaultValue.NoError,
+                    ...DefaultValue.errors,
                     serverError: true
                 },
                 data,

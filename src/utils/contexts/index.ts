@@ -14,7 +14,7 @@ export const StoreContext = React.createContext<Store>({
   setPassphrase: () => { },
   setAlerts: () => { },
   alerts: {
-    ...DefaultValue.Alerts
+    ...DefaultValue.alerts
   },
   passphrase: null,
 });

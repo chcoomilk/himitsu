@@ -48,18 +48,14 @@ $text-color-normal: var(--himitsu-color);
 $text-color-darken: var(--himitsu-color-darken);
 //
 
-.form-control,
-.form-control[readonly],
-.form-control:focus {
-  background-color: $bg-color;
-  border: 1px solid $input-border-color;
-  color: $text-color-normal;
-}
-
 // items
 html {
   background-color: $body-bg-color;
   color: $text-color-normal;
+}
+
+.navbar {
+  background-color: $body-bg-color;
 }
 
 a {
@@ -68,6 +64,14 @@ a {
 
 a:hover {
   color: $text-color-darken;
+}
+
+.form-control,
+.form-control[readonly],
+.form-control:focus {
+  background-color: $bg-color;
+  border: 1px solid $input-border-color;
+  color: $text-color-normal;
 }
 
 .modal .modal-content,
@@ -113,10 +117,6 @@ a:hover {
 .btn-outline-light {
   background-color: $input-bg-color;
   border: 1px solid $input-border-color;
-}
-
-.navbar {
-  background-color: $body-bg-color;
 }
 
 input.form-range::-moz-range-track {

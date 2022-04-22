@@ -4,7 +4,7 @@ import { Spinner, Container } from "react-bootstrap";
 import { StoreContext } from "./utils/contexts";
 import { BASE_URL, DefaultValue } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
-import { AppTheme, Alert, ErrorKind, UserActionInfo } from "./utils/types";
+import { AppTheme, Alert, ErrorKind, UserActionInfo, AppSetting } from "./utils/types";
 import { applyTheme, parseToTheme } from "./theme";
 
 import "bootstrap/scss/bootstrap.scss";
@@ -49,19 +49,19 @@ const queryClient = new QueryClient({
 
 function App() {
   const [passphrase, setPassphrase] = useState<string | null>(null);
-  const [alertsContext, setAlertsContext] = useState<ErrorKind | UserActionInfo>(DefaultValue.Alerts);
-  const [propAlerts, setPropAlerts] = useState<Alert>(DefaultValue.Alerts);
-  const [theme, setTheme] = useState<AppTheme>(AppTheme.Normal);
+  const [alertsContext, setAlertsContext] = useState<ErrorKind | UserActionInfo>(DefaultValue.alerts);
+  const [propAlerts, setPropAlerts] = useState<Alert>(DefaultValue.alerts);
+  const [appSettings, setAppSettings] = useState<AppSetting>(DefaultValue.settings);
+  const [theme, setTheme] = useState<AppTheme.Normal | AppTheme.Light | AppTheme.Black>(AppTheme.Normal);
   const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
 
   useEffect(() => {
-    const savedThemeStr = window.localStorage.getItem("theme");
-    const savedTheme = parseToTheme(savedThemeStr);
+    const savedTheme = parseToTheme(window.localStorage.getItem("theme"));
     setTheme(savedTheme);
   }, [setTheme]);
 
   useEffect(() => {
-    if (theme === AppTheme.System) {
+    if (true) {
       applyTheme(mqIsDark.matches ? AppTheme.Normal : AppTheme.Light);
       mqIsDark.addEventListener("change", ({ matches, media }) => {
         matches ? applyTheme(AppTheme.Normal) : applyTheme(AppTheme.Light);
@@ -96,7 +96,7 @@ function App() {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Navigation theme={theme === AppTheme.System ? (mqIsDark.matches ? theme : AppTheme.Light) : theme} />
+          <Navigation theme={theme} />
           <Suspense fallback={
             <Spinner animation="border" role="status"
               style={{
@@ -115,11 +115,11 @@ function App() {
             <Alerts alerts={propAlerts} setAlerts={setPropAlerts} />
             <Container className="himitsu">
               {
-                window.localStorage.getItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME)
+                window.localStorage.getItem(DefaultValue.pages.NewNote.local_storage_name)
                   ? <NewNoteModal
                     data={JSON.parse(
                       window.localStorage.getItem(
-                        DefaultValue.Pages.NewNote.RESULT_STATE_NAME
+                        DefaultValue.pages.NewNote.local_storage_name
                       ) || "There's got to be something here!"
                     )} />
                   : null

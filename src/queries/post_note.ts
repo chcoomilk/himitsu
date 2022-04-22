@@ -32,7 +32,7 @@ export default async function post_note({
     content,
     lifetime_in_secs }: Note
 ): Promise<Result<CurrentNoteInfoReturnType>> {
-    let error: ErrorKind = DefaultValue.NoError;
+    let error: ErrorKind = DefaultValue.errors;
     let url = BASE_URL + "/notes/new/";
     let request: Request;
 

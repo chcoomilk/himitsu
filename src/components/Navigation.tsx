@@ -7,7 +7,7 @@ type Parameter = {
   theme: AppTheme
 }
 
-const Navigation = ({theme}: Parameter) => {
+const Navigation = ({ theme }: Parameter) => {
   return (
     <Navbar variant={theme === AppTheme.Light ? "light" : "dark"} sticky="top">
       <Container>

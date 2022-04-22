@@ -2,13 +2,13 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { useParams } from "react-router";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Location } from "react-router-dom";
 import cryptojs from "crypto-js";
 
 import PassphraseModal from "../../components/passphrase/PassphraseModal";
 import { DefaultValue, PATHS } from "../../utils/constants";
 import { StoreContext } from "../../utils/contexts";
-import { NoteInfo, EncryptionMethod, NoteType } from "../../utils/types";
+import { NoteInfo, EncryptionMethod, Note } from "../../utils/types";
 import { get_note, get_note_info, delete_note, Result } from "../../queries";
 import { generate_face, into_readable_datetime } from "../../utils/functions";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
@@ -19,14 +19,27 @@ interface Modal {
   passphrase: string | null,
 }
 
+interface State {
+  passphrase: string | null
+}
+
+interface ModifiedLocation extends Location {
+  state: State | unknown
+}
+
 const NotePage = () => {
   let { _id } = useParams();
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  const { state }: ModifiedLocation = useLocation();
+  const isPassphraseAvailable = (state: State | unknown): state is State => {
+    return (state as State).passphrase !== "undefined";
+  }
+
   const [checkedId, setCheckedId] = useState<number | null>(null);
 
-  const { passphrase: passphrase_context, setAlerts } = useContext(StoreContext);
+  const { setAlerts } = useContext(StoreContext);
 
-  const [note, setNote] = useState<NoteType | null>(null);
+  const [note, setNote] = useState<Note | null>(null);
   const [modalDecrypt, setModalDecrypt] = useState<Modal>({
     showModal: false,
     passphrase: null,
@@ -75,13 +88,14 @@ const NotePage = () => {
         else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
         else encryption = EncryptionMethod.NoEncryption;
 
+        let passphrase = isPassphraseAvailable(state) ? state.passphrase || modalMutate.passphrase : modalMutate.passphrase;
         setNote({
           id: data.id,
           title: data.title,
           content: data.content,
-          already_decrypted: !data.frontend_encryption,
+          decrypted: !data.frontend_encryption,
           encryption,
-          passphrase: passphrase_context || modalMutate.passphrase,
+          passphrase,
           lastUpdateTime: readableUpdateTime,
           expiryTime: readableExpiryTime,
           creationTime: readableCreationTime,
@@ -143,15 +157,15 @@ const NotePage = () => {
         else encryption = EncryptionMethod.NoEncryption;
 
         setNote({
-          ...DefaultValue.Note,
+          ...DefaultValue.note,
           encryption,
           title: note_info.data.title,
           content: generate_face(),
         });
 
         if (note_info.data.backend_encryption) {
-          if (passphrase_context !== null) {
-            mutate_get_note({ id: note_info.data.id, passphrase: passphrase_context });
+          if (isPassphraseAvailable(state) && state.passphrase !== null) {
+            mutate_get_note({ id: note_info.data.id, passphrase: state.passphrase });
           } else {
             setTitle("🔒 Locked " + generate_face());
 
@@ -163,7 +177,7 @@ const NotePage = () => {
             });
           }
         } else {
-          if (!note_info.data.frontend_encryption && passphrase_context !== null) {
+          if (!note_info.data.frontend_encryption && isPassphraseAvailable(state) && state.passphrase !== null) {
             setAlerts(prev => {
               return {
                 ...prev,
@@ -178,9 +192,9 @@ const NotePage = () => {
         setAlerts(note_info.error);
       }
     }
-  }, [note_info, is_info_called, info_error, mutate_get_note, passphrase_context, setAlerts, setTitle]);
+  }, [note_info, is_info_called, info_error, mutate_get_note, state, setAlerts, setTitle]);
 
-  const try_decrypt = useCallback((note: NoteType, passphrase: string): void => {
+  const try_decrypt = useCallback((note: Note, passphrase: string): void => {
     let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
     if (content) {
       setAlerts(prev => {
@@ -196,7 +210,7 @@ const NotePage = () => {
       setNote({
         ...note,
         passphrase,
-        already_decrypted: true,
+        decrypted: true,
         content
       });
     } else {
@@ -244,9 +258,9 @@ const NotePage = () => {
 
   // check if frontend decryption succeed or not
   useEffect(() => {
-    if (isSuccess && note && note.encryption === EncryptionMethod.FrontendEncryption && !note.already_decrypted) {
-      if (passphrase_context) {
-        try_decrypt(note, passphrase_context);
+    if (isSuccess && note && note.encryption === EncryptionMethod.FrontendEncryption && !note.decrypted) {
+      if (isPassphraseAvailable(state) && state.passphrase) {
+        try_decrypt(note, state.passphrase);
       } else {
         setModalDecrypt(prev => {
           return {
@@ -256,7 +270,7 @@ const NotePage = () => {
         });
       }
     }
-  }, [isSuccess, note, passphrase_context, try_decrypt, setModalDecrypt]);
+  }, [isSuccess, note, state, try_decrypt, setModalDecrypt]);
 
   // delete confirmation 
   useEffect(() => {
@@ -355,7 +369,7 @@ const NotePage = () => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.title : DefaultValue.Note.title}
+                      value={note ? note.title : DefaultValue.note.title}
                       readOnly
                     />
                 }
@@ -370,7 +384,7 @@ const NotePage = () => {
                       as="textarea"
                       type="text"
                       name="expires"
-                      value={note ? note.content : DefaultValue.Note.content}
+                      value={note ? note.content : DefaultValue.note.content}
                       readOnly
                     />
                 }
@@ -384,7 +398,7 @@ const NotePage = () => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.creationTime : DefaultValue.Note.creationTime}
+                      value={note ? note.creationTime : DefaultValue.note.creationTime}
                       readOnly
                     />
                 }
@@ -398,7 +412,7 @@ const NotePage = () => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.expiryTime : DefaultValue.Note.expiryTime}
+                      value={note ? note.expiryTime : DefaultValue.note.expiryTime}
                       readOnly
                     />
                 }
@@ -411,7 +425,7 @@ const NotePage = () => {
                 variant="danger"
                 disabled={
                   (isLoading) ||
-                  (note === null ? true : !note.already_decrypted) ||
+                  (note === null ? true : !note.decrypted) ||
                   (is_deleting || is_deleted)
                 }
                 onClick={handleDelete}>
@@ -422,7 +436,7 @@ const NotePage = () => {
                 variant="outline-warning"
                 disabled={
                   (isLoading) ||
-                  (note === null ? true : note.already_decrypted)
+                  (note === null ? true : note.decrypted)
                 }
                 onClick={handleRetry}
               >
