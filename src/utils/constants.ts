@@ -1,7 +1,6 @@
-import { EncryptionMethod, Note, Alert, ErrorKind, AppSetting, AppTheme } from "./types";
+import { EncryptionMethod, Note, Alert, ErrorKind, AppSetting, AppThemeSetting } from "./types";
 
 if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL was set in .env");
-if (typeof process.env.REACT_APP_URL === "undefined") console.error("No React app URL was set in .env");
 
 export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
 
@@ -38,7 +37,7 @@ const note: Note = {
 
 const settings: AppSetting = {
     preferences: {
-        app_theme: AppTheme.System,
+        app_theme: AppThemeSetting.Normal,
         encryption: EncryptionMethod.BackendEncryption,
     }
 };

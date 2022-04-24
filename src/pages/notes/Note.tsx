@@ -7,7 +7,7 @@ import cryptojs from "crypto-js";
 
 import PassphraseModal from "../../components/passphrase/PassphraseModal";
 import { DefaultValue, PATHS } from "../../utils/constants";
-import { StoreContext } from "../../utils/contexts";
+import { AppContext } from "../../utils/contexts";
 import { NoteInfo, EncryptionMethod, Note } from "../../utils/types";
 import { get_note, get_note_info, delete_note, Result } from "../../queries";
 import { generate_face, into_readable_datetime } from "../../utils/functions";
@@ -37,7 +37,7 @@ const NotePage = () => {
 
   const [checkedId, setCheckedId] = useState<number | null>(null);
 
-  const { setAlerts } = useContext(StoreContext);
+  const { setAlerts } = useContext(AppContext);
 
   const [note, setNote] = useState<Note | null>(null);
   const [modalDecrypt, setModalDecrypt] = useState<Modal>({

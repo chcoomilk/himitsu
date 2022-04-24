@@ -1,22 +1,16 @@
 import React from "react";
 import { DefaultValue } from "../constants";
-import { Alert, ErrorKind, UserActionInfo } from "../types";
+import { AppSetting, ErrorKind, UserActionInfo } from "../types";
 import theme from "./theme";
 
-interface Store {
-  setPassphrase(passphrase: string | null): void,
-  passphrase: string | null,
+interface MainAppState {
   setAlerts: React.Dispatch<React.SetStateAction<ErrorKind | UserActionInfo>>,
-  alerts: Alert | UserActionInfo,
+  appSettings: AppSetting,
 }
 
-export const StoreContext = React.createContext<Store>({
-  setPassphrase: () => { },
+export const AppContext = React.createContext<MainAppState>({
   setAlerts: () => { },
-  alerts: {
-    ...DefaultValue.alerts
-  },
-  passphrase: null,
+  appSettings: DefaultValue.settings,
 });
 
 export const ThemeContext = theme;

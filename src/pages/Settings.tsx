@@ -1,40 +1,96 @@
 import { Col, Row, Form } from "react-bootstrap";
-import { AppTheme } from "../utils/types";
+import { AppSetting, AppThemeSetting, EncryptionMethod } from "../utils/types";
 import * as changeCase from "change-case";
+import { useContext } from "react";
+import { AppContext } from "../utils/contexts";
 
-type Parameter = {
-  theme: AppTheme,
-  setTheme: React.Dispatch<React.SetStateAction<AppTheme>>,
+type Props = {
+  setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
 }
 
-const Settings = ({ theme, setTheme }: Parameter) => {
-  const changeTheme = (t: AppTheme) => {
-    setTheme(t);
-    window.localStorage.setItem("theme", t);
+const Settings = ({ setAppSettings }: Props) => {
+  const { appSettings } = useContext(AppContext);
+
+  const setDefaultEncryption = (method: EncryptionMethod) => {
+    setAppSettings(prev => {
+      let settings = {
+        ...prev,
+        preferences: {
+          ...prev.preferences,
+          encryption: method,
+        }
+      };
+
+      localStorage.setItem("settings", JSON.stringify(settings));
+      return settings;
+    });
   };
 
   return (
     <Row>
-      <Col xs={{ span: 4, offset: 4 }}>
+      <Col xs={{ span: 6, offset: 3 }}>
         <Form>
-          <Form.Group as={Row} className="mb-3" controlId="formPlaintextEmail">
-            <Form.Label column sm="2">
+          <Form.Group as={Row} className="mb-3" controlId="radioTheme">
+            <Form.Label column sm="6">
+              Default Encryption
+            </Form.Label>
+            <Col sm="6">
+              <Form.Check
+                inline
+                type="radio"
+                name="encryption"
+                checked={appSettings.preferences.encryption === EncryptionMethod.BackendEncryption}
+                label="Backend"
+                onChange={() => setDefaultEncryption(EncryptionMethod.BackendEncryption)}
+              />
+              <Form.Check
+                inline
+                type="radio"
+                name="encryption"
+                checked={appSettings.preferences.encryption === EncryptionMethod.FrontendEncryption}
+                label="Frontend"
+                onChange={() => setDefaultEncryption(EncryptionMethod.FrontendEncryption)}
+              />
+              <Form.Check
+                inline
+                type="radio"
+                name="encryption"
+                checked={appSettings.preferences.encryption === EncryptionMethod.NoEncryption}
+                label="No encryption"
+                onChange={() => setDefaultEncryption(EncryptionMethod.NoEncryption)}
+              />
+            </Col>
+          </Form.Group>
+
+          <Form.Group as={Row} controlId="radioTheme">
+            <Form.Label column sm="6">
               Theme
             </Form.Label>
-            <Col sm="10">
+            <Col sm="6">
               {
-                Object.values(AppTheme).map(value => {
+                Object.values(AppThemeSetting).map(value => {
                   return (
                     <Form.Check
                       inline
                       className="pt-2"
-                      key={value}
                       type="radio"
                       name="theme"
-                      checked={theme === value}
+                      key={value}
+                      checked={appSettings.preferences.app_theme === value}
                       id={value}
                       label={changeCase.capitalCase(value)}
-                      onChange={_ => changeTheme(value)}
+                      onChange={_ => setAppSettings(prev => {
+                        let settings = {
+                          ...prev,
+                          preferences: {
+                            ...prev.preferences,
+                            app_theme: value,
+                          }
+                        };
+
+                        localStorage.setItem("settings", JSON.stringify(settings));
+                        return settings;
+                      })}
                     />
                   );
                 })

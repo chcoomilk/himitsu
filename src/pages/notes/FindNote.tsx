@@ -1,12 +1,11 @@
 import { useFormik } from "formik";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Col, Form, Row, Stack } from "react-bootstrap"
 import { useNavigate } from "react-router";
 import * as yup from "yup";
 import PassphraseInputGroup from "../../components/passphrase/PassphraseInputGroup";
 import { useTitle } from "../../custom-hooks";
 import { PATHS } from "../../utils/constants";
-import { StoreContext } from "../../utils/contexts";
 
 const schema = yup.object().shape({
   title: yup.string(),
@@ -16,7 +15,6 @@ const schema = yup.object().shape({
 
 const FindNote = () => {
   const navigate = useNavigate();
-  const { setPassphrase } = useContext(StoreContext);
   useTitle("Find");
   const [toggleSearch, setToggleSearch] = useState(true);
 
@@ -28,7 +26,6 @@ const FindNote = () => {
       passphrase: null
     },
     onSubmit: async (val) => {
-      setPassphrase(val.passphrase);
       navigate(PATHS.note_detail + "/" + val.ID, { state: { passphrase: val.passphrase } });
     },
   });

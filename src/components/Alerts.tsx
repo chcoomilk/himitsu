@@ -3,68 +3,79 @@ import { Alert, Col, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Alert as AlertType } from "../utils/types";
 
+const MULTIPLIER = 2;
+
 interface Props {
   alerts: AlertType,
   setAlerts: React.Dispatch<React.SetStateAction<AlertType>>,
 }
 
-const Alerts = ({ alerts, setAlerts }: Props) => {
-  const MULTIPLIER = 2;
-
+const Alerts = ({
+  alerts: {
+    invalidId,
+    noteDeletion,
+    notFound,
+    passphraseNotRequired,
+    serverError,
+    tooManyRequests,
+    wrongPassphrase,
+  },
+  setAlerts
+}: Props) => {
   useEffect(() => {
-    if (alerts.passphraseNotRequired) {
+    if (passphraseNotRequired) {
       let timer = setTimeout(() => {
         setAlerts(prev => {
           return {
             ...prev,
             passphraseNotRequired: false,
-          }
+          };
         });
       }, 1500 * MULTIPLIER);
       return () => clearTimeout(timer);
     }
-  }, [alerts.passphraseNotRequired, setAlerts]);
+  }, [passphraseNotRequired, setAlerts]);
 
   useEffect(() => {
-    if (alerts.wrongPassphrase) {
+    if (wrongPassphrase) {
       let timer = setTimeout(() => {
         setAlerts(prev => {
           return {
             ...prev,
             wrongPassphrase: false,
-          }
+          };
         });
       }, 2000 * MULTIPLIER);
       return () => clearTimeout(timer);
     }
-  }, [alerts.wrongPassphrase, setAlerts]);
+  }, [wrongPassphrase, setAlerts]);
 
   useEffect(() => {
-    if (alerts.noteDeletion) {
+    if (noteDeletion) {
       let timer = setTimeout(() => {
         setAlerts(prev => {
           return {
             ...prev,
             noteDeletion: null,
-          }
+          };
         });
       }, 2000 * MULTIPLIER);
       return () => clearTimeout(timer);
     }
-  }, [alerts.noteDeletion, setAlerts]);
+  }, [noteDeletion, setAlerts]);
 
   return (
     <Container as={Col} xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }} className="himitsu-popups">
       <Alert
         variant="success"
-        show={!!alerts.noteDeletion} onClose={() => setAlerts((previousValue) => {
+        show={!!noteDeletion} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, noteDeletion: null };
         })}
         dismissible
       >
         <Alert.Heading>
           <i className="bi bi-check-lg"></i> {" "}
-          Successfully deleted ID: {alerts.noteDeletion}
+          Successfully deleted ID: {noteDeletion}
         </Alert.Heading>
         <p>
           Well boys, we did it, racism is no more
@@ -73,7 +84,7 @@ const Alerts = ({ alerts, setAlerts }: Props) => {
 
       <Alert
         variant="info"
-        show={alerts.notFound} onClose={() => setAlerts((previousValue) => {
+        show={notFound} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, notFound: false };
         })}
         dismissible
@@ -95,7 +106,7 @@ const Alerts = ({ alerts, setAlerts }: Props) => {
 
       <Alert
         variant="info"
-        show={alerts.passphraseNotRequired} onClose={() => setAlerts((previousValue) => {
+        show={passphraseNotRequired} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, passphraseNotRequired: false };
         })}
         dismissible
@@ -108,7 +119,7 @@ const Alerts = ({ alerts, setAlerts }: Props) => {
 
       <Alert
         variant="danger"
-        show={alerts.wrongPassphrase} onClose={() => setAlerts((previousValue) => {
+        show={wrongPassphrase} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, wrongPassphrase: false };
         })}
         dismissible
@@ -124,7 +135,7 @@ const Alerts = ({ alerts, setAlerts }: Props) => {
 
       <Alert
         variant="secondary"
-        show={alerts.serverError} onClose={() => setAlerts((previousValue) => {
+        show={serverError} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, serverError: false };
         })}
         dismissible
@@ -140,7 +151,7 @@ const Alerts = ({ alerts, setAlerts }: Props) => {
 
       <Alert
         variant="warning"
-        show={alerts.tooManyRequests} onClose={() => setAlerts((previousValue) => {
+        show={tooManyRequests} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, tooManyRequests: false };
         })}
         dismissible

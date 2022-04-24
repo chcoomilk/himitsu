@@ -1,17 +1,4 @@
-import { AppTheme } from "./utils/types";
-
-export const parseToTheme = (str: String | null): AppTheme => {
-    switch (str) {
-        case AppTheme.Normal:
-            return AppTheme.Normal;
-        case AppTheme.Black:
-            return AppTheme.Black;
-        case AppTheme.Light:
-            return AppTheme.Light;
-        default:
-            return AppTheme.System;
-    }
-};
+import { AppThemeSetting } from "./utils/types";
 
 function increase_brightness(hex: string, percent: number) {
     // strip the leading # if it's there
@@ -43,10 +30,10 @@ function increase_brightness_linear(color: string, percent: number) {
 
 const invert_color = (hex: string) => '#' + hex.match(/[a-f0-9]{2}/ig)?.map(e => (255 - parseInt(e, 16) | 0).toString(16).replace(/^([a-f0-9])$/, '0$1')).join('');
 
-export const applyTheme = (theme: AppTheme.Normal | AppTheme.Light | AppTheme.Black) => {
+export const applyTheme = (theme: AppThemeSetting) => {
     let base_bg_color: string, base_text_color: string, css = document.documentElement.style;
     switch (theme) {
-        case AppTheme.Normal:
+        case AppThemeSetting.Normal:
             base_bg_color = "#282C34";
             base_text_color = "#FFFFFF";
             css.setProperty("--himitsu-bg", increase_brightness(base_bg_color, 4));
@@ -60,7 +47,7 @@ export const applyTheme = (theme: AppTheme.Normal | AppTheme.Light | AppTheme.Bl
             css.setProperty("--himitsu-color-darken", increase_brightness_linear((base_text_color), -25));
             css.setProperty("--bs-body-color", (base_text_color));
             break;
-        case AppTheme.Black:
+        case AppThemeSetting.Black:
             base_bg_color = "#000000";
             base_text_color = "#CCCCCC";
             css.setProperty("--himitsu-bg", increase_brightness(base_bg_color, 4));
@@ -74,7 +61,7 @@ export const applyTheme = (theme: AppTheme.Normal | AppTheme.Light | AppTheme.Bl
             css.setProperty("--himitsu-color-darken", increase_brightness_linear((base_text_color), -25));
             css.setProperty("--bs-body-color", (base_text_color));
             break;
-        case AppTheme.Light:
+        default:
             base_bg_color = "#FFFFFF";
             base_text_color = "#000000";
             css.setProperty("--himitsu-bg", increase_brightness(base_bg_color, 4));

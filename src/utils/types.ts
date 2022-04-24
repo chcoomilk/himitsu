@@ -43,16 +43,18 @@ export enum EncryptionMethod {
   BackendEncryption,
 }
 
-export enum AppTheme {
-  System = "system default",
-  Normal = "original",
+export enum AppThemeSetting {
+  // System = "system default",
+  Normal = "literally cra",
   Black = "black",
-  Light = "light",
+  // Light = "light",
 }
+
+export type AppTheme = AppThemeSetting.Black | AppThemeSetting.Normal;
 
 export type AppSetting = {
   preferences: {
-    app_theme: AppTheme,
+    app_theme: AppThemeSetting,
     encryption: EncryptionMethod,
   }
 }
