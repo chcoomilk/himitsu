@@ -1,6 +1,6 @@
 import { Result } from ".";
 import { BASE_URL, DefaultValue } from "../utils/constants";
-import { Popup } from "../utils/types";
+import { ErrorKind } from "../utils/types";
 
 interface GetNoteField {
 	id: number,
@@ -27,9 +27,9 @@ interface ResponseData {
 	"title": string,
 }
 
-export const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<ResponseData>> => {
+const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<ResponseData>> => {
 	const url = BASE_URL + "/notes/" + id;
-	let error: Popup = DefaultValue.Popups;
+	let error: ErrorKind = DefaultValue.errors;
 	let data: ResponseData = {
 		id: 0,
 		title: "",
@@ -94,3 +94,5 @@ export const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result
 		};
 	}
 };
+
+export default get_note;

@@ -1,53 +1,58 @@
-import { EncryptionMethod, NoteInfo, NoteType, Popup } from "./types";
+import { EncryptionMethod, Note, Alert, ErrorKind, AppSetting, AppThemeSetting } from "./types";
 
 if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL was set in .env");
-if (typeof process.env.REACT_APP_URL === "undefined") console.error("No React app URL was set in .env");
 
 export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
 
-const Popups: Popup = {
+const alerts: Alert = {
     notFound: false,
     serverError: false,
     wrongPassphrase: false,
     invalidId: false,
     passphraseNotRequired: false,
+    tooManyRequests: false,
     noteDeletion: null,
+};
+
+const errors: ErrorKind = {
+    notFound: false,
+    serverError: false,
+    wrongPassphrase: false,
+    invalidId: false,
+    passphraseNotRequired: false,
     tooManyRequests: false,
 };
 
-const Note: NoteType = {
+const note: Note = {
     id: 0,
     title: "",
     content: "",
-    already_decrypted: false,
+    decrypted: false,
     encryption: EncryptionMethod.NoEncryption,
     creationTime: "",
     expiryTime: "",
     lastUpdateTime: "",
     passphrase: "",
-}
+};
 
-const DefNoteInfo: NoteInfo = {
-    id: 0,
-    title: "",
-    backend_encryption: false,
-    expired_at: {
-        nanos_since_epoch: 0,
-        secs_since_epoch: 0,
-    },
-    frontend_encryption: false,
-}
+const settings: AppSetting = {
+    preferences: {
+        app_theme: AppThemeSetting.Normal,
+        encryption: EncryptionMethod.BackendEncryption,
+    }
+};
 
 export const DefaultValue = {
-    Popups,
-    Note,
-    NoteInfo: DefNoteInfo,
-    Pages: {
+    alerts,
+    errors,
+    note,
+    pages: {
         NewNote: {
-            NAME: "NewNote",
-            RESULT_STATE_NAME: "NewNoteNoteResult",
+            name: "NewNote",
+            local_storage_name: "NewNoteNoteResult",
         }
-    }
+    },
+    settings,
 };
 
 export const PATHS = {
@@ -55,6 +60,7 @@ export const PATHS = {
     about: "/about",
     new_note: "/new",
     find_note: "/find",
+    notes: "/notes",
     note_detail: "/n",
     settings: "/settings",
     not_found: "/404",

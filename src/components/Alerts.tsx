@@ -1,70 +1,81 @@
 import { useEffect } from "react";
 import { Alert, Col, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Popup } from "../utils/types";
+import { Alert as AlertType } from "../utils/types";
+
+const MULTIPLIER = 2;
 
 interface Props {
-  popups: Popup,
-  setPopups: React.Dispatch<React.SetStateAction<Popup>>,
+  alerts: AlertType,
+  setAlerts: React.Dispatch<React.SetStateAction<AlertType>>,
 }
 
-const Popups = ({ popups, setPopups }: Props) => {
-  const MULTIPLIER = 2;
-
+const Alerts = ({
+  alerts: {
+    invalidId,
+    noteDeletion,
+    notFound,
+    passphraseNotRequired,
+    serverError,
+    tooManyRequests,
+    wrongPassphrase,
+  },
+  setAlerts
+}: Props) => {
   useEffect(() => {
-    if (popups.passphraseNotRequired) {
+    if (passphraseNotRequired) {
       let timer = setTimeout(() => {
-        setPopups(prev => {
+        setAlerts(prev => {
           return {
             ...prev,
             passphraseNotRequired: false,
-          }
+          };
         });
       }, 1500 * MULTIPLIER);
       return () => clearTimeout(timer);
     }
-  }, [popups.passphraseNotRequired, setPopups]);
+  }, [passphraseNotRequired, setAlerts]);
 
   useEffect(() => {
-    if (popups.wrongPassphrase) {
+    if (wrongPassphrase) {
       let timer = setTimeout(() => {
-        setPopups(prev => {
+        setAlerts(prev => {
           return {
             ...prev,
             wrongPassphrase: false,
-          }
+          };
         });
       }, 2000 * MULTIPLIER);
       return () => clearTimeout(timer);
     }
-  }, [popups.wrongPassphrase, setPopups]);
+  }, [wrongPassphrase, setAlerts]);
 
   useEffect(() => {
-    if (popups.noteDeletion) {
+    if (noteDeletion) {
       let timer = setTimeout(() => {
-        setPopups(prev => {
+        setAlerts(prev => {
           return {
             ...prev,
             noteDeletion: null,
-          }
+          };
         });
       }, 2000 * MULTIPLIER);
       return () => clearTimeout(timer);
     }
-  }, [popups.noteDeletion, setPopups]);
+  }, [noteDeletion, setAlerts]);
 
   return (
     <Container as={Col} xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }} className="himitsu-popups">
       <Alert
         variant="success"
-        show={!!popups.noteDeletion} onClose={() => setPopups((previousValue) => {
+        show={!!noteDeletion} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, noteDeletion: null };
         })}
         dismissible
       >
         <Alert.Heading>
           <i className="bi bi-check-lg"></i> {" "}
-          Successfully deleted ID: {popups.noteDeletion}
+          Successfully deleted ID: {noteDeletion}
         </Alert.Heading>
         <p>
           Well boys, we did it, racism is no more
@@ -73,7 +84,7 @@ const Popups = ({ popups, setPopups }: Props) => {
 
       <Alert
         variant="info"
-        show={popups.notFound} onClose={() => setPopups((previousValue) => {
+        show={notFound} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, notFound: false };
         })}
         dismissible
@@ -85,7 +96,7 @@ const Popups = ({ popups, setPopups }: Props) => {
         <p>
 
           Note doesn't exist, or perhaps it's past its expiration date, {" "}
-          <Link id="special-alert-link" to="/find" onClick={() => setPopups((previousValue) => {
+          <Link id="special-alert-link" to="/find" onClick={() => setAlerts((previousValue) => {
             return { ...previousValue, notFound: false };
           })}>
             Try Again
@@ -95,7 +106,7 @@ const Popups = ({ popups, setPopups }: Props) => {
 
       <Alert
         variant="info"
-        show={popups.passphraseNotRequired} onClose={() => setPopups((previousValue) => {
+        show={passphraseNotRequired} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, passphraseNotRequired: false };
         })}
         dismissible
@@ -108,7 +119,7 @@ const Popups = ({ popups, setPopups }: Props) => {
 
       <Alert
         variant="danger"
-        show={popups.wrongPassphrase} onClose={() => setPopups((previousValue) => {
+        show={wrongPassphrase} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, wrongPassphrase: false };
         })}
         dismissible
@@ -124,7 +135,7 @@ const Popups = ({ popups, setPopups }: Props) => {
 
       <Alert
         variant="secondary"
-        show={popups.serverError} onClose={() => setPopups((previousValue) => {
+        show={serverError} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, serverError: false };
         })}
         dismissible
@@ -140,7 +151,7 @@ const Popups = ({ popups, setPopups }: Props) => {
 
       <Alert
         variant="warning"
-        show={popups.tooManyRequests} onClose={() => setPopups((previousValue) => {
+        show={tooManyRequests} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, tooManyRequests: false };
         })}
         dismissible
@@ -157,4 +168,4 @@ const Popups = ({ popups, setPopups }: Props) => {
   );
 };
 
-export default Popups;
+export default Alerts;

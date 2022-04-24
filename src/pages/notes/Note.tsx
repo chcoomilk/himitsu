@@ -2,33 +2,44 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { useParams } from "react-router";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, Location } from "react-router-dom";
 import cryptojs from "crypto-js";
 
 import PassphraseModal from "../../components/passphrase/PassphraseModal";
-import useTitle from "../../custom-hooks/useTitle";
-import { get_note } from "../../queries/get_note";
 import { DefaultValue, PATHS } from "../../utils/constants";
-import { StoreContext } from "../../utils/contexts";
-import { NoteInfo, EncryptionMethod, NoteType } from "../../utils/types";
-import { get_note_info } from "../../queries/get_note_info";
-import { delete_note, Result } from "../../queries";
+import { AppContext } from "../../utils/contexts";
+import { NoteInfo, EncryptionMethod, Note } from "../../utils/types";
+import { get_note, get_note_info, delete_note, Result } from "../../queries";
 import { generate_face, into_readable_datetime } from "../../utils/functions";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { useTitle } from "../../custom-hooks";
 
 interface Modal {
   showModal: boolean,
   passphrase: string | null,
 }
 
+interface State {
+  passphrase: string | null
+}
+
+interface ModifiedLocation extends Location {
+  state: State | unknown
+}
+
 const NotePage = () => {
   let { _id } = useParams();
-  let navigate = useNavigate();
+  const navigate = useNavigate();
+  const { state }: ModifiedLocation = useLocation();
+  const isPassphraseAvailable = (state: State | unknown): state is State => {
+    return (state as State).passphrase !== "undefined";
+  }
+
   const [checkedId, setCheckedId] = useState<number | null>(null);
 
-  const { passphrase: passphrase_context, setPopups } = useContext(StoreContext);
+  const { setAlerts } = useContext(AppContext);
 
-  const [note, setNote] = useState<NoteType | null>(null);
+  const [note, setNote] = useState<Note | null>(null);
   const [modalDecrypt, setModalDecrypt] = useState<Modal>({
     showModal: false,
     passphrase: null,
@@ -47,14 +58,14 @@ const NotePage = () => {
   const { mutate: del_note, isLoading: is_deleting, isSuccess: is_deleted } = useMutation(delete_note, {
     onSuccess: ({ is_ok, data, error }) => {
       if (is_ok) {
-        setPopups(prev => {
+        setAlerts(prev => {
           return {
             ...prev,
             noteDeletion: data.id
           };
         });
       } else {
-        setPopups(error);
+        setAlerts(error);
       }
     }
   });
@@ -77,13 +88,14 @@ const NotePage = () => {
         else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
         else encryption = EncryptionMethod.NoEncryption;
 
+        let passphrase = isPassphraseAvailable(state) ? state.passphrase || modalMutate.passphrase : modalMutate.passphrase;
         setNote({
           id: data.id,
           title: data.title,
           content: data.content,
-          already_decrypted: !data.frontend_encryption,
+          decrypted: !data.frontend_encryption,
           encryption,
-          passphrase: passphrase_context || modalMutate.passphrase,
+          passphrase,
           lastUpdateTime: readableUpdateTime,
           expiryTime: readableExpiryTime,
           creationTime: readableCreationTime,
@@ -91,7 +103,7 @@ const NotePage = () => {
         setTitle(data.title.trim().replace(" ", () => { return ""; }) ? data.title : "Note");
       } else {
         setTitle(generate_face());
-        setPopups(result.error);
+        setAlerts(result.error);
 
         if (result.error.wrongPassphrase) {
           setModalMutate(prev => {
@@ -105,7 +117,7 @@ const NotePage = () => {
     },
     onError: () => {
       setTitle(generate_face());
-      setPopups(value => {
+      setAlerts(value => {
         return {
           ...value,
           serverError: true
@@ -125,119 +137,67 @@ const NotePage = () => {
   );
 
   useEffect(() => {
-    if (note_info && note_info.is_ok) {
-      let encryption: EncryptionMethod;
-      if (note_info.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
-      else if (note_info.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
-      else encryption = EncryptionMethod.NoEncryption;
-
-      setNote({
-        ...DefaultValue.Note,
-        encryption,
-        title: note_info.data.title,
-        content: generate_face(),
+    if (info_error) {
+      setAlerts((prev) => {
+        return {
+          ...prev,
+          serverError: true,
+        };
       });
-
-      if (note_info.data.backend_encryption) {
-        if (passphrase_context !== null) {
-          mutate_get_note({ id: note_info.data.id, passphrase: passphrase_context });
-        } else {
-          setTitle("🔒 Locked " + generate_face());
-
-          setModalMutate(prev => {
-            return {
-              ...prev,
-              showModal: true
-            };
-          });
-        }
-      } else {
-        if (!note_info.data.frontend_encryption && passphrase_context !== null) {
-          setPopups(prev => {
-            return {
-              ...prev,
-              passphraseNotRequired: true
-            };
-          });
-        }
-
-        mutate_get_note({ id: note_info.data.id, passphrase: null });
-      }
-    } else {
-      if (info_error) {
-        setPopups((prev) => {
-          return note_info?.error || {
-            ...prev,
-            serverError: true,
-          };
-        });
-      }
       setTitle(generate_face());
     }
-  }, [note_info, is_info_called, info_error, mutate_get_note, passphrase_context, setPopups, setTitle]);
+  }, [info_error, setAlerts, setTitle]);
 
-  // const { mutate: mutate_get_info, isLoading: is_info_loading } = useMutation(get_note_info, {
-  //   onSuccess: result => {
-  //     if (result.is_ok) {
-  //       let encryption: EncryptionMethod;
-  //       if (result.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
-  //       else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
-  //       else encryption = EncryptionMethod.NoEncryption;
+  useEffect(() => {
+    if (note_info) {
+      if (note_info.is_ok) {
+        let encryption: EncryptionMethod;
+        if (note_info.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
+        else if (note_info.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
+        else encryption = EncryptionMethod.NoEncryption;
 
-  //       setNote({
-  //         ...DefaultValue.Note,
-  //         encryption,
-  //         title: result.data.title,
-  //         content: generate_face(),
-  //       });
+        setNote({
+          ...DefaultValue.note,
+          encryption,
+          title: note_info.data.title,
+          content: generate_face(),
+        });
 
-  //       if (result.data.backend_encryption) {
-  //         if (passphrase_context !== null) {
-  //           mutate_get_note({ id: result.data.id, passphrase: passphrase_context });
-  //         } else {
-  //           console.log("ok, throw me some numbers");
-  //           console.log("set title to \"ok, give me your password!\"");
-  //           setTitle("ok, give me your password!");
-  //           console.log("my password?\nOUT WITH IT\noralcumshot\nyeah that fits");
+        if (note_info.data.backend_encryption) {
+          if (isPassphraseAvailable(state) && state.passphrase !== null) {
+            mutate_get_note({ id: note_info.data.id, passphrase: state.passphrase });
+          } else {
+            setTitle("🔒 Locked " + generate_face());
 
-  //           setModalMutate(prev => {
-  //             return {
-  //               ...prev,
-  //               showModal: true
-  //             };
-  //           });
-  //         }
-  //       } else {
-  //         if (!result.data.frontend_encryption && passphrase_context !== null) {
-  //           setPopups(prev => {
-  //             return {
-  //               ...prev,
-  //               passphraseNotRequired: true
-  //             };
-  //           });
-  //         }
+            setModalMutate(prev => {
+              return {
+                ...prev,
+                showModal: true
+              };
+            });
+          }
+        } else {
+          if (!note_info.data.frontend_encryption && isPassphraseAvailable(state) && state.passphrase !== null) {
+            setAlerts(prev => {
+              return {
+                ...prev,
+                passphraseNotRequired: true
+              };
+            });
+          }
 
-  //         mutate_get_note({ id: result.data.id, passphrase: null });
-  //       }
-  //     } else {
-  //       setPopups(result.error)
-  //     }
-  //   },
-  //   onError: () => {
-  //     setTitle(generate_face());
-  //     setPopups(value => {
-  //       return {
-  //         ...value,
-  //         serverError: true
-  //       };
-  //     })
-  //   },
-  // });
+          mutate_get_note({ id: note_info.data.id, passphrase: null });
+        }
+      } else {
+        setAlerts(note_info.error);
+      }
+    }
+  }, [note_info, is_info_called, info_error, mutate_get_note, state, setAlerts, setTitle]);
 
-  const try_decrypt = useCallback((note: NoteType, passphrase: string): void => {
+  const try_decrypt = useCallback((note: Note, passphrase: string): void => {
     let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
     if (content) {
-      setPopups(prev => {
+      setAlerts(prev => {
         return {
           ...prev,
           wrongPassphrase: false,
@@ -250,11 +210,11 @@ const NotePage = () => {
       setNote({
         ...note,
         passphrase,
-        already_decrypted: true,
+        decrypted: true,
         content
       });
     } else {
-      setPopups(prev => {
+      setAlerts(prev => {
         return {
           ...prev,
           wrongPassphrase: true,
@@ -265,12 +225,12 @@ const NotePage = () => {
         showModal: true,
       });
     }
-  }, [setPopups]);
+  }, [setAlerts]);
 
   // check _id whence useParameter is availabe
   useEffect(() => {
     if (typeof _id === "undefined" || isNaN(+_id)) {
-      setPopups(prev => {
+      setAlerts(prev => {
         return {
           ...prev,
           invalidId: true
@@ -279,9 +239,8 @@ const NotePage = () => {
       navigate(PATHS.find_note);
     } else {
       setCheckedId(+_id);
-      // mutate_get_info({ id: +_id });
     }
-  }, [_id, navigate, setPopups/*, mutate_get_info*/]);
+  }, [_id, navigate, setAlerts]);
 
   // try to decrypt note on backend
   useEffect(() => {
@@ -299,9 +258,9 @@ const NotePage = () => {
 
   // check if frontend decryption succeed or not
   useEffect(() => {
-    if (isSuccess && note && note.encryption === EncryptionMethod.FrontendEncryption && !note.already_decrypted) {
-      if (passphrase_context) {
-        try_decrypt(note, passphrase_context);
+    if (isSuccess && note && note.encryption === EncryptionMethod.FrontendEncryption && !note.decrypted) {
+      if (isPassphraseAvailable(state) && state.passphrase) {
+        try_decrypt(note, state.passphrase);
       } else {
         setModalDecrypt(prev => {
           return {
@@ -311,7 +270,7 @@ const NotePage = () => {
         });
       }
     }
-  }, [isSuccess, note, passphrase_context, try_decrypt, setModalDecrypt]);
+  }, [isSuccess, note, state, try_decrypt, setModalDecrypt]);
 
   // delete confirmation 
   useEffect(() => {
@@ -323,7 +282,7 @@ const NotePage = () => {
           showModal: false,
           passphrase: null,
         });
-        setPopups(prev => {
+        setAlerts(prev => {
           return {
             ...prev,
             wrongPassphrase: true,
@@ -331,7 +290,7 @@ const NotePage = () => {
         });
       }
     }
-  }, [modalDelete.passphrase, note, del_note, checkedId, setPopups]);
+  }, [modalDelete.passphrase, note, del_note, checkedId, setAlerts]);
 
   const handleRetry = () => {
     if (note?.encryption === EncryptionMethod.BackendEncryption) {
@@ -410,7 +369,7 @@ const NotePage = () => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.title : DefaultValue.Note.title}
+                      value={note ? note.title : DefaultValue.note.title}
                       readOnly
                     />
                 }
@@ -425,7 +384,7 @@ const NotePage = () => {
                       as="textarea"
                       type="text"
                       name="expires"
-                      value={note ? note.content : DefaultValue.Note.content}
+                      value={note ? note.content : DefaultValue.note.content}
                       readOnly
                     />
                 }
@@ -439,7 +398,7 @@ const NotePage = () => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.creationTime : DefaultValue.Note.creationTime}
+                      value={note ? note.creationTime : DefaultValue.note.creationTime}
                       readOnly
                     />
                 }
@@ -453,7 +412,7 @@ const NotePage = () => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.expiryTime : DefaultValue.Note.expiryTime}
+                      value={note ? note.expiryTime : DefaultValue.note.expiryTime}
                       readOnly
                     />
                 }
@@ -466,7 +425,7 @@ const NotePage = () => {
                 variant="danger"
                 disabled={
                   (isLoading) ||
-                  (note === null ? true : !note.already_decrypted) ||
+                  (note === null ? true : !note.decrypted) ||
                   (is_deleting || is_deleted)
                 }
                 onClick={handleDelete}>
@@ -477,7 +436,7 @@ const NotePage = () => {
                 variant="outline-warning"
                 disabled={
                   (isLoading) ||
-                  (note === null ? true : note.already_decrypted)
+                  (note === null ? true : note.decrypted)
                 }
                 onClick={handleRetry}
               >

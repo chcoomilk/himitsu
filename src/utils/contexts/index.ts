@@ -1,22 +1,16 @@
 import React from "react";
 import { DefaultValue } from "../constants";
-import { Popup } from "../types";
+import { AppSetting, ErrorKind, UserActionInfo } from "../types";
 import theme from "./theme";
 
-interface Store {
-  setPassphrase(passphrase: string | null): void,
-  passphrase: string | null,
-  setPopups: React.Dispatch<React.SetStateAction<Popup>>,
-  popups: Popup,
+interface MainAppState {
+  setAlerts: React.Dispatch<React.SetStateAction<ErrorKind | UserActionInfo>>,
+  appSettings: AppSetting,
 }
 
-export const StoreContext = React.createContext<Store>({
-  setPassphrase: () => { },
-  setPopups: () => { },
-  popups: {
-    ...DefaultValue.Popups
-  },
-  passphrase: null,
+export const AppContext = React.createContext<MainAppState>({
+  setAlerts: () => { },
+  appSettings: DefaultValue.settings,
 });
 
 export const ThemeContext = theme;

@@ -37,7 +37,7 @@ const About = () => {
   return (
     <Row className="mb-3">
       <Col xl={{ offset: 1, span: 10 }} xs={12}>
-        <Accordion defaultActiveKey="0">
+        <Accordion className="mt-2" defaultActiveKey="0">
           <Accordion.Item eventKey="0">
             <Accordion.Header>
               Welcome!

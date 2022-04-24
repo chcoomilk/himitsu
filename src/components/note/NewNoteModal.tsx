@@ -23,11 +23,11 @@ const NewNoteModal = ({ control, data: { id, expiryTime, passphrase } }: Props) 
   let handleClose = () => { };
   control
     ? handleClose = () => {
-      window.localStorage.removeItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
+      window.localStorage.removeItem(DefaultValue.pages.NewNote.local_storage_name);
       control.setShow(false);
     }
     : handleClose = () => {
-      window.localStorage.removeItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
+      window.localStorage.removeItem(DefaultValue.pages.NewNote.local_storage_name);
       setShowSelf(false);
     };
   ;

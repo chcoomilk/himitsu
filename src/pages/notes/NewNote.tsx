@@ -6,11 +6,11 @@ import { useMutation } from "react-query";
 import * as changeCase from "change-case";
 
 import NewNoteModal from "../../components/note/NewNoteModal";
-import { StoreContext } from "../../utils/contexts";
+import { AppContext } from "../../utils/contexts";
 import { EncryptionMethod } from "../../utils/types";
-import { post_note } from "../../queries/post_note";
-import useTitle from "../../custom-hooks/useTitle";
 import { DefaultValue } from "../../utils/constants";
+import { post_note } from "../../queries";
+import { useTitle } from "../../custom-hooks";
 
 const BasicNoteSchema = {
   title: yup.string(),
@@ -37,15 +37,15 @@ const BasicNoteSchema = {
 };
 
 const NewNote = () => {
-  const { setPopups: setAlerts } = useContext(StoreContext);
+  const { setAlerts, appSettings } = useContext(AppContext);
   const [noteResult, setNoteResult] = useState({
     id: 0,
     expiryTime: "uwu",
     passphrase: "",
     fetched: false,
   });
-  const [encryption, setEncryption] = useState<EncryptionMethod>(EncryptionMethod.BackendEncryption);
-  useTitle(changeCase.capitalCase(DefaultValue.Pages.NewNote.NAME));
+  const [encryption, setEncryption] = useState<EncryptionMethod>(appSettings.preferences.encryption);
+  useTitle(changeCase.capitalCase(DefaultValue.pages.NewNote.name));
   const { mutateAsync } = useMutation(post_note);
 
   const formik = useFormik({
@@ -117,7 +117,7 @@ const NewNote = () => {
               fetched: true,
             };
             setNoteResult(res);
-            window.localStorage.setItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME, JSON.stringify(res));
+            window.localStorage.setItem(DefaultValue.pages.NewNote.local_storage_name, JSON.stringify(res));
             resetForm();
           } else {
             setAlerts(result.error);

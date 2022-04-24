@@ -20,7 +20,8 @@ const Home = () => {
                   size="lg"
                   variant="success"
                   onClick={(_) => {
-                    window.localStorage.removeItem(DefaultValue.Pages.NewNote.RESULT_STATE_NAME);
+                    // document.documentElement.style.setProperty("--default-bg-color", "white");
+                    window.localStorage.removeItem(DefaultValue.pages.NewNote.local_storage_name);
                   }}
                 >Add</Button>
               </Link>

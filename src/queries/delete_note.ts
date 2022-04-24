@@ -1,6 +1,6 @@
 import { Result } from ".";
 import { BASE_URL, DefaultValue } from "../utils/constants";
-import { Popup } from "../utils/types";
+import { ErrorKind } from "../utils/types";
 
 interface Params {
     id: number,
@@ -13,7 +13,7 @@ interface ResponseData {
 
 export default async function delete_note({ id, passphrase }: Params): Promise<Result<ResponseData>> {
     const url = BASE_URL + "/notes/" + id;
-    let error: Popup = DefaultValue.Popups;
+    let error: ErrorKind = DefaultValue.errors;
     let data: ResponseData = { id: 0 };
 
     const response = await fetch(url, {
@@ -53,6 +53,7 @@ export default async function delete_note({ id, passphrase }: Params): Promise<R
                 };
                 break;
         }
+        
         return {
             is_ok: false,
             error,

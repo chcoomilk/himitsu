@@ -11,13 +11,14 @@ export interface UserActionInfo {
   noteDeletion: number | null,
 }
 
-export interface Popup extends ErrorKind, UserActionInfo {};
+// alert can either be error or notification from response
+export type Alert = ErrorKind & UserActionInfo
 
-export interface NoteType {
+export interface Note {
   id: number,
   title: string,
   content: string,
-  already_decrypted: boolean,
+  decrypted: boolean,
   encryption: EncryptionMethod,
   expiryTime: string,
   creationTime: string,
@@ -42,8 +43,18 @@ export enum EncryptionMethod {
   BackendEncryption,
 }
 
-export enum AppTheme {
-  Normal = "normal",
+export enum AppThemeSetting {
+  // System = "system default",
+  Normal = "literally cra",
   Black = "black",
-  Light = "light",
+  // Light = "light",
+}
+
+export type AppTheme = AppThemeSetting.Black | AppThemeSetting.Normal;
+
+export type AppSetting = {
+  preferences: {
+    app_theme: AppThemeSetting,
+    encryption: EncryptionMethod,
+  }
 }
