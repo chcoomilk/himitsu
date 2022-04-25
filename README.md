@@ -7,7 +7,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 This application uses the "dotenv" library to make use the current environment of this project running on.\
 In the project directory, create a file called ".env".\
 The env file should contains:\
-`REACT_APP_URL` url of this deployed app\
 `REACT_APP_BACKEND_URL` url to the deployed backend 
 
 ## Available Scripts
