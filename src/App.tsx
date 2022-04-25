@@ -4,6 +4,7 @@ import { Spinner, Container } from "react-bootstrap";
 import { AppContext } from "./utils/contexts";
 import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
+// import { persistQueryClient } from "react-query/persistQueryClient-experimental"
 import { Alert, ErrorKind, UserActionInfo, AppSetting, EncryptionMethod } from "./utils/types";
 import { applyTheme } from "./theme";
 
@@ -29,7 +30,7 @@ const queryClient = new QueryClient({
     queries: {
       queryFn: async ({ queryKey }) => {
         let url = BASE_URL + queryKey[0];
-
+        
         let response = await fetch(url, {
           method: "GET",
           mode: "cors",
@@ -37,11 +38,16 @@ const queryClient = new QueryClient({
             "Content-Type": "application/json"
           },
         });
-
-        return await response.json();
+        
+        if (response.ok) {
+          return await response.json();
+        } else {
+          throw response.status;
+        }
       },
       keepPreviousData: true,
-      retry: (failureCount) => {
+      retry: (failureCount, error) => {
+        if (error === 400) return false;
         if (failureCount <= 10) return true;
         else return false;
       },
