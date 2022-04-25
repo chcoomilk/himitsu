@@ -17,6 +17,10 @@ input::-webkit-inner-spin-button {
   flex-direction: column;
 }
 
+:root {
+  --himitsu-body-bg: black;
+}
+
 input[type="number"] {
   -moz-appearance: textfield;
 }
