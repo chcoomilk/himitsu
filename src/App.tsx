@@ -4,7 +4,7 @@ import { Spinner, Container } from "react-bootstrap";
 import { AppContext } from "./utils/contexts";
 import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
-import { Alert, ErrorKind, UserActionInfo, AppSetting, EncryptionMethod, AppThemeSetting } from "./utils/types";
+import { Alert, ErrorKind, UserActionInfo, AppSetting, EncryptionMethod } from "./utils/types";
 import { applyTheme } from "./theme";
 
 import "bootstrap/scss/bootstrap.scss";
