@@ -32,7 +32,7 @@ const NotePage = () => {
   const navigate = useNavigate();
   const { state }: ModifiedLocation = useLocation();
   const isPassphraseAvailable = (state: State | unknown): state is State => {
-    return (state as State).passphrase !== "undefined";
+    return (state !== null && (state as State).passphrase !== undefined);
   }
 
   const [checkedId, setCheckedId] = useState<number | null>(null);
