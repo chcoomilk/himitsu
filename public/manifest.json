@@ -1,54 +1,20 @@
 {
-  "short_name": "himitsu",
-  "name": "himitsu web app for taking notes",
-  "icons": [
-    {
-      "src": "hash.png",
-      "type": "image/png",
-      "sizes": "500x500",
-      "purpose": "any"
-    },
-    {
-      "src": "hashx192.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any"
-    },
-    {
-      "src": "hashicon.png",
-      "type": "image/png",
-      "sizes": "500x500",
-      "purpose": "maskable"
-    }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#282C34",
-  "background_color": "#282C34",
-  "shortucts": [
-    {
-      "name": "New note",
-      "short_name": "New",
-      "description": "Write a new secret note",
-      "url": "/new",
-      "icon": [
-        {
-          "src": "plus.png",
-          "sizes": "512x512"
-        }
-      ]
-    },
-    {
-      "name": "Find a note",
-      "short_name": "Find",
-      "description": "Find your secret note",
-      "url": "/find",
-      "icon": [
-        {
-          "src": "find.png",
-          "sizes": "512x512"
-        }
-      ]
-    }
-  ]
+	"name": "himitsu",
+	"short_name": "himitsu",
+	"start_url": ".",
+	"icons": [
+		{
+			"src": "/android-chrome-192x192.png?v=2",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/android-chrome-384x384.png?v=2",
+			"sizes": "384x384",
+			"type": "image/png"
+		}
+	],
+	"theme_color": "#ffffff",
+	"background_color": "#ffffff",
+	"display": "standalone"
 }
