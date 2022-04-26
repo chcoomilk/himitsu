@@ -15,7 +15,7 @@ const SearchResult = ({ query }: Props) => {
   const navigate = useNavigate(); 
   const { debouncedValue } = useDebounce(query, 400);
   const { data, isFetching } = useQuery<NoteInfo[]>([`/notes?title=${debouncedValue}%&limit=${5}`]);
-
+  
   return (
     <ListGroup className="mt-3" hidden={data === undefined}>
       {
@@ -39,12 +39,12 @@ const SearchResult = ({ query }: Props) => {
                     <div className="ms-2 me-auto">
                       <div className="fw-bold">{note_info.title}</div>
                       ID: {note_info.id},
-                      encryption: {String(note_info.frontend_encryption) || String(note_info.backend_encryption)},
+                      encryption: {String(note_info.frontend_encryption) || String(note_info.backend_encryption)}
                     </div>
                     {
                       note_info.expired_at
                         ? <Countdown
-                          date={Date.now() + (note_info.expired_at.secs_since_epoch / 1000)}
+                          date={note_info.expired_at.secs_since_epoch * 1000}
                         />
                         : "Never"
                     }
