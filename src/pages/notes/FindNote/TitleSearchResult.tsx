@@ -12,10 +12,10 @@ type Props = {
 }
 
 const SearchResult = ({ query }: Props) => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const { debouncedValue } = useDebounce(query, 400);
   const { data, isFetching } = useQuery<NoteInfo[]>([`/notes?title=${debouncedValue}%&limit=${5}`]);
-  
+
   return (
     <ListGroup className="mt-3" hidden={data === undefined}>
       {
@@ -23,7 +23,7 @@ const SearchResult = ({ query }: Props) => {
           ? (
             data &&
               data.length
-              ? data.map((note_info, i) => {
+              ? data.map((note_info) => {
                 return (
                   <ListGroup.Item
                     action
@@ -34,7 +34,7 @@ const SearchResult = ({ query }: Props) => {
                       e.preventDefault();
                       navigate(PATHS.note_detail + "/" + note_info.id);
                     }}
-                    key={i}
+                    key={note_info.id}
                   >
                     <div className="ms-2 me-auto">
                       <div className="fw-bold">{note_info.title}</div>
