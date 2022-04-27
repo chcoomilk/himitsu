@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
-import { Button, Form, ListGroup, Stack } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Collapse, Form, Stack } from "react-bootstrap";
 // import PassphraseInputGroup from "../../../components/passphrase/PassphraseInputGroup";
 import * as yup from "yup";
 import SearchResult from "./TitleSearchResult";
@@ -14,6 +15,7 @@ type Props = {
 }
 
 const FindByTitle = ({ setToggleSearch }: Props) => {
+  const [show, setShow] = useState(false);
   const formik = useFormik({
     validationSchema: schema,
     initialValues: {
@@ -27,27 +29,58 @@ const FindByTitle = ({ setToggleSearch }: Props) => {
   return (
     <>
       <Form noValidate onSubmit={formik.handleSubmit}>
-        <Form.Group controlId="formBasicTitle" className="position-relative mb-4">
+        <Form.Group controlId="formBasicTitle" className="position-sticky mb-4">
           <Form.Label>Title</Form.Label>
           <Form.Control
+            list="title"
             type="text"
             name="title"
             placeholder="Enter note's title here"
+            aria-controls="collapse-suggestions"
+            aria-expanded={show}
             value={formik.values.title}
             onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
+            onBlur={e => {
+              setShow(false);
+              formik.handleBlur(e);
+            }}
+            onFocus={_ => setShow(true)}
             isInvalid={formik.touched.title && !!formik.errors.title}
           />
-          <Form.Control.Feedback type="invalid" tooltip>{formik.errors.title}</Form.Control.Feedback>
-          {
-            formik.values.title
-              ? <SearchResult query={formik.values.title} />
-              : (
-                <ListGroup className="mt-3">
-                  <ListGroup.Item variant="warning" className="text-center">...</ListGroup.Item>
-                </ListGroup>
+          {/* <Collapse in={show}>
+            <div id="collapse-suggestions">
+              {formik.values.title}
+            </div>
+          </Collapse> */}
+          <Collapse in={show}>
+            <div
+              id="collapse-suggestions"
+              className="position-absolute w-100"
+            >
+              <SearchResult
+                id="collapse-suggestions"
+                className="overflow-auto"
+                query={formik.values.title}
+              />
+            </div>
+          </Collapse>
+          {/* {
+            show
+              ? (
+                <Collapse in={show}>
+                  <div id="collapse-suggestions">
+                    <SearchResult
+                      // you fucking donkey, 
+                      // i spent minutes trying to figure out how to pass these attributes
+                      className="position-absolute w-100"
+                      query={formik.values.title}
+                    />
+                  </div>
+                </Collapse>
               )
-          }
+              : null
+          } */}
+          <Form.Control.Feedback type="invalid" tooltip>{formik.errors.title}</Form.Control.Feedback>
         </Form.Group>
 
         <Stack direction="horizontal" gap={3}>

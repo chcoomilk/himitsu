@@ -29,6 +29,10 @@ export interface Note {
 export interface NoteInfo {
   "frontend_encryption": boolean,
   "backend_encryption": boolean,
+  "created_at": {
+    "nanos_since_epoch": number,
+    "secs_since_epoch": number
+  },
   "expired_at": {
     "nanos_since_epoch": number,
     "secs_since_epoch": number
