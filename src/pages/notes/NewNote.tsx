@@ -265,6 +265,7 @@ const NewNote = () => {
               <Button
                 size="sm"
                 variant="outline-light"
+                className="border-start-0"
                 onClick={() => formik.setFieldValue("passphrase.visible", !formik.values.passphrase.visible)}
               >
                 {

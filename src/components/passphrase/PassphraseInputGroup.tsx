@@ -48,7 +48,7 @@ const PassphraseInputGroup = ({
         />
         <Button
           size="sm"
-          variant="outline-light"
+          variant="outline-light border-start-0"
           onClick={togglePasswordVisibility}
         >
           {mask ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}

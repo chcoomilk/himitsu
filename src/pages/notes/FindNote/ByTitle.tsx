@@ -1,9 +1,11 @@
 import { useFormik } from "formik";
 import { useState } from "react";
 import { Button, Collapse, Form, Stack } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 // import PassphraseInputGroup from "../../../components/passphrase/PassphraseInputGroup";
 import * as yup from "yup";
-import SearchResult from "./TitleSearchResult";
+import { PATHS } from "../../../utils/constants";
+import TitleSuggestions from "./TitleSuggestions";
 
 const schema = yup.object().shape({
   title: yup.string(),
@@ -15,6 +17,7 @@ type Props = {
 }
 
 const FindByTitle = ({ setToggleSearch }: Props) => {
+  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const formik = useFormik({
     validationSchema: schema,
@@ -23,6 +26,7 @@ const FindByTitle = ({ setToggleSearch }: Props) => {
       passphrase: null,
     },
     onSubmit: async (val) => {
+      navigate(PATHS.notes + "?q=" + formik.values.title);
     },
   });
 
@@ -56,8 +60,13 @@ const FindByTitle = ({ setToggleSearch }: Props) => {
             <div
               id="collapse-suggestions"
               className="position-absolute w-100"
+              tabIndex={-1}
+              onFocus={() => {
+                // this is needed when the user interacts inside here
+                setShow(true);
+              }}
             >
-              <SearchResult
+              <TitleSuggestions
                 id="collapse-suggestions"
                 className="overflow-auto"
                 query={formik.values.title}
