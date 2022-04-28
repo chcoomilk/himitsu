@@ -11,30 +11,30 @@ type ResponseData = NoteInfo;
 // i swear to god, there was no documentation about throwing error here will be caught in useQuery
 // albeit Promise<Result<T>> does look pretty cool...
 const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
+    let data: ResponseData = {
+        id: 0,
+        title: "",
+        backend_encryption: false,
+        expired_at: {
+            nanos_since_epoch: 0,
+            secs_since_epoch: 0,
+        },
+        created_at: {
+            nanos_since_epoch: 0,
+            secs_since_epoch: 0,
+        },
+        frontend_encryption: false,
+    };
+
     // returns early because page first has to initialize with id that hasn't been checked
     if (id === null) return {
         error: DefaultValue.errors,
         is_ok: false,
-        data: {
-            id: 0,
-            title: "",
-            backend_encryption: false,
-            expired_at: {
-                nanos_since_epoch: 0,
-                secs_since_epoch: 0,
-            },
-            frontend_encryption: false,
-        },
+        data,
     };
 
     let url = BASE_URL + "/notes/" + id;
-    let data: ResponseData = {
-        id: 0,
-        frontend_encryption: false,
-        backend_encryption: false,
-        title: "",
-        expired_at: null
-    };
+
     let response = await fetch(url, {
         method: "GET",
         mode: "cors",

@@ -52,6 +52,11 @@ $text-color-normal: var(--himitsu-color);
 $text-color-darken: var(--himitsu-color-darken);
 //
 
+.default-input-color * {
+  background-color: $input-bg-color;
+  color: $text-color-normal;
+}
+
 // items
 html {
   background-color: $body-bg-color;
