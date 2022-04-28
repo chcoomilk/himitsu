@@ -11,8 +11,7 @@ interface Props extends ListGroupProps {
   query: string,
 }
 
-
-const SearchResult: React.FC<Props> = ({ query, ...attributes }) => {
+const TitleSuggestions: React.FC<Props> = ({ query, ...attributes }) => {
   const navigate = useNavigate();
   const { debouncedValue } = useDebounce(query, 400);
   const { data, isFetching } = useQuery<NoteInfo[]>([`/notes?title=${debouncedValue}%&limit=${4}`]);
@@ -74,4 +73,4 @@ const SearchResult: React.FC<Props> = ({ query, ...attributes }) => {
   );
 };
 
-export default SearchResult;
+export default TitleSuggestions;

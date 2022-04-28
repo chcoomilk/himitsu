@@ -2,7 +2,7 @@
 
 import React from "react";
 
-export default function useDebounce(value: string, delay: number = 500) {
+export default function useDebounce<T>(value: T, delay: number = 500) {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
   const [isBouncing, setIsBouncing] = React.useState<boolean>(false);
 

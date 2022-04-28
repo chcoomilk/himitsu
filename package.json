@@ -19,6 +19,7 @@
     "react-bootstrap": "^2.3.0",
     "react-countdown": "^2.3.2",
     "react-dom": "^18.0.0",
+    "react-hot-toast": "^2.2.0",
     "react-loading-skeleton": "^3.1.0",
     "react-query": "^3.38.0",
     "react-router-dom": "^6.3.0",

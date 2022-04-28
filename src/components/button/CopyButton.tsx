@@ -22,6 +22,7 @@ const CopyButton = ({ value }: Props) => {
         size="sm"
         variant="outline-light"
         id="button-addon2"
+        className="border-start-0"
         onClick={handleCopy}
         ref={target}
       >
