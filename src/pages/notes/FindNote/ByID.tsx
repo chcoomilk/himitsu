@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PassphraseInputGroup from "../../../components/passphrase/PassphraseInputGroup";
 import { PATHS } from "../../../utils/constants";
 import * as yup from "yup";
+import { SearchOptions } from "./utils";
 
 const schema = yup.object().shape({
   ID: yup.number().required(),
@@ -11,12 +12,11 @@ const schema = yup.object().shape({
 });
 
 type Props = {
-  setToggleSearch: React.Dispatch<React.SetStateAction<boolean>>,
+  setToggleSearch: React.Dispatch<React.SetStateAction<SearchOptions | null>>,
 }
 
 const FindByID = ({ setToggleSearch }: Props) => {
   const navigate = useNavigate();
-
   const formik = useFormik({
     validationSchema: schema,
     initialValues: {
@@ -56,7 +56,7 @@ const FindByID = ({ setToggleSearch }: Props) => {
       </Form.Group>
       <Stack direction="horizontal" gap={3}>
         <Button variant="outline-warning" className="ms-auto" size="lg"
-          onClick={() => setToggleSearch(prev => !prev)}>By Title
+          onClick={() => setToggleSearch(SearchOptions.Title)}>By Title
         </Button>
         <Button type="submit" variant="primary" size="lg">Find</Button>
       </Stack>
