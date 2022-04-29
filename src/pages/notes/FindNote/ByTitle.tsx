@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { PATHS } from "../../../utils/constants";
 import TitleSuggestions from "./TitleSuggestions";
+import { SearchOptions } from "./utils";
 
 const schema = yup.object().shape({
   title: yup.string(),
@@ -13,7 +14,7 @@ const schema = yup.object().shape({
 });
 
 type Props = {
-  setToggleSearch: React.Dispatch<React.SetStateAction<boolean>>,
+  setToggleSearch: React.Dispatch<React.SetStateAction<SearchOptions | null>>,
 }
 
 const FindByTitle = ({ setToggleSearch }: Props) => {
@@ -51,11 +52,7 @@ const FindByTitle = ({ setToggleSearch }: Props) => {
             onFocus={_ => setShow(true)}
             isInvalid={formik.touched.title && !!formik.errors.title}
           />
-          {/* <Collapse in={show}>
-            <div id="collapse-suggestions">
-              {formik.values.title}
-            </div>
-          </Collapse> */}
+
           <Collapse in={show}>
             <div
               id="collapse-suggestions"
@@ -73,28 +70,13 @@ const FindByTitle = ({ setToggleSearch }: Props) => {
               />
             </div>
           </Collapse>
-          {/* {
-            show
-              ? (
-                <Collapse in={show}>
-                  <div id="collapse-suggestions">
-                    <SearchResult
-                      // you fucking donkey, 
-                      // i spent minutes trying to figure out how to pass these attributes
-                      className="position-absolute w-100"
-                      query={formik.values.title}
-                    />
-                  </div>
-                </Collapse>
-              )
-              : null
-          } */}
+
           <Form.Control.Feedback type="invalid" tooltip>{formik.errors.title}</Form.Control.Feedback>
         </Form.Group>
 
         <Stack direction="horizontal" gap={3}>
           <Button variant="outline-warning" className="ms-auto" size="lg"
-            onClick={() => setToggleSearch(prev => !prev)}>By ID
+            onClick={() => setToggleSearch(SearchOptions.ID)}>By ID
           </Button>
           <Button type="submit" variant="primary" size="lg">Find</Button>
         </Stack>

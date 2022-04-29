@@ -30,6 +30,7 @@ interface ModifiedLocation extends Location {
 const NotePage = () => {
   let { _id } = useParams();
   const navigate = useNavigate();
+  
   const { state }: ModifiedLocation = useLocation();
   const isPassphraseAvailable = (state: State | unknown): state is State => {
     return (state !== null && (state as State).passphrase !== undefined);
@@ -298,7 +299,7 @@ const NotePage = () => {
         return {
           ...prev,
           showModal: true
-        }
+        };
       });
     } else {
       setModalDecrypt(prev => {
