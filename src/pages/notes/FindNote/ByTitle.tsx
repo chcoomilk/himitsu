@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Collapse, Form, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 // import PassphraseInputGroup from "../../../components/passphrase/PassphraseInputGroup";
@@ -15,9 +15,12 @@ const schema = yup.object().shape({
 
 type Props = {
   setToggleSearch: React.Dispatch<React.SetStateAction<SearchOptions | null>>,
+  initialState?: {
+    title: string,
+  }
 }
 
-const FindByTitle = ({ setToggleSearch }: Props) => {
+const FindByTitle = ({ setToggleSearch, initialState }: Props) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const formik = useFormik({
@@ -30,6 +33,17 @@ const FindByTitle = ({ setToggleSearch }: Props) => {
       navigate(PATHS.notes + "?q=" + formik.values.title);
     },
   });
+  
+  useEffect(() => {
+    if (initialState) {
+      formik.setValues(prev => {
+        return {
+          ...prev,
+          title: initialState.title,
+        };
+      });
+    }
+  }, [initialState, formik]);
 
   return (
     <>

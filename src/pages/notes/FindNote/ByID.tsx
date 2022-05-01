@@ -5,28 +5,43 @@ import PassphraseInputGroup from "../../../components/passphrase/PassphraseInput
 import { PATHS } from "../../../utils/constants";
 import * as yup from "yup";
 import { SearchOptions } from "./utils";
+import { useEffect } from "react";
 
 const schema = yup.object().shape({
-  ID: yup.number().required(),
+  id: yup.number().required(),
   passphrase: yup.string().min(4).max(1024).nullable()
 });
 
 type Props = {
   setToggleSearch: React.Dispatch<React.SetStateAction<SearchOptions | null>>,
+  initialState?: {
+    id: string,
+  },
 }
 
-const FindByID = ({ setToggleSearch }: Props) => {
+const FindByID = ({ setToggleSearch, initialState }: Props) => {
   const navigate = useNavigate();
   const formik = useFormik({
     validationSchema: schema,
     initialValues: {
-      ID: "",
+      id: "",
       passphrase: null
     },
     onSubmit: async (val) => {
-      navigate(PATHS.note_detail + "/" + val.ID, { state: { passphrase: val.passphrase } });
+      navigate(PATHS.note_detail + "/" + val.id, { state: { passphrase: val.passphrase } });
     },
   });
+
+  useEffect(() => {
+    if (initialState) {
+      formik.setValues(prev => {
+        return {
+          ...prev,
+          id: initialState.id,
+        };
+      });
+    }
+  }, [initialState, formik]);
 
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
@@ -34,14 +49,14 @@ const FindByID = ({ setToggleSearch }: Props) => {
         <Form.Label>ID</Form.Label>
         <Form.Control
           type="text"
-          name="ID"
+          name="id"
           placeholder="Enter note's ID here"
-          value={formik.values.ID}
+          value={formik.values.id}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          isInvalid={formik.touched.ID && !!formik.errors.ID}
+          isInvalid={formik.touched.id && !!formik.errors.id}
         />
-        <Form.Control.Feedback type="invalid" tooltip>{formik.errors.ID}</Form.Control.Feedback>
+        <Form.Control.Feedback type="invalid" tooltip>{formik.errors.id}</Form.Control.Feedback>
       </Form.Group>
 
       <Form.Group controlId="formBasicPassphrase" className="mb-4">

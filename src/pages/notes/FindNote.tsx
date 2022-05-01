@@ -13,7 +13,7 @@ const FindNote = () => {
 
   useEffect(() => {
     let qby = urlQuery.get("by");
-    
+
     if (qby) {
       setFindBy(parseStringToSearchOptionEnum(qby));
     }
@@ -22,7 +22,7 @@ const FindNote = () => {
   useEffect(() => {
     if (findBy !== null) {
       let name = Object.keys(SearchOptions)[Object.values(SearchOptions).indexOf(findBy)];
-      setUrlQuery({ by: name.toLowerCase() });
+      setUrlQuery({ by: name.toLowerCase() }, { replace: true });
     }
   }, [findBy, setUrlQuery]);
 
