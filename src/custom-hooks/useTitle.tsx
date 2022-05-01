@@ -11,6 +11,7 @@ const useTitle = (initialTitle: string) => {
     } else {
       document.title = `${generate_face()} | ${defaultTitle} `;
     }
+    
     return () => {
       document.title = defaultTitle;
     };

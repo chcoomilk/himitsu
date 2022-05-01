@@ -13,7 +13,6 @@ const FindNote = () => {
 
   useEffect(() => {
     let qby = urlQuery.get("by");
-    console.log("twice?");
     
     if (qby) {
       setFindBy(parseStringToSearchOptionEnum(qby));
