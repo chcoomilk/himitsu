@@ -4,7 +4,7 @@ import { DefaultValue, PATHS } from "../utils/constants";
 
 const Home = () => {
   return (
-    <Row className="text-center align-items-center">
+    <Row>
       <Col>
         <Row className="align-items-center text-center">
           <Col>
@@ -19,10 +19,7 @@ const Home = () => {
                 <Button
                   size="lg"
                   variant="success"
-                  onClick={(_) => {
-                    // document.documentElement.style.setProperty("--default-bg-color", "white");
-                    window.localStorage.removeItem(DefaultValue.pages.NewNote.local_storage_name);
-                  }}
+                  onClick={(_) => window.localStorage.removeItem(DefaultValue.pages.NewNote.local_storage_name)}
                 >Add</Button>
               </Link>
               <Link to={PATHS.find_note} className="me-auto">

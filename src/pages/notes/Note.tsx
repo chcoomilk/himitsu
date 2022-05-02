@@ -386,6 +386,11 @@ const NotePage = () => {
                       type="text"
                       name="expires"
                       value={note ? note.content : DefaultValue.note.content}
+                      rows={(() => {
+                        // const len = note?.content.length;
+                        // const max_until_break = 4;
+                        return 4;
+                      })()}
                       readOnly
                     />
                 }

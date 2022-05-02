@@ -7,7 +7,7 @@ import PassphraseInputGroup from "../passphrase/PassphraseInputGroup";
 interface Props {
   control?: {
     show: boolean,
-    setShow: (mode: boolean) => void,
+    setShow: (show: boolean) => void,
   }
   data: {
     id: number,
@@ -32,7 +32,7 @@ const NewNoteModal = ({ control, data: { id, expiryTime, passphrase } }: Props) 
     };
   ;
 
-  const handleCopyAll = () => navigator.clipboard.writeText(`${process.env.REACT_APP_URL + PATHS.note_detail + `/${id.toString()}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
+  const handleCopyAll = () => navigator.clipboard.writeText(`${window.location.href + PATHS.note_detail + `/${id.toString()}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
 
   return (
     <Modal show={showSelf} onHide={handleClose} centered contentClassName="fs-4">
