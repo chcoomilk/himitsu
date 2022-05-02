@@ -69,16 +69,22 @@ html {
 
 a {
   color: $text-color-normal;
-}
 
-a:hover {
-  color: $text-color-darken;
+  &:hover {
+    color: $text-color-darken;
+  }
 }
 
 .form-control,
 .form-control[readonly],
 .form-control:focus {
-  background-color: $bg-color;
+  background-color: $input-bg-color;
+  border: 1px solid $input-border-color;
+  color: $text-color-normal;
+}
+
+.form-control:disabled {
+  background-color: $input-bg-color-disabled;
   border: 1px solid $input-border-color;
   color: $text-color-normal;
 }
@@ -108,19 +114,6 @@ a:hover {
   .accordion-item {
     background-color: $input-bg-color-disabled;
   }
-}
-
-.form-control,
-.form-control[readonly],
-.form-control:focus {
-  background-color: $input-bg-color;
-  border: 1px solid $input-border-color;
-  color: $text-color-normal;
-}
-
-.form-control:disabled {
-  background-color: $input-bg-color-disabled;
-  color: $text-color-normal;
 }
 
 .btn-outline-light {
