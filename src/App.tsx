@@ -30,7 +30,7 @@ const queryClient = new QueryClient({
     queries: {
       queryFn: async ({ queryKey }) => {
         let url = BASE_URL + queryKey[0];
-        
+
         let response = await fetch(url, {
           method: "GET",
           mode: "cors",
@@ -38,7 +38,7 @@ const queryClient = new QueryClient({
             "Content-Type": "application/json"
           },
         });
-        
+
         if (response.ok) {
           return await response.json();
         } else {
@@ -124,14 +124,10 @@ function App() {
             <Alerts alerts={propAlerts} setAlerts={setPropAlerts} />
             <Container className="himitsu">
               {
-                localStorage.getItem(DefaultValue.pages.NewNote.local_storage_name)
-                  ? <NewNoteModal
-                    data={JSON.parse(
-                      localStorage.getItem(
-                        DefaultValue.pages.NewNote.local_storage_name
-                      ) || "There's got to be something here!"
-                    )} />
-                  : null
+                (() => {
+                  let data = localStorage.getItem(DefaultValue.pages.NewNote.local_storage_name);
+                  return data ? <NewNoteModal data={JSON.parse(data)} /> : null;
+                })()
               }
               <Routes>
                 <Route path={"/404"} element={<NotFound />} />
