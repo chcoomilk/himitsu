@@ -1,6 +1,5 @@
 import { Col, Row, Form } from "react-bootstrap";
 import { AppSetting, AppThemeSetting, EncryptionMethod } from "../utils/types";
-import * as changeCase from "change-case";
 import { useContext } from "react";
 import { AppContext } from "../utils/contexts";
 
@@ -24,6 +23,21 @@ const Settings = ({ setAppSettings }: Props) => {
       localStorage.setItem("settings", JSON.stringify(settings));
       return settings;
     });
+  };
+
+  const setDefaultTheme = (theme: AppThemeSetting) => {
+    setAppSettings(prev => {
+      let settings = {
+        ...prev,
+        preferences: {
+          ...prev.preferences,
+          app_theme: theme,
+        }
+      };
+      
+      localStorage.setItem("settings", JSON.stringify(settings));
+      return settings;
+    })
   };
 
   return (
@@ -67,34 +81,22 @@ const Settings = ({ setAppSettings }: Props) => {
               Theme
             </Form.Label>
             <Col sm="6">
-              {
-                Object.values(AppThemeSetting).map(value => {
-                  return (
-                    <Form.Check
-                      inline
-                      className="pt-2"
-                      type="radio"
-                      name="theme"
-                      key={value}
-                      checked={appSettings.preferences.app_theme === value}
-                      id={value}
-                      label={changeCase.capitalCase(value)}
-                      onChange={_ => setAppSettings(prev => {
-                        let settings = {
-                          ...prev,
-                          preferences: {
-                            ...prev.preferences,
-                            app_theme: value,
-                          }
-                        };
-
-                        localStorage.setItem("settings", JSON.stringify(settings));
-                        return settings;
-                      })}
-                    />
-                  );
-                })
-              }
+              <Form.Check
+                inline
+                type="radio"
+                name="theme"
+                checked={appSettings.preferences.app_theme === AppThemeSetting.Normal}
+                label="Literally CRA"
+                onChange={_ => setDefaultTheme(AppThemeSetting.Normal)}
+              />
+              <Form.Check
+                inline
+                type="radio"
+                name="theme"
+                checked={appSettings.preferences.app_theme === AppThemeSetting.Black}
+                label="Black"
+                onChange={_ => setDefaultTheme(AppThemeSetting.Black)}
+              />
             </Col>
           </Form.Group>
         </Form>

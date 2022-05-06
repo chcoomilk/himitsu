@@ -5,7 +5,7 @@ import { AppContext } from "./utils/contexts";
 import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 // import { persistQueryClient } from "react-query/persistQueryClient-experimental"
-import { Alert, ErrorKind, UserActionInfo, AppSetting, EncryptionMethod } from "./utils/types";
+import { Alert, ErrorKind, UserActionInfo, AppSetting } from "./utils/types";
 import { applyTheme } from "./theme";
 
 import "bootstrap/scss/bootstrap.scss";
@@ -18,6 +18,8 @@ import NewNote from "./pages/notes/NewNote";
 import FindNote from "./pages/notes/FindNote";
 import Note from "./pages/notes/Note";
 import Navigation from "./components/Navigation";
+import { local_storage } from "./utils/functions";
+import { Toaster } from "react-hot-toast";
 const NotFound = lazy(() => import("./pages/404"));
 const About = lazy(() => import("./pages/About"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -67,22 +69,25 @@ function App() {
   // const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
 
   useEffect(() => {
-    const saved_settings_str = localStorage.getItem("settings");
-    if (saved_settings_str) {
-      const isSettingsValid = (settings: unknown): settings is AppSetting => {
-        return (
-          (settings as AppSetting).preferences !== undefined &&
-          (settings as AppSetting).preferences.app_theme !== undefined &&
-          (settings as AppSetting).preferences.encryption !== undefined &&
-          EncryptionMethod[(settings as AppSetting).preferences.encryption] !== undefined
-        );
-      };
-      const saved_settings: unknown = JSON.parse(saved_settings_str);
-
-      if (isSettingsValid(saved_settings)) {
-        setAppSettings(saved_settings);
-      }
+    const saved_settings = local_storage.get("settings");
+    if (saved_settings) {
+      setAppSettings(saved_settings);
     }
+    // const saved_settings_str = localStorage.getItem("settings");
+    // if (saved_settings_str) {
+    //   const isSettingsValid = (settings: unknown): settings is AppSetting => {
+    //     return (
+    //       (settings as AppSetting).preferences !== undefined &&
+    //       AppThemeSetting[(settings as AppSetting).preferences.app_theme] !== undefined &&
+    //       EncryptionMethod[(settings as AppSetting).preferences.encryption] !== undefined
+    //     );
+    //   };
+    //   const saved_settings: unknown = JSON.parse(saved_settings_str);
+
+    //   if (isSettingsValid(saved_settings)) {
+    //     setAppSettings(saved_settings);
+    //   }
+    // }
   }, [setAppSettings]);
 
   useEffect(() => applyTheme(appSettings.preferences.app_theme), [appSettings.preferences.app_theme]);
@@ -121,8 +126,9 @@ function App() {
               <span className="visually-hidden">Loading...</span>
             </Spinner>
           }>
-            <Alerts alerts={propAlerts} setAlerts={setPropAlerts} />
             <Container className="himitsu">
+              <Alerts alerts={propAlerts} setAlerts={setPropAlerts} />
+              <Toaster />
               {
                 (() => {
                   let data = localStorage.getItem(DefaultValue.pages.NewNote.local_storage_name);

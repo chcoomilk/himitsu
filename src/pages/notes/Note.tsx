@@ -30,7 +30,7 @@ interface ModifiedLocation extends Location {
 const NotePage = () => {
   let { _id } = useParams();
   const navigate = useNavigate();
-  
+
   const { state }: ModifiedLocation = useLocation();
   const isPassphraseAvailable = (state: State | unknown): state is State => {
     return (state !== null && (state as State).passphrase !== undefined);
@@ -101,7 +101,8 @@ const NotePage = () => {
           expiryTime: readableExpiryTime,
           creationTime: readableCreationTime,
         });
-        setTitle(data.title.trim().replace(" ", () => { return ""; }) ? data.title : "Note");
+        let title = data.title.trim().replace(" ", "");
+        setTitle(title ? title : "Note");
       } else {
         setTitle(generate_face());
         setAlerts(result.error);

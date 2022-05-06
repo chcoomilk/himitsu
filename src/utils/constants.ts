@@ -65,14 +65,3 @@ export const PATHS = {
     settings: "/settings",
     not_found: "/404",
 }
-
-export const TIME_CONFIG: Intl.DateTimeFormatOptions | undefined = {
-    weekday: "short",
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h24"
-};

@@ -27,18 +27,18 @@ export interface Note {
 }
 
 export interface NoteInfo {
-  "frontend_encryption": boolean,
-  "backend_encryption": boolean,
-  "created_at": {
-    "nanos_since_epoch": number,
-    "secs_since_epoch": number
+  frontend_encryption: boolean,
+  backend_encryption: boolean,
+  created_at: {
+    nanos_since_epoch: number,
+    secs_since_epoch: number
   },
-  "expired_at": {
-    "nanos_since_epoch": number,
-    "secs_since_epoch": number
+  expired_at: {
+    nanos_since_epoch: number,
+    secs_since_epoch: number
   } | null,
-  "id": number,
-  "title": string
+  id: number,
+  title: string
 }
 
 export enum EncryptionMethod {
@@ -49,12 +49,10 @@ export enum EncryptionMethod {
 
 export enum AppThemeSetting {
   // System = "system default",
-  Normal = "literally cra",
-  Black = "black",
+  Normal,
+  Black,
   // Light = "light",
 }
-
-export type AppTheme = AppThemeSetting.Black | AppThemeSetting.Normal;
 
 export type AppSetting = {
   preferences: {
