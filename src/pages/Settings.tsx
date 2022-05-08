@@ -1,7 +1,10 @@
 import { Col, Row, Form } from "react-bootstrap";
 import { AppSetting, AppThemeSetting, EncryptionMethod } from "../utils/types";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { AppContext } from "../utils/contexts";
+import { local_storage } from "../utils/functions";
+import { Link } from "react-router-dom";
+import { PATHS } from "../utils/constants";
 
 type Props = {
   setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
@@ -17,10 +20,11 @@ const Settings = ({ setAppSettings }: Props) => {
         preferences: {
           ...prev.preferences,
           encryption: method,
-        }
+        },
       };
 
-      localStorage.setItem("settings", JSON.stringify(settings));
+      // localStorage.setItem("settings", JSON.stringify(settings));
+      local_storage.set(settings);
       return settings;
     });
   };
@@ -34,23 +38,44 @@ const Settings = ({ setAppSettings }: Props) => {
           app_theme: theme,
         }
       };
-      
-      localStorage.setItem("settings", JSON.stringify(settings));
+
+      // localStorage.setItem("settings", JSON.stringify(settings));
+      local_storage.set(settings);
       return settings;
-    })
+    });
+  };
+
+  const setSaveHistory = (val: boolean) => {
+    setAppSettings(prev => {
+      let settings = {
+        ...prev,
+        history: val,
+      };
+
+      // localStorage.setItem("settings", JSON.stringify(settings));
+      local_storage.set(settings);
+      return settings;
+    });
+  };
+
+  const handleResetSettings = (e: React.MouseEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDeleteNotes = (e: React.MouseEvent) => {
+    e.preventDefault();
   };
 
   return (
     <Row>
       <Col xs={{ span: 6, offset: 3 }}>
         <Form>
-          <Form.Group as={Row} className="mb-3" controlId="radioTheme">
-            <Form.Label column sm="6">
+          <Form.Group as={Row} controlId="encryption">
+            <Form.Label column lg="6">
               Default Encryption
             </Form.Label>
-            <Col sm="6">
+            <Col lg="6" className="pt-2">
               <Form.Check
-                inline
                 type="radio"
                 name="encryption"
                 checked={appSettings.preferences.encryption === EncryptionMethod.BackendEncryption}
@@ -58,7 +83,6 @@ const Settings = ({ setAppSettings }: Props) => {
                 onChange={() => setDefaultEncryption(EncryptionMethod.BackendEncryption)}
               />
               <Form.Check
-                inline
                 type="radio"
                 name="encryption"
                 checked={appSettings.preferences.encryption === EncryptionMethod.FrontendEncryption}
@@ -66,7 +90,6 @@ const Settings = ({ setAppSettings }: Props) => {
                 onChange={() => setDefaultEncryption(EncryptionMethod.FrontendEncryption)}
               />
               <Form.Check
-                inline
                 type="radio"
                 name="encryption"
                 checked={appSettings.preferences.encryption === EncryptionMethod.NoEncryption}
@@ -76,11 +99,11 @@ const Settings = ({ setAppSettings }: Props) => {
             </Col>
           </Form.Group>
 
-          <Form.Group as={Row} controlId="radioTheme">
-            <Form.Label column sm="6">
+          <Form.Group as={Row} controlId="theme">
+            <Form.Label column lg="6">
               Theme
             </Form.Label>
-            <Col sm="6">
+            <Col lg="6" className="pt-2">
               <Form.Check
                 inline
                 type="radio"
@@ -97,6 +120,39 @@ const Settings = ({ setAppSettings }: Props) => {
                 label="Black"
                 onChange={_ => setDefaultTheme(AppThemeSetting.Black)}
               />
+            </Col>
+          </Form.Group>
+
+          <Form.Group as={Row} controlId="history">
+            <Form.Label column lg="6">
+              History
+            </Form.Label>
+            <Col lg="6" className="pt-2">
+              <Form.Check
+                type="switch"
+                name="history"
+                defaultChecked={appSettings.history}
+                label={"New notes will " + (appSettings.history ? "be saved" : "not be saved")}
+                onChange={_ => setSaveHistory(!appSettings.history)}
+              />
+              <button onClick={handleDeleteNotes} className="btn-anchor link-danger">
+                Delete all saved notes!
+              </button>
+            </Col>
+          </Form.Group>
+
+          <Form.Group as={Row} controlId="actions">
+            <Form.Label column lg="6">
+              Others
+            </Form.Label>
+            <Col lg="6" className="mt-2">
+              <button onClick={handleResetSettings} className="btn-anchor link-warning">
+                Reset all settings to default
+              </button>
+              <br />
+              <Link to={PATHS.about}>
+                About me
+              </Link>
             </Col>
           </Form.Group>
         </Form>

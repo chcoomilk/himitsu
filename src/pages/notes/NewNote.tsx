@@ -202,7 +202,9 @@ const NewNote = () => {
                 placeholder="Days"
                 value={formik.values.duration.day}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 isInvalid={formik.touched.duration?.day && !!formik.errors.duration?.day}
+                autoComplete="off"
               />
               <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.day}</FormControl.Feedback>
               <FormControl
@@ -212,7 +214,9 @@ const NewNote = () => {
                 placeholder="Hrs"
                 value={formik.values.duration.hour}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 isInvalid={formik.touched.duration?.hour && !!formik.errors.duration?.hour}
+                autoComplete="off"
               />
               <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.hour}</FormControl.Feedback>
               <FormControl
@@ -222,7 +226,9 @@ const NewNote = () => {
                 placeholder="Mins"
                 value={formik.values.duration.minute}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 isInvalid={formik.touched.duration?.minute && !!formik.errors.duration?.minute}
+                autoComplete="off"
               />
               <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.minute}</FormControl.Feedback>
               <FormControl
@@ -232,12 +238,14 @@ const NewNote = () => {
                 placeholder="Secs"
                 value={formik.values.duration.second}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 isInvalid={formik.touched.duration?.second && !!formik.errors.duration?.second}
+                autoComplete="off"
               />
               <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.second}</FormControl.Feedback>
             </InputGroup>
             <Form.Text muted>
-              Omit these duration fields to set it permanent
+              Omit these fields to set it permanent
             </Form.Text>
           </Form.Group>
 

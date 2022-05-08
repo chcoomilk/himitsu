@@ -39,7 +39,8 @@ const settings: AppSetting = {
     preferences: {
         app_theme: AppThemeSetting.Normal,
         encryption: EncryptionMethod.BackendEncryption,
-    }
+    },
+    history: true,
 };
 
 export const DefaultValue = {

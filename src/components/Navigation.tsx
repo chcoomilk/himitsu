@@ -19,18 +19,17 @@ const Navigation = () => {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse className="justify-content-end text-white">
-          <Nav className="me-auto"></Nav>
+          <Nav className="me-auto" />
           <Nav>
             <Nav.Link
               className="py-0 fs-3"
               as={NavLink}
-              to={PATHS.about}
+              to={PATHS.notes}
             >
-              {/* <i className="bi bi-exclamation-circle"></i> */}
-              info
+              <i className="bi bi-archive"></i>
             </Nav.Link>
           </Nav>
-          <Nav>
+          <Nav className="ms-3">
             <Nav.Link
               className="py-0 fs-3"
               as={NavLink}

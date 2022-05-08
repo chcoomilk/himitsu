@@ -58,5 +58,6 @@ export type AppSetting = {
   preferences: {
     app_theme: AppThemeSetting,
     encryption: EncryptionMethod,
-  }
+  },
+  history: boolean,
 }

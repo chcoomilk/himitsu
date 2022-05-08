@@ -68,26 +68,13 @@ function App() {
   const [appSettings, setAppSettings] = useState<AppSetting>(DefaultValue.settings);
   // const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
 
+  // App renders twice for no reason in development, so this fire twice
+  // but issue does not occur in production, so as expected this should only fire once
   useEffect(() => {
     const saved_settings = local_storage.get("settings");
     if (saved_settings) {
       setAppSettings(saved_settings);
     }
-    // const saved_settings_str = localStorage.getItem("settings");
-    // if (saved_settings_str) {
-    //   const isSettingsValid = (settings: unknown): settings is AppSetting => {
-    //     return (
-    //       (settings as AppSetting).preferences !== undefined &&
-    //       AppThemeSetting[(settings as AppSetting).preferences.app_theme] !== undefined &&
-    //       EncryptionMethod[(settings as AppSetting).preferences.encryption] !== undefined
-    //     );
-    //   };
-    //   const saved_settings: unknown = JSON.parse(saved_settings_str);
-
-    //   if (isSettingsValid(saved_settings)) {
-    //     setAppSettings(saved_settings);
-    //   }
-    // }
   }, [setAppSettings]);
 
   useEffect(() => applyTheme(appSettings.preferences.app_theme), [appSettings.preferences.app_theme]);
@@ -128,7 +115,13 @@ function App() {
           }>
             <Container className="himitsu">
               <Alerts alerts={propAlerts} setAlerts={setPropAlerts} />
-              <Toaster />
+              <Toaster position="bottom-center" toastOptions={{
+                style: {
+                  borderRadius: '10px',
+                  background: '#333',
+                  color: '#fff',
+                },
+              }} />
               {
                 (() => {
                   let data = localStorage.getItem(DefaultValue.pages.NewNote.local_storage_name);
