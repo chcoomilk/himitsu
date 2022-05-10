@@ -4,44 +4,51 @@ import { useNavigate } from "react-router-dom";
 import PassphraseInputGroup from "../../../components/passphrase/PassphraseInputGroup";
 import { PATHS } from "../../../utils/constants";
 import * as yup from "yup";
-import { SearchOptions } from "./utils";
-import { useEffect } from "react";
+import { Props } from "./utils";
+import { useEffect, useState } from "react";
 
 const schema = yup.object().shape({
   id: yup.number().required(),
   passphrase: yup.string().min(4).max(1024).nullable()
 });
 
-type Props = {
-  setToggleSearch: React.Dispatch<React.SetStateAction<SearchOptions | null>>,
-  initialState?: {
-    id: string,
-  },
-}
-
-const FindByID = ({ setToggleSearch, initialState }: Props) => {
+const FindByID = ({ params: { query }, setParams }: Props) => {
   const navigate = useNavigate();
+  // what
+  const [_query] = useState(query);
+  // whhhyy
+
   const formik = useFormik({
     validationSchema: schema,
     initialValues: {
-      id: "",
+      // possibly because here query change every param set, but shouldn't cause infinite loop
+      // as ByTitle implemented the same way and didn't break
+      id: /* what in tarnation does this mean */ _query, /* query, */
       passphrase: null
     },
     onSubmit: async (val) => {
       navigate(PATHS.note_detail + "/" + val.id, { state: { passphrase: val.passphrase } });
     },
+    validateOnMount: true,
+    enableReinitialize: false,
   });
 
+  // this creates infinite loop for some reason
   useEffect(() => {
-    if (initialState) {
-      formik.setValues(prev => {
+    if (formik.values.id) {
+      setParams(prev => {
         return {
-          ...prev,
-          id: initialState.id,
+          ...prev, query: formik.values.id,
+        };
+      });
+    } else {
+      setParams(prev => {
+        return {
+          ...prev, query: null,
         };
       });
     }
-  }, [initialState, formik]);
+  }, [formik.values.id, setParams]);
 
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
@@ -51,10 +58,10 @@ const FindByID = ({ setToggleSearch, initialState }: Props) => {
           type="text"
           name="id"
           placeholder="Enter note's ID here"
-          value={formik.values.id}
+          value={formik.values.id || ""}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          isInvalid={formik.touched.id && !!formik.errors.id}
+          isInvalid={formik.initialValues.id === null ? (formik.touched.id && !!formik.errors.id) : !!formik.errors.id}
         />
         <Form.Control.Feedback type="invalid" tooltip>{formik.errors.id}</Form.Control.Feedback>
       </Form.Group>
@@ -70,8 +77,15 @@ const FindByID = ({ setToggleSearch, initialState }: Props) => {
         />
       </Form.Group>
       <Stack direction="horizontal" gap={3}>
-        <Button variant="outline-warning" className="ms-auto" size="lg"
-          onClick={() => setToggleSearch(SearchOptions.Title)}>By Title
+        <Button
+          variant="outline-warning"
+          className="ms-auto"
+          size="lg"
+          onClick={() => setParams({ query: null, findBy: "title" })}
+        >
+          <i className="bi bi-search"></i>
+          {" "}
+          Title
         </Button>
         <Button type="submit" variant="primary" size="lg">Find</Button>
       </Stack>

@@ -5,10 +5,14 @@ import { AppContext } from "../utils/contexts";
 import { local_storage } from "../utils/functions";
 import { Link } from "react-router-dom";
 import { PATHS } from "../utils/constants";
+import * as changeCase from "change-case";
 
 type Props = {
   setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
 }
+
+type EncryptionMethodKey = keyof typeof EncryptionMethod;
+type AppThemeKey = keyof typeof AppThemeSetting;
 
 const Settings = ({ setAppSettings }: Props) => {
   const { appSettings } = useContext(AppContext);
@@ -75,27 +79,25 @@ const Settings = ({ setAppSettings }: Props) => {
               Default Encryption
             </Form.Label>
             <Col lg="6" className="pt-2">
-              <Form.Check
-                type="radio"
-                name="encryption"
-                checked={appSettings.preferences.encryption === EncryptionMethod.BackendEncryption}
-                label="Backend"
-                onChange={() => setDefaultEncryption(EncryptionMethod.BackendEncryption)}
-              />
-              <Form.Check
-                type="radio"
-                name="encryption"
-                checked={appSettings.preferences.encryption === EncryptionMethod.FrontendEncryption}
-                label="Frontend"
-                onChange={() => setDefaultEncryption(EncryptionMethod.FrontendEncryption)}
-              />
-              <Form.Check
-                type="radio"
-                name="encryption"
-                checked={appSettings.preferences.encryption === EncryptionMethod.NoEncryption}
-                label="No encryption"
-                onChange={() => setDefaultEncryption(EncryptionMethod.NoEncryption)}
-              />
+              {
+                Array<EncryptionMethodKey>(
+                  "BackendEncryption",
+                  "FrontendEncryption",
+                  "NoEncryption"
+                ).map(method => {
+                  return (
+                    <Form.Check
+                      type="radio"
+                      name="encryption"
+                      key={method}
+                      id={method}
+                      defaultChecked={appSettings.preferences.encryption === EncryptionMethod[method]}
+                      label={changeCase.capitalCase(method)}
+                      onClick={() => setDefaultEncryption(EncryptionMethod[method])}
+                    />
+                  );
+                })
+              }
             </Col>
           </Form.Group>
 
@@ -104,22 +106,25 @@ const Settings = ({ setAppSettings }: Props) => {
               Theme
             </Form.Label>
             <Col lg="6" className="pt-2">
-              <Form.Check
-                inline
-                type="radio"
-                name="theme"
-                checked={appSettings.preferences.app_theme === AppThemeSetting.Normal}
-                label="Literally CRA"
-                onChange={_ => setDefaultTheme(AppThemeSetting.Normal)}
-              />
-              <Form.Check
-                inline
-                type="radio"
-                name="theme"
-                checked={appSettings.preferences.app_theme === AppThemeSetting.Black}
-                label="Black"
-                onChange={_ => setDefaultTheme(AppThemeSetting.Black)}
-              />
+              {
+                Array<AppThemeKey>(
+                  "Black",
+                  "Normal",
+                ).map(theme_name => {
+                  return (
+                    <Form.Check
+                      inline
+                      type="radio"
+                      name="theme"
+                      key={theme_name}
+                      id={`theme-${theme_name}`}
+                      defaultChecked={appSettings.preferences.app_theme === AppThemeSetting[theme_name]}
+                      label={changeCase.capitalCase(theme_name)}
+                      onClick={_ => setDefaultTheme(AppThemeSetting[theme_name])}
+                    />
+                  );
+                })
+              }
             </Col>
           </Form.Group>
 
@@ -129,13 +134,14 @@ const Settings = ({ setAppSettings }: Props) => {
             </Form.Label>
             <Col lg="6" className="pt-2">
               <Form.Check
+                id="history-switch"
                 type="switch"
                 name="history"
                 defaultChecked={appSettings.history}
-                label={"New notes will " + (appSettings.history ? "be saved" : "not be saved")}
-                onChange={_ => setSaveHistory(!appSettings.history)}
+                label={"New notes will " + (appSettings.history ? "be" : "not be") + " saved"}
+                onClick={_ => setSaveHistory(!appSettings.history)}
               />
-              <button onClick={handleDeleteNotes} className="btn-anchor link-danger">
+              <button onClick={handleDeleteNotes} className="btn-anchor link-danger text-decoration-none">
                 Delete all saved notes!
               </button>
             </Col>
@@ -146,12 +152,12 @@ const Settings = ({ setAppSettings }: Props) => {
               Others
             </Form.Label>
             <Col lg="6" className="mt-2">
-              <button onClick={handleResetSettings} className="btn-anchor link-warning">
+              <button onClick={handleResetSettings} className="btn-anchor link-warning text-decoration-none">
                 Reset all settings to default
               </button>
               <br />
-              <Link to={PATHS.about}>
-                About me
+              <Link to={PATHS.about} className="link-secondary">
+                About page
               </Link>
             </Col>
           </Form.Group>

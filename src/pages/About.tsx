@@ -71,7 +71,7 @@ const About = () => {
             <Accordion.Body className="clearfix text-center"> {/* this is so the image is centered when screen is small */}
               <Image fluid src={kanna} alt="scary_dragon" className="col-md-6 float-md-end mb-3 ms-md-3" />
               <h2 className="text-start">
-                You can't.. <a href="https://www.youtube.com/watch?v=TN25ghkfgQA" style={{ textDecoration: "none" }}>or can you</a>?
+                You can't.. <a href="https://www.youtube.com/watch?v=TN25ghkfgQA" className="text-decoration-none">or can you</a>?
               </h2>
               <p className="fs-6 text-start">
                 You can check out how this app work on the GitHub repo down below.
