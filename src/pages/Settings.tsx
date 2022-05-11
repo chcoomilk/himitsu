@@ -108,8 +108,8 @@ const Settings = ({ setAppSettings }: Props) => {
             <Col lg="6" className="pt-2">
               {
                 Array<AppThemeKey>(
-                  "Black",
                   "Normal",
+                  "Black",
                 ).map(theme_name => {
                   return (
                     <Form.Check
