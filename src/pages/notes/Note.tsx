@@ -101,8 +101,8 @@ const NotePage = () => {
           expiryTime: readableExpiryTime,
           creationTime: readableCreationTime,
         });
-        let title = data.title.trim().replace(" ", "");
-        setTitle(title ? title : "Note");
+
+        setTitle(data.title ? data.title.trim() : "Note");
       } else {
         setTitle(generate_face());
         setAlerts(result.error);
