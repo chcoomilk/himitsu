@@ -60,7 +60,7 @@ function get(key: LocalStorageItemKeys): LocalStorageitems {
                 throw invalid_error;
         }
     } catch (error) {
-        console.log(error);
+        console.error(error);
         toast.error(`Invalid item in ${key}`);
     }
 
@@ -72,7 +72,7 @@ function set(item: AppSetting | NoteInfo[] | NoteInfo) {
         try {
             localStorage.setItem(key, JSON.stringify(item));
         } catch (error) {
-            console.log(error);
+            console.error(error);
             toast(`Failed to save item of ${key}`);
         }
     };
