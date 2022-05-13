@@ -31,39 +31,7 @@ const FindNote = () => {
     } else if (q) {
       setSearchParams({ q }, { replace: true });
     }
-
-    //
-    // setSearchParams({ q: params.query || "", by: params.findBy || "" });
   }, [params, setSearchParams]);
-
-  // useEffect(() => {
-  //   if (params.findBy) {
-  //     let find_by = changeCase.capitalCase(params.findBy);
-
-  //     if (is_opts(find_by)) {
-  //       setFindBy(SearchOptions[find_by]);
-  //     }
-  //   }
-  // }, [params.findBy, setFindBy]);
-
-  // useEffect(() => {
-  //   let find_by = Object.keys(SearchOptions)[Object.values(SearchOptions).indexOf(findBy)];
-  //   setSearchParams({ by: find_by.toLowerCase() }, { replace: true });
-  // }, [findBy, setSearchParams]);
-
-  // const matchFilter = useCallback(() => {
-  //   let idp = <FindByID setToggleSearch={setFindBy} />;
-  //   switch (findBy) {
-  //     case SearchOptions.Id:
-  //       return idp;
-  //     case SearchOptions.Title:
-  //       return (
-  //         <FindByTitle setToggleSearch={setFindBy} />
-  //       );
-  //     default:
-  //       return idp;
-  //   }
-  // }, [findBy]);
 
   return (
     <Row>

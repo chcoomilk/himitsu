@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import { AppContext } from "../utils/contexts";
 import { local_storage } from "../utils/functions";
 import { Link } from "react-router-dom";
-import { PATHS } from "../utils/constants";
+import { DefaultValue, PATHS } from "../utils/constants";
 import * as changeCase from "change-case";
 
 type Props = {
@@ -13,6 +13,12 @@ type Props = {
 
 type EncryptionMethodKey = keyof typeof EncryptionMethod;
 type AppThemeKey = keyof typeof AppThemeSetting;
+const createEncryptionMethodKeys = <T extends EncryptionMethodKey[]>(
+  ...array: T & ([EncryptionMethodKey] extends [T[number]] ? unknown : "Missing a key")
+) => array;
+const createAppThemeKeys = <T extends AppThemeKey[]>(
+  ...array: T & ([AppThemeKey] extends [T[number]] ? unknown : "Missing a key")
+) => array;
 
 const Settings = ({ setAppSettings }: Props) => {
   const { appSettings } = useContext(AppContext);
@@ -64,6 +70,7 @@ const Settings = ({ setAppSettings }: Props) => {
 
   const handleResetSettings = (e: React.MouseEvent) => {
     e.preventDefault();
+    setAppSettings(DefaultValue.settings);
   };
 
   const handleDeleteNotes = (e: React.MouseEvent) => {
@@ -80,7 +87,7 @@ const Settings = ({ setAppSettings }: Props) => {
             </Form.Label>
             <Col lg="6" className="pt-2">
               {
-                Array<EncryptionMethodKey>(
+                createEncryptionMethodKeys(
                   "BackendEncryption",
                   "FrontendEncryption",
                   "NoEncryption"
@@ -107,7 +114,7 @@ const Settings = ({ setAppSettings }: Props) => {
             </Form.Label>
             <Col lg="6" className="pt-2">
               {
-                Array<AppThemeKey>(
+                createAppThemeKeys(
                   "Normal",
                   "Black",
                 ).map(theme_name => {
