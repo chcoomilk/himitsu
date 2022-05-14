@@ -44,7 +44,7 @@ function get(key: LocalStorageItemKeys): LocalStorageitems {
                         if (is_note(data)) {
                             return data;
                         }
-
+                        
                         throw invalid_error;
                     });
 

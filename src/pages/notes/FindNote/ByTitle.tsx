@@ -8,8 +8,7 @@ import TitleSuggestions from "./TitleSuggestions";
 import { Props } from "./utils";
 
 const schema = yup.object().shape({
-  title: yup.string(),
-  passphrase: yup.string().min(4).max(1024).nullable()
+  title: yup.string().min(3, "Put at least 3 characters in to search").nullable().required(),
 });
 
 const FindByTitle = ({ params: { query }, setParams }: Props) => {
@@ -20,7 +19,6 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
     validationSchema: schema,
     initialValues: {
       title: query,
-      passphrase: null,
     },
     onSubmit: async ({ title }) => {
       navigate(PATHS.notes + "?q=" + title);
@@ -76,7 +74,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
               }}
             >
               {
-                formik.values.title
+                formik.isValid && /* only for passing typecheck */ formik.values.title
                   ? (
                     <TitleSuggestions
                       id="collapse-suggestions"

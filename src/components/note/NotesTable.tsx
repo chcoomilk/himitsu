@@ -1,9 +1,10 @@
 import { Table, TableProps } from "react-bootstrap";
 import { into_readable_datetime } from "../../utils/functions";
 import { NoteInfo } from "../../utils/types";
+import * as changeCase from "change-case";
 
 type Props = TableProps & {
-  notes: NoteInfo[],
+  notes: NoteInfo[] | null,
 }
 
 type NoteInfoKey = keyof NoteInfo;
@@ -14,7 +15,7 @@ type NoteInfoKey = keyof NoteInfo;
 
 const NotesTable = ({ notes, ...attributes }: Props) => {
   return (
-    <Table striped bordered hover variant="dark" {...attributes} >
+    <Table {...attributes} >
       <thead>
         <tr>
           {
@@ -25,30 +26,26 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
               "expired_at",
             ).map(header => {
               let custom: string | undefined;
-              if (header === "expired_at") custom = "Time Left";
+              custom = changeCase.noCase(header);
               return (<th>{custom || header}</th>);
             })
           }
         </tr>
       </thead>
       <tbody>
-        {/* <tr>
-          <td>1</td>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-        </tr> */}
         {
-          notes.map(note => {
-            return (
-              <tr>
-                <td>{note.id}</td>
-                <td>{note.title}</td>
-                <td>{note.created_at.secs_since_epoch}</td>
-                <td>{note.expired_at ? into_readable_datetime(note.expired_at.secs_since_epoch) : "Never"}</td>
-              </tr>
-            );
-          })
+          notes && notes.length
+            ? notes.map(note => {
+              return (
+                <tr>
+                  <td>{note.id}</td>
+                  <td>{note.title}</td>
+                  <td>{into_readable_datetime(note.created_at.secs_since_epoch)}</td>
+                  <td>{note.expired_at ? into_readable_datetime(note.expired_at.secs_since_epoch) : "Never"}</td>
+                </tr>
+              );
+            })
+            : <tr><td colSpan={4} className="text-center">Bushwack, it's empty!</td></tr>
         }
       </tbody>
     </Table>

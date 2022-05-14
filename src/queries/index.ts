@@ -11,8 +11,6 @@ export {
 };
 
 export interface Result<T> {
-    is_ok: boolean, // might delete since tis not really needed 
     data: T,
-    // change this to errorkind
-    error: ErrorKind, // oh yes big brain time
+    error?: keyof ErrorKind,
 }

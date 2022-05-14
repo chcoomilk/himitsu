@@ -9,10 +9,12 @@ import PassphraseModal from "../../components/passphrase/PassphraseModal";
 import { DefaultValue, PATHS } from "../../utils/constants";
 import { AppContext } from "../../utils/contexts";
 import { NoteInfo, EncryptionMethod, Note } from "../../utils/types";
-import { get_note, get_note_info, delete_note, Result } from "../../queries";
-import { generate_face, into_readable_datetime } from "../../utils/functions";
+import { get_note, get_note_info, delete_note } from "../../queries";
+import { generate_face, into_readable_datetime, local_storage } from "../../utils/functions";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useTitle } from "../../custom-hooks";
+import toast from "react-hot-toast";
+import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
 
 interface Modal {
   showModal: boolean,
@@ -35,10 +37,21 @@ const NotePage = () => {
   const isPassphraseAvailable = (state: State | unknown): state is State => {
     return (state !== null && (state as State).passphrase !== undefined);
   }
-
-  const [checkedId, setCheckedId] = useState<number | null>(null);
-
   const { setAlerts } = useContext(AppContext);
+  const [id] = useState<number>((() => {
+    if (typeof _id === "undefined" || isNaN(+_id) || +_id === 0) {
+      setAlerts(prev => {
+        return {
+          ...prev,
+          invalidId: true
+        };
+      });
+      navigate(PATHS.find_note);
+      return 0;
+    } else {
+      return +_id;
+    }
+  })());
 
   const [note, setNote] = useState<Note | null>(null);
   const [modalDecrypt, setModalDecrypt] = useState<Modal>({
@@ -53,27 +66,31 @@ const NotePage = () => {
     showModal: false,
     passphrase: null
   });
+  const [modalConfirmDelete, setModalConfirmDelete] = useState(false);
 
   const setTitle = useTitle("Loading...");
 
   const { mutate: del_note, isLoading: is_deleting, isSuccess: is_deleted } = useMutation(delete_note, {
-    onSuccess: ({ is_ok, data, error }) => {
-      if (is_ok) {
+    onSuccess: ({ data, error }) => {
+      if (!error) {
         setAlerts(prev => {
           return {
             ...prev,
-            noteDeletion: data.id
+            noteDelete: data.id.toString(),
           };
         });
       } else {
-        setAlerts(error);
+        setAlerts(prev => {
+          prev[error] = data.id.toString();
+          return prev;
+        });
       }
     }
   });
 
   const { mutate: mutate_get_note, isLoading, isSuccess } = useMutation(get_note, {
     onSuccess: result => {
-      if (result.is_ok) {
+      if (!result.error) {
         let data = result.data;
 
         let readableExpiryTime = data.expired_at
@@ -100,14 +117,19 @@ const NotePage = () => {
           lastUpdateTime: readableUpdateTime,
           expiryTime: readableExpiryTime,
           creationTime: readableCreationTime,
+          raw: data,
         });
 
         setTitle(data.title ? data.title.trim() : "Note");
       } else {
         setTitle(generate_face());
-        setAlerts(result.error);
+        let _ = result.error;
+        setAlerts(prev => {
+          prev[_] = id.toString();
+          return prev;
+        });
 
-        if (result.error.wrongPassphrase) {
+        if (result.error === "wrongPassphrase") {
           setModalMutate(prev => {
             return {
               ...prev,
@@ -119,11 +141,9 @@ const NotePage = () => {
     },
     onError: () => {
       setTitle(generate_face());
-      setAlerts(value => {
-        return {
-          ...value,
-          serverError: true
-        };
+      setAlerts(prev => {
+        prev.serverError = id.toString();
+        return prev;
       })
     },
   });
@@ -133,9 +153,9 @@ const NotePage = () => {
     isError: info_error,
     isPreviousData: is_info_called,
     isFetching: is_info_loading,
-  } = useQuery<Result<NoteInfo>>(
-    ["note_info", checkedId],
-    () => get_note_info({ id: checkedId }),
+  } = useQuery(
+    ["note_info", id],
+    () => get_note_info({ id }),
   );
 
   useEffect(() => {
@@ -143,16 +163,16 @@ const NotePage = () => {
       setAlerts((prev) => {
         return {
           ...prev,
-          serverError: true,
+          serverError: id.toString(),
         };
       });
       setTitle(generate_face());
     }
-  }, [info_error, setAlerts, setTitle]);
+  }, [id, info_error, setAlerts, setTitle]);
 
   useEffect(() => {
     if (note_info) {
-      if (note_info.is_ok) {
+      if (!note_info.error) {
         let encryption: EncryptionMethod;
         if (note_info.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
         else if (note_info.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
@@ -180,30 +200,28 @@ const NotePage = () => {
           }
         } else {
           if (!note_info.data.frontend_encryption && isPassphraseAvailable(state) && state.passphrase !== null) {
-            setAlerts(prev => {
-              return {
-                ...prev,
-                passphraseNotRequired: true
-              };
+            toast("Passphrase wasn't needed", {
+              icon: <i className="bi bi-asterisk" />
             });
           }
 
           mutate_get_note({ id: note_info.data.id, passphrase: null });
         }
       } else {
-        setAlerts(note_info.error);
+        setAlerts(prev => {
+          prev.serverError = id.toString();
+          return prev;
+        });
       }
     }
-  }, [note_info, is_info_called, info_error, mutate_get_note, state, setAlerts, setTitle]);
+  }, [id, note_info, is_info_called, info_error, mutate_get_note, state, setAlerts, setTitle]);
 
   const try_decrypt = useCallback((note: Note, passphrase: string): void => {
     let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
     if (content) {
       setAlerts(prev => {
-        return {
-          ...prev,
-          wrongPassphrase: false,
-        };
+        prev.wrongPassphrase = id.toString();
+        return prev;
       });
       setModalDecrypt({
         passphrase: null,
@@ -217,39 +235,22 @@ const NotePage = () => {
       });
     } else {
       setAlerts(prev => {
-        return {
-          ...prev,
-          wrongPassphrase: true,
-        };
+        prev.wrongPassphrase = id.toString();
+        return prev;
       });
       setModalDecrypt({
         passphrase: null,
         showModal: true,
       });
     }
-  }, [setAlerts]);
-
-  // check _id whence useParameter is availabe
-  useEffect(() => {
-    if (typeof _id === "undefined" || isNaN(+_id)) {
-      setAlerts(prev => {
-        return {
-          ...prev,
-          invalidId: true
-        };
-      });
-      navigate(PATHS.find_note);
-    } else {
-      setCheckedId(+_id);
-    }
-  }, [_id, navigate, setAlerts]);
+  }, [id, setAlerts]);
 
   // try to decrypt note on backend
   useEffect(() => {
-    if (modalMutate.passphrase !== null && checkedId) {
-      mutate_get_note({ id: checkedId, passphrase: modalMutate.passphrase });
+    if (modalMutate.passphrase !== null && id) {
+      mutate_get_note({ id: id, passphrase: modalMutate.passphrase });
     }
-  }, [checkedId, modalMutate.passphrase, mutate_get_note]);
+  }, [id, modalMutate.passphrase, mutate_get_note]);
 
   // try to decrypt note on frontend
   useEffect(() => {
@@ -276,23 +277,21 @@ const NotePage = () => {
 
   // delete confirmation 
   useEffect(() => {
-    if (modalDelete.passphrase && note && checkedId) {
+    if (modalDelete.passphrase && note && id) {
       if (modalDelete.passphrase === note.passphrase) {
-        del_note({ id: checkedId, passphrase: note.passphrase });
+        del_note({ id: id, passphrase: note.passphrase });
       } else {
         setModalDelete({
           showModal: false,
           passphrase: null,
         });
         setAlerts(prev => {
-          return {
-            ...prev,
-            wrongPassphrase: true,
-          }
+          prev.wrongPassphrase = id.toString();
+          return prev;
         });
       }
     }
-  }, [modalDelete.passphrase, note, del_note, checkedId, setAlerts]);
+  }, [modalDelete.passphrase, note, del_note, id, setAlerts]);
 
   const handleRetry = () => {
     if (note?.encryption === EncryptionMethod.BackendEncryption) {
@@ -313,14 +312,50 @@ const NotePage = () => {
   };
 
   const handleDelete = () => {
-    (isSuccess && note && checkedId) && note.encryption === EncryptionMethod.NoEncryption
-      ? del_note({ id: checkedId, passphrase: null })
+    (isSuccess && note && id) && note.encryption === EncryptionMethod.NoEncryption
+      ? setModalConfirmDelete(true)
       : setModalDelete(prev => {
         return {
           ...prev,
           showModal: true
         };
       });
+  };
+
+  const handleDownload = () => {
+    if (note && note.raw) {
+      const { created_at, expired_at, backend_encryption, frontend_encryption } = note.raw;
+      let note_to_save: NoteInfo = {
+        id: note.id,
+        title: note.title,
+        backend_encryption,
+        created_at,
+        expired_at,
+        frontend_encryption,
+      }
+      let prev_notes = local_storage.get("notes");
+
+      if (prev_notes) {
+        if (prev_notes.find((note) => note.id === note_to_save.id)) {
+          toast("This note had already been saved before", {
+            icon: <i className="bi bi-chevron-bar-contract"></i>
+          });
+
+          return;
+        } else {
+          local_storage.set([...prev_notes, note_to_save]);
+        }
+      } else {
+        local_storage.set([note_to_save]);
+      }
+
+      setAlerts(prev => {
+        prev.noteDownload = note.title.toString();
+        return prev;
+      });
+    } else {
+      toast.error("Unable to download, note is malformed");
+    }
   };
 
   return (
@@ -330,7 +365,7 @@ const NotePage = () => {
         setShow={(show) => setModalDecrypt(prev => {
           return { ...prev, showModal: show };
         })}
-        setPassphrase={(passphrase) => setModalDecrypt({
+        newPassphrase={(passphrase) => setModalDecrypt({
           passphrase,
           showModal: false,
         })} />
@@ -340,7 +375,7 @@ const NotePage = () => {
         setShow={(show) => setModalMutate(prev => {
           return { ...prev, showModal: show };
         })}
-        setPassphrase={(passphrase) => {
+        newPassphrase={(passphrase) => {
           setModalMutate({
             passphrase,
             showModal: false,
@@ -353,10 +388,23 @@ const NotePage = () => {
         setShow={(show) => setModalDelete(prev => {
           return { ...prev, showModal: show };
         })}
-        setPassphrase={(passphrase) => setModalDelete({
+        newPassphrase={(passphrase) => setModalDelete({
           passphrase,
           showModal: false,
         })} />
+
+      <SimpleConfirmationModal
+        centered
+        show={modalConfirmDelete}
+        text={`You are about to delete ${note?.title}`}
+        result={val => {
+          if (val) {
+            del_note({ id: id, passphrase: null })
+          }
+
+          setModalConfirmDelete(false);
+        }}
+      />
 
       <Row>
         <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
@@ -437,6 +485,17 @@ const NotePage = () => {
                 }
                 onClick={handleDelete}>
                 <i className="bi bi-trash"></i>
+              </Button>
+              <Button
+                size="lg"
+                variant="primary"
+                disabled={
+                  (isLoading) ||
+                  (note === null ? true : !note.decrypted) ||
+                  (is_deleting || is_deleted)
+                }
+                onClick={handleDownload}>
+                <i className="bi bi-download"></i>
               </Button>
               <Button
                 size="lg"

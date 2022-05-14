@@ -108,8 +108,8 @@ const NewNote = () => {
         passphrase: val.passphrase.value
       })
         .then(result => {
-          if (result && result.is_ok) {
-            let data = result.data;
+          const { data, error } = result;
+          if (!error) {
             const res = {
               expiryTime: data.expiryTime,
               id: data.id,
@@ -120,15 +120,16 @@ const NewNote = () => {
             window.localStorage.setItem(DefaultValue.pages.NewNote.local_storage_name, JSON.stringify(res));
             resetForm();
           } else {
-            setAlerts(result.error);
+            setAlerts(prev => {
+              prev[error] = "nopointer";
+              return prev;
+            });
           }
         })
-        .catch(() => {
-          setAlerts(value => {
-            return {
-              ...value,
-              serverError: true
-            };
+        .catch((e) => {
+          setAlerts(prev => {
+            prev.serverError = String(e);
+            return prev;
           });
         }).finally(() => {
           setSubmitting(false);

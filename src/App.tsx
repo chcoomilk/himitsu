@@ -5,7 +5,7 @@ import { AppContext } from "./utils/contexts";
 import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 // import { persistQueryClient } from "react-query/persistQueryClient-experimental"
-import { Alert, ErrorKind, UserActionInfo, AppSetting } from "./utils/types";
+import { Alert, AppSetting } from "./utils/types";
 import { applyTheme } from "./theme";
 
 import "bootstrap/scss/bootstrap.scss";
@@ -63,8 +63,7 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const [alertsContext, setAlertsContext] = useState<ErrorKind | UserActionInfo>(DefaultValue.alerts);
-  const [propAlerts, setPropAlerts] = useState<Alert>(DefaultValue.alerts);
+  const [alerts, setAlerts] = useState<Alert>(DefaultValue.alerts);
   const [appSettings, setAppSettings] = useState<AppSetting>(DefaultValue.settings);
   // const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
 
@@ -79,21 +78,12 @@ function App() {
 
   useEffect(() => applyTheme(appSettings.preferences.app_theme), [appSettings.preferences.app_theme]);
 
-  useEffect(() => {
-    setPropAlerts(prev => {
-      return {
-        ...prev,
-        ...alertsContext,
-      };
-    });
-  }, [alertsContext]);
-
   return (
     <Router>
       <AppContext.Provider
         value={{
           appSettings,
-          setAlerts: setAlertsContext,
+          setAlerts,
         }}
       >
         <QueryClientProvider client={queryClient}>
@@ -114,7 +104,7 @@ function App() {
             </Spinner>
           }>
             <Container className="himitsu">
-              <Alerts alerts={propAlerts} setAlerts={setPropAlerts} />
+              <Alerts alerts={alerts} setAlerts={setAlerts} />
               <Toaster position="bottom-center" toastOptions={{
                 style: {
                   borderRadius: '10px',

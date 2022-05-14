@@ -4,23 +4,18 @@ if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No 
 
 export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
 
-const alerts: Alert = {
-    notFound: false,
-    serverError: false,
-    wrongPassphrase: false,
-    invalidId: false,
-    passphraseNotRequired: false,
-    tooManyRequests: false,
-    noteDeletion: null,
+const errors: ErrorKind = {
+    notFound: null,
+    serverError: null,
+    wrongPassphrase: null,
+    tooManyRequests: null,
+    clientError: null,
 };
 
-const errors: ErrorKind = {
-    notFound: false,
-    serverError: false,
-    wrongPassphrase: false,
-    invalidId: false,
-    passphraseNotRequired: false,
-    tooManyRequests: false,
+const alerts: Alert = {
+    ...errors,
+    noteDelete: null,
+    noteDownload: null,
 };
 
 const note: Note = {

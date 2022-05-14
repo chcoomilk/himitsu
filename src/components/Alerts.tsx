@@ -1,81 +1,109 @@
 import { useEffect } from "react";
 import { Alert, Col, Container } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Alert as AlertType } from "../utils/types";
-
-const MULTIPLIER = 2;
+import { Alert as AlertT } from "../utils/types";
 
 interface Props {
-  alerts: AlertType,
-  setAlerts: React.Dispatch<React.SetStateAction<AlertType>>,
+  alerts: AlertT,
+  setAlerts: React.Dispatch<React.SetStateAction<AlertT>>,
 }
+
+// type Keys = keyof AlertT;
 
 const Alerts = ({
   alerts: {
-    invalidId,
-    noteDeletion,
+    noteDownload,
+    noteDelete,
     notFound,
-    passphraseNotRequired,
     serverError,
     tooManyRequests,
     wrongPassphrase,
   },
-  setAlerts
+  setAlerts,
 }: Props) => {
-  useEffect(() => {
-    if (passphraseNotRequired) {
-      let timer = setTimeout(() => {
-        setAlerts(prev => {
-          return {
-            ...prev,
-            passphraseNotRequired: false,
-          };
-        });
-      }, 1500 * MULTIPLIER);
-      return () => clearTimeout(timer);
-    }
-  }, [passphraseNotRequired, setAlerts]);
+  // const {
+  //   noteDownload,
+  //   noteDelete,
+  //   notFound,
+  //   serverError,
+  //   tooManyRequests,
+  //   wrongPassphrase,
+  // } = alerts;
+  // const setFalse = useCallback((type: Keys) => {
+  //   alerts[type] = false;
+  //   setAlerts(alerts);
+  // }, [alerts, setAlerts]);
 
   useEffect(() => {
     if (wrongPassphrase) {
-      let timer = setTimeout(() => {
-        setAlerts(prev => {
-          return {
-            ...prev,
-            wrongPassphrase: false,
-          };
-        });
-      }, 2000 * MULTIPLIER);
+      let timer = setTimeout(() => setAlerts(prev => {
+        return {
+          ...prev,
+          wrongPassphrase: null,
+        };
+      }), 6000);
+      // let timer = setTimeout(() => setFalse("wrongPassphrase"), 2500);
       return () => clearTimeout(timer);
     }
   }, [wrongPassphrase, setAlerts]);
 
   useEffect(() => {
-    if (noteDeletion) {
-      let timer = setTimeout(() => {
-        setAlerts(prev => {
-          return {
-            ...prev,
-            noteDeletion: null,
-          };
-        });
-      }, 2000 * MULTIPLIER);
+    if (noteDelete) {
+      let timer = setTimeout(() => setAlerts(prev => {
+        return {
+          ...prev,
+          noteDelete: null,
+        };
+      }), 5000);
       return () => clearTimeout(timer);
     }
-  }, [noteDeletion, setAlerts]);
+  }, [noteDelete, setAlerts]);
+
+  useEffect(() => {
+    if (noteDownload) {
+      let timer = setTimeout(() => setAlerts(prev => {
+        return {
+          ...prev,
+          noteDownload: null,
+        };
+      }), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [noteDownload, setAlerts]);
 
   return (
     <Container as={Col} xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }} className="himitsu-popups">
       <Alert
+        variant="primary"
+        show={!!noteDownload} onClose={() => setAlerts((previousValue) => {
+          return { ...previousValue, noteDownload: null };
+        })}
+        dismissible
+      >
+        <Alert.Heading>
+          <i className="bi bi-check"></i> {" "}
+          Note {noteDownload ? `(${noteDownload})` : null} has been downloaded locally
+        </Alert.Heading>
+        <p>
+          Ah yes that note, I remember it clearly. It was something about [REDACTED], ahaha such a good memory...
+        </p>
+      </Alert>
+
+      <Alert
         variant="success"
-        show={!!noteDeletion} onClose={() => setAlerts((previousValue) => {
-          return { ...previousValue, noteDeletion: null };
+        show={!!noteDelete} onClose={() => setAlerts((previousValue) => {
+          return { ...previousValue, noteDelete: null };
         })}
         dismissible
       >
         <Alert.Heading>
           <i className="bi bi-check-lg"></i> {" "}
-          Successfully deleted ID: {noteDeletion}
+          {
+            // if null or empty str
+            noteDelete
+              ? `Successfully deleted note ID: ${noteDelete}`
+              : "Note has been deleted"
+          }
         </Alert.Heading>
         <p>
           Well boys, we did it, racism is no more
@@ -84,8 +112,8 @@ const Alerts = ({
 
       <Alert
         variant="info"
-        show={notFound} onClose={() => setAlerts((previousValue) => {
-          return { ...previousValue, notFound: false };
+        show={!!notFound} onClose={() => setAlerts((previousValue) => {
+          return { ...previousValue, notFound: null };
         })}
         dismissible
       >
@@ -94,10 +122,9 @@ const Alerts = ({
           Note not found
         </Alert.Heading>
         <p>
-
           Note doesn't exist, or perhaps it's past its expiration date, {" "}
           <Link id="special-alert-link" to="/find" onClick={() => setAlerts((previousValue) => {
-            return { ...previousValue, notFound: false };
+            return { ...previousValue, notFound: null };
           })}>
             Try Again
           </Link>?
@@ -105,22 +132,9 @@ const Alerts = ({
       </Alert>
 
       <Alert
-        variant="info"
-        show={passphraseNotRequired} onClose={() => setAlerts((previousValue) => {
-          return { ...previousValue, passphraseNotRequired: false };
-        })}
-        dismissible
-      >
-        <Alert.Heading>
-          <i className="bi bi-info-circle"></i> {" "}
-          Passphrase was not required
-        </Alert.Heading>
-      </Alert>
-
-      <Alert
         variant="danger"
-        show={wrongPassphrase} onClose={() => setAlerts((previousValue) => {
-          return { ...previousValue, wrongPassphrase: false };
+        show={!!wrongPassphrase} onClose={() => setAlerts((previousValue) => {
+          return { ...previousValue, wrongPassphrase: null };
         })}
         dismissible
       >
@@ -135,8 +149,8 @@ const Alerts = ({
 
       <Alert
         variant="secondary"
-        show={serverError} onClose={() => setAlerts((previousValue) => {
-          return { ...previousValue, serverError: false };
+        show={!!serverError} onClose={() => setAlerts((previousValue) => {
+          return { ...previousValue, serverError: null };
         })}
         dismissible
       >
@@ -151,8 +165,8 @@ const Alerts = ({
 
       <Alert
         variant="warning"
-        show={tooManyRequests} onClose={() => setAlerts((previousValue) => {
-          return { ...previousValue, tooManyRequests: false };
+        show={!!tooManyRequests} onClose={() => setAlerts((previousValue) => {
+          return { ...previousValue, tooManyRequests: null };
         })}
         dismissible
       >

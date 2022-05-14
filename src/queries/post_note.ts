@@ -1,9 +1,11 @@
 import { Result } from ".";
-import { BASE_URL, DefaultValue } from "../utils/constants";
-import { EncryptionMethod, ErrorKind, NoteInfo as ResponseData } from "../utils/types";
+import { BASE_URL } from "../utils/constants";
+import { EncryptionMethod, NoteInfo as ResponseData } from "../utils/types";
 import CryptoJS from "crypto-js";
 import { into_readable_datetime } from "../utils/functions";
 
+// remind to change return type to be note info instead
+// let the caller handle all the data instead
 interface CurrentNoteInfoReturnType {
     id: number,
     expiryTime: string,
@@ -30,10 +32,9 @@ export default async function post_note({
     passphrase,
     encryption,
     content,
-    lifetime_in_secs }: Note
-): Promise<Result<CurrentNoteInfoReturnType>> {
-    let error: ErrorKind = DefaultValue.errors;
-    let url = BASE_URL + "/notes/new";
+    lifetime_in_secs
+}: Note): Promise<Result<CurrentNoteInfoReturnType>> {
+    let url = BASE_URL + "/notes";
     let request: Request;
 
     switch (encryption) {
@@ -82,24 +83,18 @@ export default async function post_note({
             ? into_readable_datetime(data.expired_at.secs_since_epoch)
             : "Never"
         return {
-            is_ok: true,
             data: {
                 expiryTime: readableDateTime,
                 id: data.id,
             },
-            error,
         };
     } else {
         return {
-            is_ok: false,
             data: {
                 expiryTime: "",
                 id: 0
             },
-            error: {
-                ...error,
-                serverError: true,
-            }
+            error: "clientError",
         }
     }
 }

@@ -1,16 +1,19 @@
 import { Result } from ".";
-import { BASE_URL, DefaultValue } from "../utils/constants";
+import { BASE_URL } from "../utils/constants";
 import { NoteInfo } from "../utils/types";
 
 interface Params {
-    id: number | null
+    id: number
 }
 
 type ResponseData = NoteInfo;
 
 // i swear to god, there was no documentation about throwing error here will be caught in useQuery
 // albeit Promise<Result<T>> does look pretty cool...
-const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
+const get_note_info = async ({ id }: Params): Promise<Result<ResponseData> | null> => {
+    // returns early because page first has to initialize with id that hasn't been checked
+    if (id === 0) return null;
+
     let data: ResponseData = {
         id: 0,
         title: "",
@@ -26,13 +29,6 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
         frontend_encryption: false,
     };
 
-    // returns early because page first has to initialize with id that hasn't been checked
-    if (id === null) return {
-        error: DefaultValue.errors,
-        is_ok: false,
-        data,
-    };
-
     let url = BASE_URL + "/notes/" + id;
 
     let response = await fetch(url, {
@@ -46,29 +42,19 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
     if (response.ok) {
         let data = await response.json();
         return {
-            is_ok: true,
-            error: DefaultValue.errors,
             data,
         }
     } else {
         if (response.status === 404) {
             return {
-                is_ok: false,
-                error: {
-                    ...DefaultValue.errors,
-                    notFound: true
-                },
+                error: "notFound",
                 data,
-            }
+            };
         } else {
             return {
-                is_ok: false,
-                error: {
-                    ...DefaultValue.errors,
-                    serverError: true
-                },
+                error: "serverError",
                 data,
-            }
+            };
         }
     }
 };
