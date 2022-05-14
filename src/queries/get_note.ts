@@ -1,5 +1,5 @@
 import { Result } from ".";
-import { BASE_URL, DefaultValue } from "../utils/constants";
+import { BASE_URL } from "../utils/constants";
 import { ErrorKind } from "../utils/types";
 
 interface GetNoteField {
@@ -29,7 +29,7 @@ interface ResponseData {
 
 const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<ResponseData>> => {
 	const url = BASE_URL + "/notes/" + id;
-	let error: ErrorKind = DefaultValue.errors;
+	let error: keyof ErrorKind;
 	let data: ResponseData = {
 		id: 0,
 		title: "",
@@ -62,33 +62,21 @@ const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<Respon
 	if (response.ok) {
 		data = await response.json();
 		return {
-			is_ok: true,
-			error,
 			data,
 		};
 	} else {
 		switch (response.status) {
 			case 404:
-				error = {
-					...error,
-					notFound: true,
-				};
+				error = "notFound";
 				break;
 			case 401:
-				error = {
-					...error,
-					wrongPassphrase: true,
-				}
+				error = "wrongPassphrase";
 				break;
 			default:
-				error = {
-					...error,
-					serverError: true,
-				};
+				error = "serverError";
 				break;
 		}
 		return {
-			is_ok: false,
 			error,
 			data
 		};

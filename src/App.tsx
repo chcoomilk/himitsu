@@ -5,7 +5,7 @@ import { AppContext } from "./utils/contexts";
 import { BASE_URL, DefaultValue, PATHS } from "./utils/constants";
 import { QueryClient, QueryClientProvider } from "react-query"
 // import { persistQueryClient } from "react-query/persistQueryClient-experimental"
-import { Alert, ErrorKind, UserActionInfo, AppSetting, EncryptionMethod } from "./utils/types";
+import { Alert, AppSetting } from "./utils/types";
 import { applyTheme } from "./theme";
 
 import "bootstrap/scss/bootstrap.scss";
@@ -18,6 +18,8 @@ import NewNote from "./pages/notes/NewNote";
 import FindNote from "./pages/notes/FindNote";
 import Note from "./pages/notes/Note";
 import Navigation from "./components/Navigation";
+import { local_storage } from "./utils/functions";
+import { Toaster } from "react-hot-toast";
 const NotFound = lazy(() => import("./pages/404"));
 const About = lazy(() => import("./pages/About"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -30,7 +32,7 @@ const queryClient = new QueryClient({
     queries: {
       queryFn: async ({ queryKey }) => {
         let url = BASE_URL + queryKey[0];
-        
+
         let response = await fetch(url, {
           method: "GET",
           mode: "cors",
@@ -38,7 +40,7 @@ const queryClient = new QueryClient({
             "Content-Type": "application/json"
           },
         });
-        
+
         if (response.ok) {
           return await response.json();
         } else {
@@ -61,47 +63,27 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const [alertsContext, setAlertsContext] = useState<ErrorKind | UserActionInfo>(DefaultValue.alerts);
-  const [propAlerts, setPropAlerts] = useState<Alert>(DefaultValue.alerts);
+  const [alerts, setAlerts] = useState<Alert>(DefaultValue.alerts);
   const [appSettings, setAppSettings] = useState<AppSetting>(DefaultValue.settings);
   // const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
 
+  // App renders twice for no reason in development, so this fire twice
+  // but issue does not occur in production, so as expected this should only fire once
   useEffect(() => {
-    const saved_settings_str = localStorage.getItem("settings");
-    if (saved_settings_str) {
-      const isSettingsValid = (settings: unknown): settings is AppSetting => {
-        return (
-          (settings as AppSetting).preferences !== undefined &&
-          (settings as AppSetting).preferences.app_theme !== undefined &&
-          (settings as AppSetting).preferences.encryption !== undefined &&
-          EncryptionMethod[(settings as AppSetting).preferences.encryption] !== undefined
-        );
-      };
-      const saved_settings: unknown = JSON.parse(saved_settings_str);
-
-      if (isSettingsValid(saved_settings)) {
-        setAppSettings(saved_settings);
-      }
+    const saved_settings = local_storage.get("settings");
+    if (saved_settings) {
+      setAppSettings(saved_settings);
     }
   }, [setAppSettings]);
 
   useEffect(() => applyTheme(appSettings.preferences.app_theme), [appSettings.preferences.app_theme]);
-
-  useEffect(() => {
-    setPropAlerts(prev => {
-      return {
-        ...prev,
-        ...alertsContext,
-      };
-    });
-  }, [alertsContext]);
 
   return (
     <Router>
       <AppContext.Provider
         value={{
           appSettings,
-          setAlerts: setAlertsContext,
+          setAlerts,
         }}
       >
         <QueryClientProvider client={queryClient}>
@@ -121,17 +103,20 @@ function App() {
               <span className="visually-hidden">Loading...</span>
             </Spinner>
           }>
-            <Alerts alerts={propAlerts} setAlerts={setPropAlerts} />
             <Container className="himitsu">
+              <Alerts alerts={alerts} setAlerts={setAlerts} />
+              <Toaster position="bottom-center" toastOptions={{
+                style: {
+                  borderRadius: '10px',
+                  background: '#333',
+                  color: '#fff',
+                },
+              }} />
               {
-                localStorage.getItem(DefaultValue.pages.NewNote.local_storage_name)
-                  ? <NewNoteModal
-                    data={JSON.parse(
-                      localStorage.getItem(
-                        DefaultValue.pages.NewNote.local_storage_name
-                      ) || "There's got to be something here!"
-                    )} />
-                  : null
+                (() => {
+                  let data = localStorage.getItem(DefaultValue.pages.NewNote.local_storage_name);
+                  return data ? <NewNoteModal data={JSON.parse(data)} /> : null;
+                })()
               }
               <Routes>
                 <Route path={"/404"} element={<NotFound />} />

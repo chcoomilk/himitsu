@@ -1,36 +1,27 @@
-import { Table } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Container, Spinner } from "react-bootstrap";
+import NotesTable from "../../components/note/NotesTable";
+import { local_storage } from "../../utils/functions";
+import { NoteInfo } from "../../utils/types";
 
 const Notes = () => {
+  const [notes, setNote] = useState<NoteInfo[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const notes = local_storage.get("notes");
+    setNote(notes);
+    setLoading(false);
+  }, [setLoading, setNote]);
+
   return (
-    <Table striped bordered hover variant="dark">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Username</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1</td>
-          <td>Mark</td>
-          <td>Otto</td>
-          <td>@mdo</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Jacob</td>
-          <td>Thornton</td>
-          <td>@fat</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td colSpan={2}>Larry the Bird</td>
-          <td>@twitter</td>
-        </tr>
-      </tbody>
-    </Table>
+    <Container className="overflow-auto">
+      {
+        loading
+          ? <Spinner animation="border" />
+          : <NotesTable className="align-self-center" responsive striped bordered hover variant="dark" notes={notes} />
+      }
+    </Container>
   );
 };
 

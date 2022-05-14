@@ -43,6 +43,7 @@ export const applyTheme = (theme: AppThemeSetting) => {
             css.setProperty("--himitsu-input-border", increase_brightness(base_bg_color, -2));
             css.setProperty("--himitsu-input-disabled-bg", increase_brightness_linear(base_bg_color, -2));
             css.setProperty("--himitsu-input-disabled-border", increase_brightness_linear(base_bg_color, -5));
+            css.setProperty("--himitsu-color-darken", increase_brightness_linear((base_text_color), -25));
             css.setProperty("--bs-body-color", (base_text_color));
             break;
         case AppThemeSetting.Black:

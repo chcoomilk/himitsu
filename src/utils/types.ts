@@ -1,18 +1,37 @@
 export interface ErrorKind {
-  notFound: boolean,
-  wrongPassphrase: boolean,
-  serverError: boolean,
-  invalidId: boolean,
-  passphraseNotRequired: boolean,
-  tooManyRequests: boolean,
+  notFound: string | null,
+  wrongPassphrase: string | null,
+  tooManyRequests: string | null,
+  serverError: string | null,
+  clientError: string | null,
 }
 
 export interface UserActionInfo {
-  noteDeletion: number | null,
+  noteDelete: string | null,
+  noteDownload: string | null,
 }
 
 // alert can either be error or notification from response
 export type Alert = ErrorKind & UserActionInfo
+
+export type RustDateTime = {
+  "nanos_since_epoch": number,
+  "secs_since_epoch": number,
+}
+
+// caution: fleeting dream
+// impl RustDateTime { }
+
+export type RawNote = {
+  "content": string,
+  "created_at": RustDateTime,
+  "updated_at": RustDateTime,
+  "backend_encryption": boolean,
+  "frontend_encryption": boolean,
+  "expired_at": RustDateTime | null,
+  "id": number,
+  "title": string,
+}
 
 export interface Note {
   id: number,
@@ -24,21 +43,16 @@ export interface Note {
   creationTime: string,
   lastUpdateTime: string,
   passphrase: string | null,
+  raw?: RawNote,
 }
 
 export interface NoteInfo {
-  "frontend_encryption": boolean,
-  "backend_encryption": boolean,
-  "created_at": {
-    "nanos_since_epoch": number,
-    "secs_since_epoch": number
-  },
-  "expired_at": {
-    "nanos_since_epoch": number,
-    "secs_since_epoch": number
-  } | null,
-  "id": number,
-  "title": string
+  frontend_encryption: boolean,
+  backend_encryption: boolean,
+  created_at: RustDateTime,
+  expired_at: RustDateTime | null,
+  id: number,
+  title: string
 }
 
 export enum EncryptionMethod {
@@ -49,16 +63,15 @@ export enum EncryptionMethod {
 
 export enum AppThemeSetting {
   // System = "system default",
-  Normal = "literally cra",
-  Black = "black",
+  Normal,
+  Black,
   // Light = "light",
 }
-
-export type AppTheme = AppThemeSetting.Black | AppThemeSetting.Normal;
 
 export type AppSetting = {
   preferences: {
     app_theme: AppThemeSetting,
     encryption: EncryptionMethod,
-  }
+  },
+  history: boolean,
 }

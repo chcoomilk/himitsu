@@ -4,11 +4,14 @@ $font-size-base: 1.1rem;
   font-size: $font-size-base * 3.25;
 }
 
-// For hiding vertical arrows in number input
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
+.btn-anchor {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline;
   margin: 0;
+  padding: 0;
 }
 
 #root {
@@ -20,11 +23,6 @@ input::-webkit-inner-spin-button {
 :root {
   --himitsu-body-bg: black;
 }
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-//
 
 .himitsu {
   flex-grow: 1;
@@ -40,6 +38,7 @@ input[type="number"] {
   margin-right: auto;
   left: 0;
   right: 0;
+  z-index: 420;
 }
 
 // variables
@@ -67,7 +66,7 @@ html {
   background-color: $body-bg-color;
 }
 
-a {
+a, .link-light {
   color: $text-color-normal;
 
   &:hover {

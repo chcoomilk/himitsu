@@ -4,23 +4,18 @@ if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No 
 
 export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
 
-const alerts: Alert = {
-    notFound: false,
-    serverError: false,
-    wrongPassphrase: false,
-    invalidId: false,
-    passphraseNotRequired: false,
-    tooManyRequests: false,
-    noteDeletion: null,
+const errors: ErrorKind = {
+    notFound: null,
+    serverError: null,
+    wrongPassphrase: null,
+    tooManyRequests: null,
+    clientError: null,
 };
 
-const errors: ErrorKind = {
-    notFound: false,
-    serverError: false,
-    wrongPassphrase: false,
-    invalidId: false,
-    passphraseNotRequired: false,
-    tooManyRequests: false,
+const alerts: Alert = {
+    ...errors,
+    noteDelete: null,
+    noteDownload: null,
 };
 
 const note: Note = {
@@ -39,7 +34,8 @@ const settings: AppSetting = {
     preferences: {
         app_theme: AppThemeSetting.Normal,
         encryption: EncryptionMethod.BackendEncryption,
-    }
+    },
+    history: false,
 };
 
 export const DefaultValue = {
@@ -65,14 +61,3 @@ export const PATHS = {
     settings: "/settings",
     not_found: "/404",
 }
-
-export const TIME_CONFIG: Intl.DateTimeFormatOptions | undefined = {
-    weekday: "short",
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h24"
-};

@@ -2,48 +2,44 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { Button, Collapse, Form, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-// import PassphraseInputGroup from "../../../components/passphrase/PassphraseInputGroup";
 import * as yup from "yup";
 import { PATHS } from "../../../utils/constants";
 import TitleSuggestions from "./TitleSuggestions";
-import { SearchOptions } from "./utils";
+import { Props } from "./utils";
 
 const schema = yup.object().shape({
-  title: yup.string(),
-  passphrase: yup.string().min(4).max(1024).nullable()
+  title: yup.string().min(3, "Put at least 3 characters in to search").nullable().required(),
 });
 
-type Props = {
-  setToggleSearch: React.Dispatch<React.SetStateAction<SearchOptions | null>>,
-  initialState?: {
-    title: string,
-  }
-}
-
-const FindByTitle = ({ setToggleSearch, initialState }: Props) => {
+const FindByTitle = ({ params: { query }, setParams }: Props) => {
   const navigate = useNavigate();
-  const [show, setShow] = useState(false);
+
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const formik = useFormik({
     validationSchema: schema,
     initialValues: {
-      title: "",
-      passphrase: null,
+      title: query,
     },
-    onSubmit: async (val) => {
-      navigate(PATHS.notes + "?q=" + formik.values.title);
+    onSubmit: async ({ title }) => {
+      navigate(PATHS.notes + "?q=" + title);
     },
   });
-  
+
   useEffect(() => {
-    if (initialState) {
-      formik.setValues(prev => {
+    if (formik.values.title) {
+      setParams(prev => {
         return {
-          ...prev,
-          title: initialState.title,
+          ...prev, query: formik.values.title,
+        };
+      });
+    } else {
+      setParams(prev => {
+        return {
+          ...prev, query: null,
         };
       });
     }
-  }, [initialState, formik]);
+  }, [formik.values.title, setParams]);
 
   return (
     <>
@@ -56,32 +52,37 @@ const FindByTitle = ({ setToggleSearch, initialState }: Props) => {
             name="title"
             placeholder="Enter note's title here"
             aria-controls="collapse-suggestions"
-            aria-expanded={show}
-            value={formik.values.title}
+            aria-expanded={showSuggestions}
+            value={formik.values.title || ""}
             onChange={formik.handleChange}
             onBlur={e => {
-              setShow(false);
+              setShowSuggestions(false);
               formik.handleBlur(e);
             }}
-            onFocus={_ => setShow(true)}
+            onFocus={_ => setShowSuggestions(true)}
             isInvalid={formik.touched.title && !!formik.errors.title}
           />
 
-          <Collapse in={show}>
+          <Collapse in={showSuggestions}>
             <div
               id="collapse-suggestions"
               className="position-absolute w-100"
               tabIndex={-1}
               onFocus={() => {
-                // this is needed when the user interacts inside here
-                setShow(true);
+                // this is needed when the user interacts inside here (the suggestions box)
+                setShowSuggestions(true);
               }}
             >
-              <TitleSuggestions
-                id="collapse-suggestions"
-                className="overflow-auto"
-                query={formik.values.title}
-              />
+              {
+                formik.isValid && /* only for passing typecheck */ formik.values.title
+                  ? (
+                    <TitleSuggestions
+                      id="collapse-suggestions"
+                      className="overflow-auto"
+                      query={formik.values.title}
+                    />
+                  ) : null
+              }
             </div>
           </Collapse>
 
@@ -89,8 +90,15 @@ const FindByTitle = ({ setToggleSearch, initialState }: Props) => {
         </Form.Group>
 
         <Stack direction="horizontal" gap={3}>
-          <Button variant="outline-warning" className="ms-auto" size="lg"
-            onClick={() => setToggleSearch(SearchOptions.ID)}>By ID
+          <Button
+            variant="outline-warning"
+            className="ms-auto"
+            size="lg"
+            onClick={() => setParams({ query: null, findBy: "id" })}
+          >
+            <i className="bi bi-search"></i>
+            {" "}
+            ID
           </Button>
           <Button type="submit" variant="primary" size="lg">Find</Button>
         </Stack>

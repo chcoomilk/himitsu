@@ -7,10 +7,10 @@ interface Props {
   title?: string,
   show: boolean,
   setShow: (value: boolean) => void,
-  setPassphrase: (passphrase: string) => void,
+  newPassphrase: (passphrase: string) => void,
 }
 
-const PassphraseModal = ({ title, show, setShow, setPassphrase: setParentPassphrase }: Props) => {
+const PassphraseModal = ({ title, show, setShow, newPassphrase: sendToParentPassphrase }: Props) => {
   const formik = useFormik({
     validationSchema: yup.object().shape({
       passphrase: yup.string().min(4).max(1024).required()
@@ -19,9 +19,9 @@ const PassphraseModal = ({ title, show, setShow, setPassphrase: setParentPassphr
       passphrase: ""
     },
     onSubmit: (value, form) => {
-      setParentPassphrase(value.passphrase);
-      form.resetForm();
+      sendToParentPassphrase(value.passphrase);
       setShow(false);
+      form.resetForm();
     }
   });
 

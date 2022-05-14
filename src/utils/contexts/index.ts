@@ -1,10 +1,10 @@
 import React from "react";
 import { DefaultValue } from "../constants";
-import { AppSetting, ErrorKind, UserActionInfo } from "../types";
+import { Alert, AppSetting } from "../types";
 import theme from "./theme";
 
 interface MainAppState {
-  setAlerts: React.Dispatch<React.SetStateAction<ErrorKind | UserActionInfo>>,
+  setAlerts: React.Dispatch<React.SetStateAction<Alert>>,
   appSettings: AppSetting,
 }
 
