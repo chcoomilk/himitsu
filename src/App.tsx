@@ -26,6 +26,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const Notes = lazy(() => import("./pages/notes/Notes"));
 const Alerts = lazy(() => import("./components/Alerts"));
 const NewNoteModal = lazy(() => import("./components/note/NewNoteModal"));
+const Debug = lazy(() => import("./Debug"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,6 +121,7 @@ function App() {
               }
               <Routes>
                 <Route path={"/404"} element={<NotFound />} />
+                <Route path={"/debug"} element={<Debug />} />
                 <Route path={PATHS.home} element={<Home />} />
                 <Route path={PATHS.about} element={<About />} />
                 <Route path={PATHS.new_note} element={<NewNote />} />

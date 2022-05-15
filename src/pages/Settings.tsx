@@ -1,11 +1,12 @@
 import { Col, Row, Form } from "react-bootstrap";
 import { AppSetting, AppThemeSetting, EncryptionMethod } from "../utils/types";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AppContext } from "../utils/contexts";
 import { local_storage } from "../utils/functions";
 import { Link } from "react-router-dom";
 import { DefaultValue, PATHS } from "../utils/constants";
 import * as changeCase from "change-case";
+import SimpleConfirmationModal from "../components/SimpleConfirmationModal";
 
 type Props = {
   setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
@@ -21,6 +22,14 @@ const createAppThemeKeys = <T extends AppThemeKey[]>(
 ) => array;
 
 const Settings = ({ setAppSettings }: Props) => {
+  const [modals, setModals] = useState({
+    deleteNotes: {
+      show: false,
+    },
+    resetSettings: {
+      show: false,
+    }
+  });
   const { appSettings } = useContext(AppContext);
 
   const setDefaultEncryption = (method: EncryptionMethod) => {
@@ -68,19 +77,65 @@ const Settings = ({ setAppSettings }: Props) => {
     });
   };
 
-  const handleResetSettings = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setAppSettings(DefaultValue.settings);
+  const handleResetSettings = () => {
+    setModals(prev => {
+      prev.resetSettings.show = true;
+      return { ...prev };
+    });
   };
 
-  const handleDeleteNotes = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleDeleteNotes = () => {
+    setModals(prev => {
+      prev.deleteNotes.show = true;
+      return { ...prev };
+    });
   };
 
   return (
     <Row>
       <Col xs={{ span: 6, offset: 3 }}>
-        <Form>
+        <SimpleConfirmationModal
+          centered
+          text="This will delete all of your saved notes' infos locally. Your saved notes in the backend is unaffected."
+          show={modals.deleteNotes.show}
+          onHide={() => setModals(prev => {
+            prev.deleteNotes.show = false;
+            return { ...prev };
+          })}
+          doDecide={val => {
+            if (val) {
+              local_storage.remove("notes");
+            }
+            setModals(prev => {
+              prev.deleteNotes.show = false;
+              return { ...prev };
+            });
+          }}
+        />
+
+        <SimpleConfirmationModal
+          centered
+          show={modals.resetSettings.show}
+          onHide={() => setModals(prev => {
+            prev.resetSettings.show = false;
+            return { ...prev };
+          })}
+          doDecide={val => {
+            if (val) {
+              setAppSettings(DefaultValue.settings);
+              local_storage.set(DefaultValue.settings);
+            }
+            setModals(prev => {
+              prev.resetSettings.show = false;
+              return { ...prev };
+            });
+          }}
+        />
+
+        <Form onSubmit={e => {
+          e.preventDefault();
+          return;
+        }}>
           <Form.Group as={Row} controlId="encryption">
             <Form.Label column lg="6">
               Default Encryption
@@ -98,9 +153,9 @@ const Settings = ({ setAppSettings }: Props) => {
                       name="encryption"
                       key={method}
                       id={method}
-                      defaultChecked={appSettings.preferences.encryption === EncryptionMethod[method]}
+                      checked={appSettings.preferences.encryption === EncryptionMethod[method]}
                       label={changeCase.capitalCase(method)}
-                      onClick={() => setDefaultEncryption(EncryptionMethod[method])}
+                      onChange={_ => setDefaultEncryption(EncryptionMethod[method])}
                     />
                   );
                 })
@@ -125,9 +180,9 @@ const Settings = ({ setAppSettings }: Props) => {
                       name="theme"
                       key={theme_name}
                       id={`theme-${theme_name}`}
-                      defaultChecked={appSettings.preferences.app_theme === AppThemeSetting[theme_name]}
+                      checked={appSettings.preferences.app_theme === AppThemeSetting[theme_name]}
                       label={changeCase.capitalCase(theme_name)}
-                      onClick={_ => setDefaultTheme(AppThemeSetting[theme_name])}
+                      onChange={_ => setDefaultTheme(AppThemeSetting[theme_name])}
                     />
                   );
                 })
@@ -144,9 +199,9 @@ const Settings = ({ setAppSettings }: Props) => {
                 id="history-switch"
                 type="switch"
                 name="history"
-                defaultChecked={appSettings.history}
+                checked={appSettings.history}
                 label={"New notes will " + (appSettings.history ? "be" : "not be") + " saved"}
-                onClick={_ => setSaveHistory(!appSettings.history)}
+                onChange={_ => setSaveHistory(!appSettings.history)}
               />
               <button onClick={handleDeleteNotes} className="btn-anchor link-danger text-decoration-none">
                 Delete all saved notes!

@@ -16,7 +16,7 @@ import { useTitle } from "../../custom-hooks";
 import toast from "react-hot-toast";
 import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
 
-interface Modal {
+interface PasswordModalState {
   showModal: boolean,
   passphrase: string | null,
 }
@@ -54,15 +54,15 @@ const NotePage = () => {
   })());
 
   const [note, setNote] = useState<Note | null>(null);
-  const [modalDecrypt, setModalDecrypt] = useState<Modal>({
+  const [modalDecrypt, setModalDecrypt] = useState<PasswordModalState>({
     showModal: false,
     passphrase: null,
   });
-  const [modalMutate, setModalMutate] = useState<Modal>({
+  const [modalMutate, setModalMutate] = useState<PasswordModalState>({
     showModal: false,
     passphrase: null
   });
-  const [modalDelete, setModalDelete] = useState<Modal>({
+  const [modalDelete, setModalDelete] = useState<PasswordModalState>({
     showModal: false,
     passphrase: null
   });
@@ -82,7 +82,7 @@ const NotePage = () => {
       } else {
         setAlerts(prev => {
           prev[error] = data.id.toString();
-          return prev;
+          return { ...prev };
         });
       }
     }
@@ -126,7 +126,7 @@ const NotePage = () => {
         let _ = result.error;
         setAlerts(prev => {
           prev[_] = id.toString();
-          return prev;
+          return { ...prev };
         });
 
         if (result.error === "wrongPassphrase") {
@@ -143,7 +143,7 @@ const NotePage = () => {
       setTitle(generate_face());
       setAlerts(prev => {
         prev.serverError = id.toString();
-        return prev;
+        return { ...prev };
       })
     },
   });
@@ -210,7 +210,7 @@ const NotePage = () => {
       } else {
         setAlerts(prev => {
           prev.serverError = id.toString();
-          return prev;
+          return { ...prev };
         });
       }
     }
@@ -221,7 +221,7 @@ const NotePage = () => {
     if (content) {
       setAlerts(prev => {
         prev.wrongPassphrase = id.toString();
-        return prev;
+        return { ...prev };
       });
       setModalDecrypt({
         passphrase: null,
@@ -236,7 +236,7 @@ const NotePage = () => {
     } else {
       setAlerts(prev => {
         prev.wrongPassphrase = id.toString();
-        return prev;
+        return { ...prev };
       });
       setModalDecrypt({
         passphrase: null,
@@ -287,7 +287,7 @@ const NotePage = () => {
         });
         setAlerts(prev => {
           prev.wrongPassphrase = id.toString();
-          return prev;
+          return { ...prev };
         });
       }
     }
@@ -351,7 +351,7 @@ const NotePage = () => {
 
       setAlerts(prev => {
         prev.noteDownload = note.title.toString();
-        return prev;
+        return { ...prev };
       });
     } else {
       toast.error("Unable to download, note is malformed");
@@ -396,8 +396,9 @@ const NotePage = () => {
       <SimpleConfirmationModal
         centered
         show={modalConfirmDelete}
+        onHide={() => setModalConfirmDelete(false)}
         text={`You are about to delete ${note?.title}`}
-        result={val => {
+        doDecide={val => {
           if (val) {
             del_note({ id: id, passphrase: null })
           }
