@@ -122,14 +122,14 @@ const NewNote = () => {
           } else {
             setAlerts(prev => {
               prev[error] = "nopointer";
-              return prev;
+              return { ...prev };
             });
           }
         })
         .catch((e) => {
           setAlerts(prev => {
             prev.serverError = String(e);
-            return prev;
+            return { ...prev };
           });
         }).finally(() => {
           setSubmitting(false);
