@@ -35,7 +35,7 @@ const Alerts = ({
   // }, [alerts, setAlerts]);
 
   useEffect(() => {
-    if (wrongPassphrase) {
+    if (wrongPassphrase !== null) {
       let timer = setTimeout(() => setAlerts(prev => {
         return {
           ...prev,
@@ -48,7 +48,7 @@ const Alerts = ({
   }, [wrongPassphrase, setAlerts]);
 
   useEffect(() => {
-    if (noteDelete) {
+    if (noteDelete !== null) {
       let timer = setTimeout(() => setAlerts(prev => {
         return {
           ...prev,
@@ -60,7 +60,7 @@ const Alerts = ({
   }, [noteDelete, setAlerts]);
 
   useEffect(() => {
-    if (noteDownload) {
+    if (noteDownload !== null) {
       let timer = setTimeout(() => setAlerts(prev => {
         return {
           ...prev,
@@ -75,7 +75,7 @@ const Alerts = ({
     <Container as={Col} xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }} className="himitsu-popups">
       <Alert
         variant="primary"
-        show={!!noteDownload} onClose={() => setAlerts((previousValue) => {
+        show={noteDownload !== null} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, noteDownload: null };
         })}
         dismissible
@@ -91,7 +91,7 @@ const Alerts = ({
 
       <Alert
         variant="success"
-        show={!!noteDelete} onClose={() => setAlerts((previousValue) => {
+        show={noteDelete !== null} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, noteDelete: null };
         })}
         dismissible
@@ -112,7 +112,7 @@ const Alerts = ({
 
       <Alert
         variant="info"
-        show={!!notFound} onClose={() => setAlerts((previousValue) => {
+        show={notFound !== null} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, notFound: null };
         })}
         dismissible
@@ -133,7 +133,7 @@ const Alerts = ({
 
       <Alert
         variant="danger"
-        show={!!wrongPassphrase} onClose={() => setAlerts((previousValue) => {
+        show={wrongPassphrase !== null} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, wrongPassphrase: null };
         })}
         dismissible
@@ -149,7 +149,7 @@ const Alerts = ({
 
       <Alert
         variant="secondary"
-        show={!!serverError} onClose={() => setAlerts((previousValue) => {
+        show={serverError !== null} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, serverError: null };
         })}
         dismissible
@@ -165,7 +165,7 @@ const Alerts = ({
 
       <Alert
         variant="warning"
-        show={!!tooManyRequests} onClose={() => setAlerts((previousValue) => {
+        show={tooManyRequests !== null} onClose={() => setAlerts((previousValue) => {
           return { ...previousValue, tooManyRequests: null };
         })}
         dismissible
