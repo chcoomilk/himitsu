@@ -6,11 +6,12 @@ import { useMutation } from "react-query";
 import * as changeCase from "change-case";
 
 import NewNoteModal from "../../components/note/NewNoteModal";
-import { AppContext } from "../../utils/contexts";
+import AppContext from "../../utils/app_state_context";
 import { EncryptionMethod } from "../../utils/types";
 import { DefaultValue } from "../../utils/constants";
 import { post_note } from "../../queries";
 import { useTitle } from "../../custom-hooks";
+import { unwrap } from "../../utils/functions";
 
 const BasicNoteSchema = {
   title: yup.string(),
@@ -37,7 +38,7 @@ const BasicNoteSchema = {
 };
 
 const NewNote = () => {
-  const { setAlerts, appSettings } = useContext(AppContext);
+  const { appSettings } = useContext(AppContext);
   const [noteResult, setNoteResult] = useState({
     id: 0,
     expiryTime: "uwu",
@@ -120,17 +121,16 @@ const NewNote = () => {
             window.localStorage.setItem(DefaultValue.pages.NewNote.local_storage_name, JSON.stringify(res));
             resetForm();
           } else {
-            setAlerts(prev => {
-              prev[error] = "nopointer";
-              return { ...prev };
-            });
+            unwrap.default(error);
+            // danger(
+            //   generate_alert_text({ key: error }),
+            //   { timeout: 6000 }
+            // );
           }
         })
         .catch((e) => {
-          setAlerts(prev => {
-            prev.serverError = String(e);
-            return { ...prev };
-          });
+          unwrap.default("clientError");
+          console.error(e);
         }).finally(() => {
           setSubmitting(false);
         });

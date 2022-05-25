@@ -1,23 +1,22 @@
-import { useContext } from "react";
-import { Button } from "react-bootstrap";
-import { AppContext } from "./utils/contexts";
-import { Alert } from "./utils/types";
+import { Alert, Button } from "react-bootstrap";
+import toast from "react-hot-toast";
+import { Alert as AlertT } from "./utils/types";
+import { unwrap } from "./utils/functions";
 
-type AlertKeys = keyof Alert;
+type AlertKeys = keyof AlertT;
 const createAlertKeys = <T extends AlertKeys[]>(
   ...array: T & ([AlertKeys] extends [T[number]] ? unknown : "Missing a key")
 ) => array;
 
 const Debug = () => {
-  const { setAlerts } = useContext(AppContext);
   return (
     <>
       {
         createAlertKeys(
           "clientError",
           "notFound",
-          "noteDelete",
-          "noteDownload",
+          "genericDelete",
+          "genericSave",
           "serverError",
           "tooManyRequests",
           "wrongPassphrase",
@@ -27,10 +26,7 @@ const Debug = () => {
               className="mb-3"
               key={key}
               onClick={_ => {
-                setAlerts(alerts => {
-                  alerts[key] = "";
-                  return { ...alerts };
-                });
+                unwrap.default(key);
               }}
             >
               {key}
@@ -40,10 +36,32 @@ const Debug = () => {
       }
       <Button
         className="mb-3"
-        onClick={_ => { }}
+        onClick={_ => {
+          toast((t) => (
+            <Alert dismissible onClose={() => {
+              toast.dismiss(t.id);
+            }}>
+              <Alert.Heading>
+                Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello
+              </Alert.Heading>
+              <p>
+                World World World World World World World Why Stack
+              </p>
+            </Alert>
+          ), { duration: Infinity, className: "toast-alert" });
+        }}
       >
         Toast
       </Button>
+      <Alert dismissible onClose={() => {
+      }}>
+        <Alert.Heading>
+          Hello
+        </Alert.Heading>
+        <p>
+          World
+        </p>
+      </Alert>
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { Col, Row, Form } from "react-bootstrap";
 import { AppSetting, AppThemeSetting, EncryptionMethod } from "../utils/types";
 import React, { useContext, useState } from "react";
-import { AppContext } from "../utils/contexts";
+import AppContext from "../utils/app_state_context";
 import { local_storage } from "../utils/functions";
 import { Link } from "react-router-dom";
 import { DefaultValue, PATHS } from "../utils/constants";
@@ -96,6 +96,7 @@ const Settings = ({ setAppSettings }: Props) => {
       <Col xs={{ span: 6, offset: 3 }}>
         <SimpleConfirmationModal
           centered
+          title="Delete all saved notes?"
           text="This will delete all of your saved notes' infos locally. Your saved notes in the backend is unaffected."
           show={modals.deleteNotes.show}
           onHide={() => setModals(prev => {
@@ -115,6 +116,8 @@ const Settings = ({ setAppSettings }: Props) => {
 
         <SimpleConfirmationModal
           centered
+          title="Reset settings to default?"
+          text="This will reset all the settings back to their original value"
           show={modals.resetSettings.show}
           onHide={() => setModals(prev => {
             prev.resetSettings.show = false;

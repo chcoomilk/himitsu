@@ -7,8 +7,8 @@ export interface ErrorKind {
 }
 
 export interface UserActionInfo {
-  noteDelete: string | null,
-  noteDownload: string | null,
+  genericDelete: string | null,
+  genericSave: string | null,
 }
 
 // alert can either be error or notification from response
@@ -18,9 +18,6 @@ export type RustDateTime = {
   "nanos_since_epoch": number,
   "secs_since_epoch": number,
 }
-
-// caution: fleeting dream
-// impl RustDateTime { }
 
 export type RawNote = {
   "content": string,

@@ -41,6 +41,16 @@ $font-size-base: 1.1rem;
   z-index: 420;
 }
 
+.toast-alert {
+  padding: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+
+  div:first-child {
+    margin: 0 !important;
+  }
+}
+
 // variables
 $body-bg-color: var(--himitsu-body-bg);
 $bg-color: var(--himitsu-bg);
@@ -66,7 +76,8 @@ html {
   background-color: $body-bg-color;
 }
 
-a, .link-light {
+a,
+.link-light {
   color: $text-color-normal;
 
   &:hover {
@@ -141,9 +152,9 @@ span.input-group-text {
 //
 
 a#special-alert-link {
-  color: rgb(5, 81, 96);
+  color: rgb(94, 96, 5);
 }
 
 a#special-alert-link:hover {
-  color: rgb(65, 141, 156);
+  color: rgb(152, 156, 65);
 }

@@ -91,9 +91,14 @@ function set(item: AppSetting | NoteInfo[] | NoteInfo) {
 }
 
 function remove(key: LocalStorageItemKeys) {
-    localStorage.remove(key);
+    localStorage.removeItem(key);
 }
 
+/**
+ * a typed localStorage
+ * 
+ * add, edit the code freely in utils/functions
+ */
 const local_storage = {
     get,
     set,

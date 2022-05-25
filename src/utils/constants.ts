@@ -14,8 +14,8 @@ const errors: ErrorKind = {
 
 const alerts: Alert = {
     ...errors,
-    noteDelete: null,
-    noteDownload: null,
+    genericDelete: null,
+    genericSave: null,
 };
 
 const note: Note = {

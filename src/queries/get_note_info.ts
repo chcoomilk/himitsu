@@ -10,10 +10,7 @@ type ResponseData = NoteInfo;
 
 // i swear to god, there was no documentation about throwing error here will be caught in useQuery
 // albeit Promise<Result<T>> does look pretty cool...
-const get_note_info = async ({ id }: Params): Promise<Result<ResponseData> | null> => {
-    // returns early because page first has to initialize with id that hasn't been checked
-    if (id === 0) return null;
-
+const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
     let data: ResponseData = {
         id: 0,
         title: "",
