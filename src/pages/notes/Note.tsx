@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import { useNavigate, useLocation, Location } from "react-router-dom";
 import { PATHS } from "../../utils/constants";
 import toast from "react-hot-toast";
-import Note from "./note";
+import Note from "./_Note";
 
 interface State {
   passphrase: string | null

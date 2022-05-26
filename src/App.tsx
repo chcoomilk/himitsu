@@ -45,13 +45,15 @@ function App() {
           <span className="visually-hidden">Loading...</span>
         </Spinner>
       }>
-        <Toaster position="bottom-center" toastOptions={{
-          style: {
-            borderRadius: '10px',
-            background: '#333',
-            color: '#fff',
-          },
-        }} />
+        <Toaster
+          position="bottom-center"
+          toastOptions={{
+            style: {
+              background: '#333',
+              color: '#fff',
+            },
+          }}
+        />
         <Container className="himitsu">
           {
             (() => {
