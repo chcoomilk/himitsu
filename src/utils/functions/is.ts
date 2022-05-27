@@ -36,9 +36,9 @@ export function is_note(item: unknown): item is NoteInfo {
 
 export const is_settings = (item: unknown): item is AppSetting => {
     return (
-        (item as AppSetting).preferences !== undefined &&
-        AppThemeSetting[(item as AppSetting).preferences.app_theme] !== undefined &&
-        EncryptionMethod[(item as AppSetting).preferences.encryption] !== undefined
+        AppThemeSetting[(item as AppSetting).app_theme] !== undefined &&
+        EncryptionMethod[(item as AppSetting).encryption] !== undefined &&
+        typeof (item as AppSetting).history === "boolean"
     );
 };
 
@@ -50,6 +50,6 @@ export const unsafe_is_note = (item: unknown): item is NoteInfo => {
 
 export const unsafe_is_settings = (item: unknown): item is AppSetting => {
     return (
-        (item as AppSetting).preferences !== undefined
+        (item as AppSetting).encryption !== undefined
     );
 };

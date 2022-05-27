@@ -44,7 +44,7 @@ function get(key: LocalStorageItemKeys): LocalStorageitems {
                         if (is_note(data)) {
                             return data;
                         }
-                        
+
                         throw invalid_error;
                     });
 
@@ -62,12 +62,25 @@ function get(key: LocalStorageItemKeys): LocalStorageitems {
     } catch (error) {
         console.error(error);
         toast.error(`Invalid item in ${key}`);
+        let prefix = "_trashed-error";
+        console.warn("saved notes might get reset, saving last known (invalid) item in local storage prefixed " + prefix);
+        console.log("trying to save\n", saved_item);
+        console.log("...");
+        try {
+            localStorage.setItem(prefix + Date.now().toString(), saved_item);
+            console.log("...saved!");
+        } catch (error) {
+            console.log("...failed!");
+            console.error(error);
+        }
+
+        localStorage.removeItem(key);
     }
 
     return null;
 };
 
-function set(item: AppSetting | NoteInfo[] | NoteInfo) {
+function set(item: AppSetting | NoteInfo[] | NoteInfo, key?: LocalStorageItemKeys) {
     const save = (key: LocalStorageItemKeys, item: AppSetting | NoteInfo[] | NoteInfo) => {
         try {
             localStorage.setItem(key, JSON.stringify(item));
@@ -76,7 +89,11 @@ function set(item: AppSetting | NoteInfo[] | NoteInfo) {
             toast(`Failed to save item of ${key}`);
         }
     };
-    let key: LocalStorageItemKeys;
+
+    if (key) {
+        save(key, item);
+        return;
+    }
 
     if (unsafe_is_note(item)) {
         key = "last_saved_note";

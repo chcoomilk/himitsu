@@ -93,6 +93,11 @@ a,
   color: $text-color-normal;
 }
 
+//   background-color: $input-bg-color;
+//   border: 1px solid $input-border-color;
+//   color: $text-color-normal;
+// }
+
 .form-control:disabled {
   background-color: $input-bg-color-disabled;
   border: 1px solid $input-border-color;
@@ -102,7 +107,7 @@ a,
 .modal .modal-content,
 .modal .modal-header,
 .modal .modal-footer {
-  background-color: $bg-color;
+  background-color: $body-bg-color;
   color: $text-color-normal;
   border-style: none;
 }

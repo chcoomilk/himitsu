@@ -66,10 +66,8 @@ export enum AppThemeSetting {
 }
 
 export type AppSetting = {
-  preferences: {
-    app_theme: AppThemeSetting,
-    encryption: EncryptionMethod,
-  },
+  app_theme: AppThemeSetting,
+  encryption: EncryptionMethod,
   history: boolean,
 }
 

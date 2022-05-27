@@ -36,10 +36,7 @@ const Settings = ({ setAppSettings }: Props) => {
     setAppSettings(prev => {
       let settings = {
         ...prev,
-        preferences: {
-          ...prev.preferences,
-          encryption: method,
-        },
+        encryption: method,
       };
 
       // localStorage.setItem("settings", JSON.stringify(settings));
@@ -52,10 +49,7 @@ const Settings = ({ setAppSettings }: Props) => {
     setAppSettings(prev => {
       let settings = {
         ...prev,
-        preferences: {
-          ...prev.preferences,
-          app_theme: theme,
-        }
+        app_theme: theme,
       };
 
       // localStorage.setItem("settings", JSON.stringify(settings));
@@ -156,7 +150,7 @@ const Settings = ({ setAppSettings }: Props) => {
                       name="encryption"
                       key={method}
                       id={method}
-                      checked={appSettings.preferences.encryption === EncryptionMethod[method]}
+                      checked={appSettings.encryption === EncryptionMethod[method]}
                       label={changeCase.capitalCase(method)}
                       onChange={_ => setDefaultEncryption(EncryptionMethod[method])}
                     />
@@ -183,7 +177,7 @@ const Settings = ({ setAppSettings }: Props) => {
                       name="theme"
                       key={theme_name}
                       id={`theme-${theme_name}`}
-                      checked={appSettings.preferences.app_theme === AppThemeSetting[theme_name]}
+                      checked={appSettings.app_theme === AppThemeSetting[theme_name]}
                       label={changeCase.capitalCase(theme_name)}
                       onChange={_ => setDefaultTheme(AppThemeSetting[theme_name])}
                     />

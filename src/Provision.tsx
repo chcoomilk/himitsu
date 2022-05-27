@@ -59,7 +59,7 @@ const ContextCoupler = ({ appSettings, setAppSettings, children }: AppDefinition
     }
   }, [setAppSettings]);
 
-  useEffect(() => applyTheme(appSettings.preferences.app_theme), [appSettings.preferences.app_theme]);
+  useEffect(() => applyTheme(appSettings.app_theme), [appSettings.app_theme]);
   return (
     <BrowserRouter>
       <AppContext.Provider

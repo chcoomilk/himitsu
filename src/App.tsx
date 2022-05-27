@@ -16,6 +16,7 @@ import FindNote from "./pages/notes/FindNote";
 import Note from "./pages/notes/Note";
 import { default as Navbar } from "./components/Navigation";
 import ContextCoupler from "./Provision";
+import { local_storage } from "./utils/functions";
 const NotFound = lazy(() => import("./pages/404"));
 const About = lazy(() => import("./pages/About"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -57,8 +58,8 @@ function App() {
         <Container className="himitsu">
           {
             (() => {
-              let data = localStorage.getItem(DefaultValue.pages.NewNote.local_storage_name);
-              return data ? <NewNoteModal data={JSON.parse(data)} /> : null;
+              let data = local_storage.get("last_saved_note");
+              return data ? <NewNoteModal data={data} onHide={() => local_storage.remove("last_saved_note")} /> : null;
             })()
           }
           <Routes>

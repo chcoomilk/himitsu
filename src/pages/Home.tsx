@@ -1,6 +1,6 @@
 import { Button, Col, Row, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { DefaultValue, PATHS } from "../utils/constants";
+import { PATHS } from "../utils/constants";
 
 const Home = () => {
   return (
@@ -19,7 +19,6 @@ const Home = () => {
                 <Button
                   size="lg"
                   variant="success"
-                  onClick={(_) => window.localStorage.removeItem(DefaultValue.pages.NewNote.local_storage_name)}
                 >Add</Button>
               </Link>
               <Link to={PATHS.find_note} className="me-auto">

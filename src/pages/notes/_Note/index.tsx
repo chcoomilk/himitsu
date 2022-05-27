@@ -344,11 +344,12 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         <Alert show={t.visible} variant="primary" dismissible onClose={() => toast.dismiss(t.id)}>
           <Alert.Heading>
             <i className="bi bi-check"></i> {" "}
-            {`Note "${note.title}" has been saved locally`}
+            {`Note "${truncate_string(note.title, 18)}" has been saved locally`}
           </Alert.Heading>
           <p>
             Ah yes that note, I remember it clearly.
-            It was something about [REDACTED], ahaha such memory to behold...
+            It was something about [REDACTED],<br />
+            ahaha such memory to behold...
           </p>
         </Alert>
       ), { duration: 6000, ...unwrap.opts });

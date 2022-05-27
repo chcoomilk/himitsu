@@ -74,14 +74,17 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
               }}
             >
               {
-                formik.isValid && /* only for passing typecheck */ formik.values.title
-                  ? (
-                    <TitleSuggestions
-                      id="collapse-suggestions"
-                      className="overflow-auto"
-                      query={formik.values.title}
-                    />
-                  ) : null
+                (
+                  formik.isValid &&
+                  formik.values.title /* only for passing typecheck */ &&
+                  formik.values.title.length >= 3 /* what the heck formik.. or yup idk */
+                ) ? (
+                  <TitleSuggestions
+                    id="collapse-suggestions"
+                    className="overflow-auto"
+                    query={formik.values.title}
+                  />
+                ) : null
               }
             </div>
           </Collapse>
