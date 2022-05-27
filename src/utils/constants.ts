@@ -14,8 +14,8 @@ const errors: ErrorKind = {
 
 const alerts: Alert = {
     ...errors,
-    noteDelete: null,
-    noteDownload: null,
+    genericDelete: null,
+    genericSave: null,
 };
 
 const note: Note = {
@@ -31,10 +31,8 @@ const note: Note = {
 };
 
 const settings: AppSetting = {
-    preferences: {
-        app_theme: AppThemeSetting.Normal,
-        encryption: EncryptionMethod.BackendEncryption,
-    },
+    app_theme: AppThemeSetting.Normal,
+    encryption: EncryptionMethod.BackendEncryption,
     history: false,
 };
 

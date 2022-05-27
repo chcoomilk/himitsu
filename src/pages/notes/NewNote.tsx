@@ -6,11 +6,12 @@ import { useMutation } from "react-query";
 import * as changeCase from "change-case";
 
 import NewNoteModal from "../../components/note/NewNoteModal";
-import { AppContext } from "../../utils/contexts";
-import { EncryptionMethod } from "../../utils/types";
+import AppContext from "../../utils/app_state_context";
+import { EncryptionMethod, NoteInfo } from "../../utils/types";
 import { DefaultValue } from "../../utils/constants";
 import { post_note } from "../../queries";
 import { useTitle } from "../../custom-hooks";
+import { local_storage, unwrap } from "../../utils/functions";
 
 const BasicNoteSchema = {
   title: yup.string(),
@@ -36,15 +37,14 @@ const BasicNoteSchema = {
   }),
 };
 
+type UNoteInfo = NoteInfo & {
+  passphrase?: string,
+}
+
 const NewNote = () => {
-  const { setAlerts, appSettings } = useContext(AppContext);
-  const [noteResult, setNoteResult] = useState({
-    id: 0,
-    expiryTime: "uwu",
-    passphrase: "",
-    fetched: false,
-  });
-  const [encryption, setEncryption] = useState<EncryptionMethod>(appSettings.preferences.encryption);
+  const { appSettings } = useContext(AppContext);
+  const [noteResult, setNoteResult] = useState<UNoteInfo | null>(null);
+  const [encryption, setEncryption] = useState<EncryptionMethod>(appSettings.encryption);
   useTitle(changeCase.capitalCase(DefaultValue.pages.NewNote.name));
   const { mutateAsync } = useMutation(post_note);
 
@@ -110,27 +110,27 @@ const NewNote = () => {
         .then(result => {
           const { data, error } = result;
           if (!error) {
-            const res = {
-              expiryTime: data.expiryTime,
-              id: data.id,
-              passphrase: val.passphrase.value,
-              fetched: true,
-            };
-            setNoteResult(res);
-            window.localStorage.setItem(DefaultValue.pages.NewNote.local_storage_name, JSON.stringify(res));
+            setNoteResult({
+              ...data,
+              passphrase: val.passphrase.value || undefined,
+            });
+            local_storage.set(data);
+            if (appSettings.history) {
+              let notes = local_storage.get("notes");
+              if (notes) {
+                notes.push(data)
+                local_storage.set(notes);
+              } else {
+                local_storage.set([data]);
+              }
+            }
             resetForm();
           } else {
-            setAlerts(prev => {
-              prev[error] = "nopointer";
-              return { ...prev };
-            });
+            unwrap.default(error);
           }
         })
         .catch((e) => {
-          setAlerts(prev => {
-            prev.serverError = String(e);
-            return { ...prev };
-          });
+          console.error(e);
         }).finally(() => {
           setSubmitting(false);
         });
@@ -139,17 +139,12 @@ const NewNote = () => {
 
   return (
     <Row className="mb-3">
-      <NewNoteModal
-        control={{
-          show: noteResult.fetched,
-          setShow: (show) => setNoteResult(prev => {
-            return {
-              ...prev,
-              fetched: show,
-            };
-          })
-        }}
-        data={{ ...noteResult }} />
+      {
+        noteResult && (<NewNoteModal data={{ ...noteResult }} onHide={() => {
+          setNoteResult(null);
+          local_storage.remove("last_saved_note");
+        }} />)
+      }
       <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
         <Form noValidate onSubmit={formik.handleSubmit}>
           <Form.Group controlId="formBasicTitle" className="position-relative mb-4">

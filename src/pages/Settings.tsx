@@ -1,7 +1,7 @@
 import { Col, Row, Form } from "react-bootstrap";
 import { AppSetting, AppThemeSetting, EncryptionMethod } from "../utils/types";
 import React, { useContext, useState } from "react";
-import { AppContext } from "../utils/contexts";
+import AppContext from "../utils/app_state_context";
 import { local_storage } from "../utils/functions";
 import { Link } from "react-router-dom";
 import { DefaultValue, PATHS } from "../utils/constants";
@@ -36,10 +36,7 @@ const Settings = ({ setAppSettings }: Props) => {
     setAppSettings(prev => {
       let settings = {
         ...prev,
-        preferences: {
-          ...prev.preferences,
-          encryption: method,
-        },
+        encryption: method,
       };
 
       // localStorage.setItem("settings", JSON.stringify(settings));
@@ -52,10 +49,7 @@ const Settings = ({ setAppSettings }: Props) => {
     setAppSettings(prev => {
       let settings = {
         ...prev,
-        preferences: {
-          ...prev.preferences,
-          app_theme: theme,
-        }
+        app_theme: theme,
       };
 
       // localStorage.setItem("settings", JSON.stringify(settings));
@@ -96,6 +90,7 @@ const Settings = ({ setAppSettings }: Props) => {
       <Col xs={{ span: 6, offset: 3 }}>
         <SimpleConfirmationModal
           centered
+          title="Delete all saved notes?"
           text="This will delete all of your saved notes' infos locally. Your saved notes in the backend is unaffected."
           show={modals.deleteNotes.show}
           onHide={() => setModals(prev => {
@@ -115,6 +110,8 @@ const Settings = ({ setAppSettings }: Props) => {
 
         <SimpleConfirmationModal
           centered
+          title="Reset settings to default?"
+          text="This will reset all the settings back to their original value"
           show={modals.resetSettings.show}
           onHide={() => setModals(prev => {
             prev.resetSettings.show = false;
@@ -153,7 +150,7 @@ const Settings = ({ setAppSettings }: Props) => {
                       name="encryption"
                       key={method}
                       id={method}
-                      checked={appSettings.preferences.encryption === EncryptionMethod[method]}
+                      checked={appSettings.encryption === EncryptionMethod[method]}
                       label={changeCase.capitalCase(method)}
                       onChange={_ => setDefaultEncryption(EncryptionMethod[method])}
                     />
@@ -180,7 +177,7 @@ const Settings = ({ setAppSettings }: Props) => {
                       name="theme"
                       key={theme_name}
                       id={`theme-${theme_name}`}
-                      checked={appSettings.preferences.app_theme === AppThemeSetting[theme_name]}
+                      checked={appSettings.app_theme === AppThemeSetting[theme_name]}
                       label={changeCase.capitalCase(theme_name)}
                       onChange={_ => setDefaultTheme(AppThemeSetting[theme_name])}
                     />

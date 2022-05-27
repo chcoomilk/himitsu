@@ -27,7 +27,7 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
             ).map(header => {
               let custom: string | undefined;
               custom = changeCase.noCase(header);
-              return (<th>{custom || header}</th>);
+              return (<th key={header}>{custom || header}</th>);
             })
           }
         </tr>
@@ -37,7 +37,7 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
           notes && notes.length
             ? notes.map(note => {
               return (
-                <tr>
+                <tr key={note.id}>
                   <td>{note.id}</td>
                   <td>{note.title}</td>
                   <td>{into_readable_datetime(note.created_at.secs_since_epoch)}</td>

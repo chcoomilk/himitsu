@@ -1,41 +1,31 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Form, FormControl, InputGroup, Modal, Stack } from "react-bootstrap";
-import { DefaultValue, PATHS } from "../../utils/constants";
 import CopyButton from "../button/CopyButton";
 import PassphraseInputGroup from "../passphrase/PassphraseInputGroup";
+import { PATHS } from "../../utils/constants";
+import { NoteInfo } from "../../utils/types";
+import { into_readable_datetime } from "../../utils/functions";
 
-interface Props {
-  control?: {
-    show: boolean,
-    setShow: (show: boolean) => void,
-  }
-  data: {
-    id: number,
-    expiryTime: string,
-    passphrase: string,
-  },
+type UNoteInfo = NoteInfo & {
+  passphrase?: string,
 }
 
-const NewNoteModal = ({ control, data: { id, expiryTime, passphrase } }: Props) => {
-  const [showSelf, setShowSelf] = useState(true);
-  useEffect(() => setShowSelf(control ? control.show : true), [control]);
+interface Props {
+  data: UNoteInfo,
+  onHide?: () => void,
+}
 
-  let handleClose = () => { };
-  control
-    ? handleClose = () => {
-      window.localStorage.removeItem(DefaultValue.pages.NewNote.local_storage_name);
-      control.setShow(false);
-    }
-    : handleClose = () => {
-      window.localStorage.removeItem(DefaultValue.pages.NewNote.local_storage_name);
-      setShowSelf(false);
-    };
-  ;
+const NewNoteModal = ({ data: { id, expired_at, passphrase }, onHide: doUponHide }: Props) => {
+  const [show, setShow] = useState(true);
 
-  const handleCopyAll = () => navigator.clipboard.writeText(`${window.location.href + PATHS.note_detail + `/${id.toString()}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
+  let handleClose = () => {
+    setShow(false);
+    if (doUponHide) doUponHide();
+  };
+  const handleCopyAll = () => navigator.clipboard.writeText(`${window.location.host + PATHS.note_detail + `/${id.toString()}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
 
   return (
-    <Modal show={showSelf} onHide={handleClose} centered contentClassName="fs-4">
+    <Modal show={show} onHide={handleClose} centered contentClassName="fs-4">
       <Modal.Header closeButton closeVariant="white">
         <Modal.Title>Saved!</Modal.Title>
       </Modal.Header>
@@ -73,7 +63,7 @@ const NewNoteModal = ({ control, data: { id, expiryTime, passphrase } }: Props) 
             </Form.Label>
             <InputGroup className="mb-3">
               <FormControl
-                value={expiryTime}
+                value={expired_at ? into_readable_datetime(expired_at.secs_since_epoch) : "Never"}
                 aria-describedby="basic-addon2"
                 readOnly
               />

@@ -1,15 +1,7 @@
 import { Result } from ".";
 import { BASE_URL } from "../utils/constants";
-import { EncryptionMethod, NoteInfo as ResponseData } from "../utils/types";
+import { EncryptionMethod, NoteInfo, NoteInfo as ResponseData } from "../utils/types";
 import CryptoJS from "crypto-js";
-import { into_readable_datetime } from "../utils/functions";
-
-// remind to change return type to be note info instead
-// let the caller handle all the data instead
-interface CurrentNoteInfoReturnType {
-    id: number,
-    expiryTime: string,
-}
 
 interface Note {
     title: string,
@@ -33,9 +25,23 @@ export default async function post_note({
     encryption,
     content,
     lifetime_in_secs
-}: Note): Promise<Result<CurrentNoteInfoReturnType>> {
+}: Note): Promise<Result<NoteInfo>> {
     let url = BASE_URL + "/notes";
     let request: Request;
+    let data: ResponseData = {
+        id: 0,
+        title: "",
+        backend_encryption: false,
+        expired_at: {
+            nanos_since_epoch: 0,
+            secs_since_epoch: 0,
+        },
+        created_at: {
+            nanos_since_epoch: 0,
+            secs_since_epoch: 0,
+        },
+        frontend_encryption: false,
+    };
 
     switch (encryption) {
         case EncryptionMethod.NoEncryption:
@@ -68,33 +74,39 @@ export default async function post_note({
             break;
     }
 
-    const result = await fetch(url, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(request)
-    });
+    try {
+        const result = await fetch(url, {
+            method: "POST",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(request)
+        });
 
-    if (result.ok) {
-        const data: ResponseData = await result.json();
-        const readableDateTime = data.expired_at !== null
-            ? into_readable_datetime(data.expired_at.secs_since_epoch)
-            : "Never"
-        return {
-            data: {
-                expiryTime: readableDateTime,
-                id: data.id,
-            },
-        };
-    } else {
-        return {
-            data: {
-                expiryTime: "",
-                id: 0
-            },
-            error: "clientError",
+        if (result.ok) {
+            data = await result.json();
+
+            return {
+                data,
+            };
+        } else {
+            if (result.status >= 400 && result.status < 500) {
+                return {
+                    data,
+                    error: "clientError",
+                };
+            } else {
+                return {
+                    data,
+                    error: "serverError",
+                };
+            }
         }
+    } catch (error) {
+        return {
+            data,
+            error: "serverError",
+        };
     }
 }

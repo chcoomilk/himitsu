@@ -14,8 +14,8 @@ const SimpleConfirmationModal = ({ doDecide: result, title, text, ...attr }: Pro
   return (
     <Modal {...attr}>
       <Form onSubmit={e => {
-        e.preventDefault();
         agree();
+        e.preventDefault();
       }}>
         <Modal.Header closeButton closeVariant="white">
           <Modal.Title>
@@ -26,7 +26,7 @@ const SimpleConfirmationModal = ({ doDecide: result, title, text, ...attr }: Pro
         </Modal.Header>
         <Modal.Body className="fs-6">
           {
-            text ? text : "We would like you to think more about this, is this the right decision? Think about the future, think about the children, think about the future of the children!"
+            text ? text : "Every 60 seconds around the world, a minute passes in Africa"
           }
         </Modal.Body>
         <Modal.Footer>
