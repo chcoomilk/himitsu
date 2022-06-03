@@ -6,7 +6,7 @@ export interface ErrorKind {
   clientError: string | null,
 }
 
-export interface UserActionInfo {
+interface UserActionInfo {
   genericDelete: string | null,
   genericSave: string | null,
 }
@@ -14,12 +14,12 @@ export interface UserActionInfo {
 // alert can either be error or notification from response
 export type Alert = ErrorKind & UserActionInfo
 
-export type RustDateTime = {
+type RustDateTime = {
   "nanos_since_epoch": number,
   "secs_since_epoch": number,
 }
 
-export type RawNote = {
+type RawNote = {
   "content": string,
   "created_at": RustDateTime,
   "updated_at": RustDateTime,

@@ -1,4 +1,4 @@
-import { EncryptionMethod, Note, Alert, ErrorKind, AppSetting, AppThemeSetting } from "./types";
+import { EncryptionMethod, Note, ErrorKind, AppSetting, AppThemeSetting } from "./types";
 
 if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL was set in .env");
 
@@ -10,12 +10,6 @@ const errors: ErrorKind = {
     wrongPassphrase: null,
     tooManyRequests: null,
     clientError: null,
-};
-
-const alerts: Alert = {
-    ...errors,
-    genericDelete: null,
-    genericSave: null,
 };
 
 const note: Note = {
@@ -37,15 +31,8 @@ const settings: AppSetting = {
 };
 
 export const DefaultValue = {
-    alerts,
     errors,
     note,
-    pages: {
-        NewNote: {
-            name: "NewNote",
-            local_storage_name: "NewNoteNoteResult",
-        }
-    },
     settings,
 };
 

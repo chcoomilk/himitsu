@@ -12,10 +12,11 @@ type UNoteInfo = NoteInfo & {
 
 interface Props {
   data: UNoteInfo,
+  show?: boolean,
   onHide?: () => void,
 }
 
-const NewNoteModal = ({ data: { id, expired_at, passphrase }, onHide: doUponHide }: Props) => {
+const NewNoteModal = ({ data: { id, expired_at, passphrase }, onHide: doUponHide, show: _show }: Props) => {
   const [show, setShow] = useState(true);
 
   let handleClose = () => {
@@ -25,7 +26,7 @@ const NewNoteModal = ({ data: { id, expired_at, passphrase }, onHide: doUponHide
   const handleCopyAll = () => navigator.clipboard.writeText(`${window.location.host + PATHS.note_detail + `/${id.toString()}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
 
   return (
-    <Modal show={show} onHide={handleClose} centered contentClassName="fs-4">
+    <Modal show={_show !== undefined ? _show : show} onHide={handleClose} centered contentClassName="fs-4">
       <Modal.Header closeButton closeVariant="white">
         <Modal.Title>Saved!</Modal.Title>
       </Modal.Header>

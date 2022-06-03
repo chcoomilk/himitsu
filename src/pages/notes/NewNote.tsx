@@ -3,12 +3,10 @@ import { useContext, useState } from "react";
 import { Button, Form, Row, Col, DropdownButton, Dropdown, InputGroup, FormControl, Stack } from "react-bootstrap";
 import * as yup from "yup";
 import { useMutation } from "react-query";
-import * as changeCase from "change-case";
 
 import NewNoteModal from "../../components/note/NewNoteModal";
 import AppContext from "../../utils/app_state_context";
 import { EncryptionMethod, NoteInfo } from "../../utils/types";
-import { DefaultValue } from "../../utils/constants";
 import { post_note } from "../../queries";
 import { useTitle } from "../../custom-hooks";
 import { local_storage, unwrap } from "../../utils/functions";
@@ -45,7 +43,7 @@ const NewNote = () => {
   const { appSettings } = useContext(AppContext);
   const [noteResult, setNoteResult] = useState<UNoteInfo | null>(null);
   const [encryption, setEncryption] = useState<EncryptionMethod>(appSettings.encryption);
-  useTitle(changeCase.capitalCase(DefaultValue.pages.NewNote.name));
+  useTitle("New Note");
   const { mutateAsync } = useMutation(post_note);
 
   const formik = useFormik({
