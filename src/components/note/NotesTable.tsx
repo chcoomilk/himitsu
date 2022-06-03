@@ -2,6 +2,7 @@ import { Table, TableProps } from "react-bootstrap";
 import { into_readable_datetime } from "../../utils/functions";
 import { NoteInfo } from "../../utils/types";
 import * as changeCase from "change-case";
+import Countdown from "react-countdown";
 
 type Props = TableProps & {
   notes: NoteInfo[] | null,
@@ -26,8 +27,16 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
               "expired_at",
             ).map(header => {
               let custom: string | undefined;
-              custom = changeCase.noCase(header);
-              return (<th key={header}>{custom || header}</th>);
+              switch (header) {
+                case "id":
+                  custom = "ID";
+                  break;
+                case "expired_at":
+                  custom = "expires in";
+                  break;
+              }
+
+              return (<th key={header}>{changeCase.capitalCase(custom || header)}</th>);
             })
           }
         </tr>
@@ -41,7 +50,18 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
                   <td>{note.id}</td>
                   <td>{note.title}</td>
                   <td>{into_readable_datetime(note.created_at.secs_since_epoch)}</td>
-                  <td>{note.expired_at ? into_readable_datetime(note.expired_at.secs_since_epoch) : "Never"}</td>
+                  <td>{
+                    note.expired_at
+                      ? (
+                        <>
+                          <i className="bi bi-hourglass-split"></i>
+                          <Countdown
+                            date={note.expired_at.secs_since_epoch * 1000}
+                          />
+                        </>
+                      )
+                      : "Never"
+                  }</td>
                 </tr>
               );
             })

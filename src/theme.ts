@@ -36,7 +36,7 @@ export const applyTheme = (theme: AppThemeSetting) => {
         case AppThemeSetting.Normal:
             base_bg_color = "#282C34";
             base_text_color = "#FFFFFF";
-            css.setProperty("--himitsu-bg", increase_brightness(base_bg_color, 4));
+            css.setProperty("--himitsu-bg", base_bg_color);
             css.setProperty("--himitsu-body-bg", base_bg_color);
             css.setProperty("--bs-body-bg", base_bg_color);
             css.setProperty("--himitsu-input-bg", increase_brightness(base_bg_color, 4));

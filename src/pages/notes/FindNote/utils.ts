@@ -10,6 +10,10 @@ export type Props = {
     readonly setParams: React.Dispatch<React.SetStateAction<UrlParams>>,
 }
 
+const allKeys = <T extends ValidOpts[]>(
+    ...array: T & ([ValidOpts] extends [T[number]] ? unknown : 'Missing some key(s)')
+) => array;
+
 export const is_opts = (x: unknown): x is ValidOpts => {
-    return typeof x === "string" ? Array<ValidOpts>("id", "title").includes((x as any)) : false;
+    return typeof x === "string" ? allKeys("id", "title").includes((x as any)) : false;
 };
