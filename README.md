@@ -1,3 +1,17 @@
+# himitsu
+
+q: What is this?\
+Basically it's another pastebin.. but this one is special. Oi i swear this one is special, come back mate where u goin?\
+I'm kidding, there's nothing special about this one.. wait, anyway I made this at the time when I was trying to learn Rust. I figured why don't I make a web app so I don't have to login to my google account on some randos computer to access my google keep. And so I made one in [actix](https://actix.rs) [here](https://github.com/chcoomilk/himitsu-backend) and react for the web ui\
+\
+q: What does himitsu mean?\
+himitsu means secret in Spanish\
+\
+q: Is there any better alternatives?\
+Unfortunately, yes! There are\
+[https://ghostbin.co (rip)](https://ghostbin.co)\
+[https://privatebin.info](https://privatebin.info/)\
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

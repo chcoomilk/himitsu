@@ -27,16 +27,17 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
               "expired_at",
             ).map(header => {
               let custom: string | undefined;
+              const cc = changeCase.capitalCase;
               switch (header) {
                 case "id":
                   custom = "ID";
                   break;
                 case "expired_at":
-                  custom = "expires in";
+                  custom = cc("expires in");
                   break;
               }
 
-              return (<th key={header}>{changeCase.capitalCase(custom || header)}</th>);
+              return (<th key={header}>{custom || cc(header)}</th>);
             })
           }
         </tr>
