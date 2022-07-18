@@ -27,9 +27,9 @@ export function is_note(item: unknown): item is NoteInfo {
         typeof (item as NoteInfo).created_at.nanos_since_epoch === "number" &&
         typeof (item as NoteInfo).created_at.secs_since_epoch === "number" &&
         (
-            (item as NoteInfo).expired_at === null
+            (item as NoteInfo).expires_at === null
                 ? true
-                : (!isNaN(Number((item as NoteInfo).expired_at?.nanos_since_epoch)) && !isNaN(Number((item as NoteInfo).expired_at?.secs_since_epoch)))
+                : (!isNaN(Number((item as NoteInfo).expires_at?.nanos_since_epoch)) && !isNaN(Number((item as NoteInfo).expires_at?.secs_since_epoch)))
         )
     );
 }
@@ -42,14 +42,14 @@ export const is_settings = (item: unknown): item is AppSetting => {
     );
 };
 
-export const unsafe_is_note = (item: unknown): item is NoteInfo => {
-    return (
-        (item as NoteInfo).id !== undefined
-    );
-};
+// export const unsafe_is_note = (item: unknown): item is NoteInfo => {
+//     return (
+//         (item as NoteInfo).id !== undefined
+//     );
+// };
 
-export const unsafe_is_settings = (item: unknown): item is AppSetting => {
-    return (
-        (item as AppSetting).encryption !== undefined
-    );
-};
+// export const unsafe_is_settings = (item: unknown): item is AppSetting => {
+//     return (
+//         (item as AppSetting).encryption !== undefined
+//     );
+// };

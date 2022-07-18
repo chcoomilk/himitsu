@@ -15,7 +15,11 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
         id: 0,
         title: "",
         backend_encryption: false,
-        expired_at: {
+        expires_at: {
+            nanos_since_epoch: 0,
+            secs_since_epoch: 0,
+        },
+        updated_at: {
             nanos_since_epoch: 0,
             secs_since_epoch: 0,
         },
@@ -37,10 +41,10 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
     });
 
     if (response.ok) {
-        let data = await response.json();
+        data = await response.json();
         return {
             data,
-        }
+        };
     } else {
         if (response.status === 404) {
             return {

@@ -1,31 +1,13 @@
 import { Result } from ".";
 import { BASE_URL } from "../utils/constants";
-import { ErrorKind } from "../utils/types";
+import { ErrorKind, RawNote } from "../utils/types";
 
 interface GetNoteField {
 	id: number,
 	passphrase: string | null
 }
 
-interface ResponseData {
-	"content": string,
-	"created_at": {
-		"nanos_since_epoch": number,
-		"secs_since_epoch": number
-	},
-	"updated_at": {
-		"nanos_since_epoch": number,
-		"secs_since_epoch": number
-	},
-	"backend_encryption": boolean,
-	"frontend_encryption": boolean,
-	"expired_at": {
-		"nanos_since_epoch": number,
-		"secs_since_epoch": number
-	} | null,
-	"id": number,
-	"title": string,
-}
+type ResponseData = RawNote;
 
 const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<ResponseData>> => {
 	const url = BASE_URL + "/notes/" + id;
@@ -44,7 +26,7 @@ const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<Respon
 			nanos_since_epoch: 0,
 			secs_since_epoch: 0,
 		},
-		expired_at: {
+		expires_at: {
 			nanos_since_epoch: 0,
 			secs_since_epoch: 0,
 		},

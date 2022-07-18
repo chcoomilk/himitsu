@@ -2,8 +2,8 @@ import { useRef, useState } from "react";
 import { Button, Overlay, Tooltip } from "react-bootstrap";
 
 type Props = {
-  value: string
-};
+  value: any
+}
 
 const CopyButton = ({ value }: Props) => {
   const [tooltip, setTooltip] = useState(false);

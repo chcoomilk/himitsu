@@ -62,6 +62,7 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           isInvalid={formik.initialValues.id === null ? (formik.touched.id && !!formik.errors.id) : !!formik.errors.id}
+          autoFocus
         />
         <Form.Control.Feedback type="invalid" tooltip>{formik.errors.id}</Form.Control.Feedback>
       </Form.Group>

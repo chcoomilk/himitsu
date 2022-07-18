@@ -16,7 +16,7 @@ interface Props {
   onHide?: () => void,
 }
 
-const NewNoteModal = ({ data: { id, expired_at, passphrase }, onHide: doUponHide, show: _show }: Props) => {
+const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide: doUponHide, show: _show }: Props) => {
   const [show, setShow] = useState(true);
 
   let handleClose = () => {

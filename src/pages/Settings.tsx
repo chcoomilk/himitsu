@@ -40,7 +40,7 @@ const Settings = ({ setAppSettings }: Props) => {
       };
 
       // localStorage.setItem("settings", JSON.stringify(settings));
-      local_storage.set(settings);
+      local_storage.set("settings", settings);
       return settings;
     });
   };
@@ -53,7 +53,7 @@ const Settings = ({ setAppSettings }: Props) => {
       };
 
       // localStorage.setItem("settings", JSON.stringify(settings));
-      local_storage.set(settings);
+      local_storage.set("settings", settings);
       return settings;
     });
   };
@@ -66,19 +66,19 @@ const Settings = ({ setAppSettings }: Props) => {
       };
 
       // localStorage.setItem("settings", JSON.stringify(settings));
-      local_storage.set(settings);
+      local_storage.set("settings", settings);
       return settings;
     });
   };
 
-  const handleResetSettings = () => {
+  const handleReset = () => {
     setModals(prev => {
       prev.resetSettings.show = true;
       return { ...prev };
     });
   };
 
-  const handleDeleteNotes = () => {
+  const handleDelete = () => {
     setModals(prev => {
       prev.deleteNotes.show = true;
       return { ...prev };
@@ -91,7 +91,7 @@ const Settings = ({ setAppSettings }: Props) => {
         <SimpleConfirmationModal
           centered
           title="Delete all saved notes?"
-          text="This will delete all of your saved notes' infos locally. Your saved notes in the backend is unaffected."
+          text="This will delete all of your saved notes locally. Your saved notes in the server is unaffected."
           show={modals.deleteNotes.show}
           onHide={() => setModals(prev => {
             prev.deleteNotes.show = false;
@@ -120,7 +120,7 @@ const Settings = ({ setAppSettings }: Props) => {
           doDecide={val => {
             if (val) {
               setAppSettings(DefaultValue.settings);
-              local_storage.set(DefaultValue.settings);
+              local_storage.set("settings", DefaultValue.settings);
             }
             setModals(prev => {
               prev.resetSettings.show = false;
@@ -200,7 +200,7 @@ const Settings = ({ setAppSettings }: Props) => {
                 label={"New notes will " + (appSettings.history ? "be" : "not be") + " saved"}
                 onChange={_ => setSaveHistory(!appSettings.history)}
               />
-              <button onClick={handleDeleteNotes} className="btn-anchor link-danger text-decoration-none">
+              <button onClick={handleDelete} className="btn-anchor link-danger text-decoration-none">
                 Delete all saved notes!
               </button>
             </Col>
@@ -211,7 +211,7 @@ const Settings = ({ setAppSettings }: Props) => {
               Others
             </Form.Label>
             <Col lg="6" className="mt-2">
-              <button onClick={handleResetSettings} className="btn-anchor link-warning text-decoration-none">
+              <button onClick={handleReset} className="btn-anchor link-warning text-decoration-none">
                 Reset all settings to default
               </button>
               <br />

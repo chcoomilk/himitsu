@@ -33,7 +33,7 @@ const SimpleConfirmationModal = ({ doDecide: result, title, text, ...attr }: Pro
           <Button variant="outline-danger" onClick={disagree}>
             No
           </Button>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" autoFocus>
             Yes
           </Button>
         </Modal.Footer>

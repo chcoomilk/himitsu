@@ -19,13 +19,13 @@ type RustDateTime = {
   "secs_since_epoch": number,
 }
 
-type RawNote = {
+export type RawNote = {
   "content": string,
   "created_at": RustDateTime,
   "updated_at": RustDateTime,
   "backend_encryption": boolean,
   "frontend_encryption": boolean,
-  "expired_at": RustDateTime | null,
+  "expires_at": RustDateTime | null,
   "id": number,
   "title": string,
 }
@@ -47,7 +47,8 @@ export interface NoteInfo {
   frontend_encryption: boolean,
   backend_encryption: boolean,
   created_at: RustDateTime,
-  expired_at: RustDateTime | null,
+  updated_at: RustDateTime,
+  expires_at: RustDateTime | null,
   id: number,
   title: string
 }

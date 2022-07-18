@@ -32,7 +32,11 @@ export default async function post_note({
         id: 0,
         title: "",
         backend_encryption: false,
-        expired_at: {
+        updated_at: {
+            nanos_since_epoch: 0,
+            secs_since_epoch: 0,
+        },
+        expires_at: {
             nanos_since_epoch: 0,
             secs_since_epoch: 0,
         },

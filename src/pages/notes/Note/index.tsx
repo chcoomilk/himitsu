@@ -57,8 +57,8 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
       if (!result.error) {
         let data = result.data;
 
-        let readableExpiryTime = data.expired_at
-          ? into_readable_datetime(data.expired_at.secs_since_epoch)
+        let readableExpiryTime = data.expires_at
+          ? into_readable_datetime(data.expires_at.secs_since_epoch)
           : "Never";
 
         let readableCreationTime = into_readable_datetime(data.created_at.secs_since_epoch);
@@ -315,13 +315,14 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
 
   const handleDownload = () => {
     if (note && note.raw) {
-      const { created_at, expired_at, backend_encryption, frontend_encryption } = note.raw;
+      const { created_at, expires_at, backend_encryption, frontend_encryption, updated_at } = note.raw;
       let note_to_save: NoteInfo = {
         id: note.id,
         title: note.title,
         backend_encryption,
         created_at,
-        expired_at,
+        updated_at,
+        expires_at,
         frontend_encryption,
       }
       let prev_notes = local_storage.get("notes");
@@ -334,10 +335,10 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
 
           return;
         } else {
-          local_storage.set([...prev_notes, note_to_save]);
+          local_storage.set("notes", [...prev_notes, note_to_save]);
         }
       } else {
-        local_storage.set([note_to_save]);
+        local_storage.set("notes", [note_to_save]);
       }
 
       toast.custom(t => (

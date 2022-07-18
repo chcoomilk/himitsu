@@ -9,6 +9,7 @@ const Navigation = () => {
         <Navbar.Brand className="py-0 m-0">
           <Nav>
             <Nav.Link
+              aria-label="home"
               className="py-0 fs-3"
               as={NavLink}
               to={PATHS.home}
@@ -22,6 +23,7 @@ const Navigation = () => {
           <Nav className="me-auto" />
           <Nav>
             <Nav.Link
+              aria-label="saved notes"
               className="py-0 fs-3"
               as={NavLink}
               to={PATHS.notes}
@@ -31,6 +33,7 @@ const Navigation = () => {
           </Nav>
           <Nav className="ms-3">
             <Nav.Link
+              aria-label="settings"
               className="py-0 fs-3"
               as={NavLink}
               to={PATHS.settings}

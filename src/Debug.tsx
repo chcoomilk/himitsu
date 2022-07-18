@@ -12,15 +12,19 @@ const createAlertKeys = <T extends AlertKeys[]>(
   ...array: T & ([AlertKeys] extends [T[number]] ? unknown : "Missing a key")
 ) => array;
 
-const new_note = {
+const new_note: UNoteInfo = {
   title: "Test Value Title",
   id: 0,
   backend_encryption: true,
+  updated_at: {
+    nanos_since_epoch: 0,
+    secs_since_epoch: 0,
+  },
   created_at: {
     nanos_since_epoch: 0,
     secs_since_epoch: 0,
   },
-  expired_at: {
+  expires_at: {
     nanos_since_epoch: 0,
     secs_since_epoch: 0,
   },

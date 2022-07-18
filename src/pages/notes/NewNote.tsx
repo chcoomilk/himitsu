@@ -112,14 +112,14 @@ const NewNote = () => {
               ...data,
               passphrase: val.passphrase.value || undefined,
             });
-            local_storage.set(data);
+            local_storage.set("last_saved_note", data);
             if (appSettings.history) {
               let notes = local_storage.get("notes");
               if (notes) {
                 notes.push(data)
-                local_storage.set(notes);
+                local_storage.set("notes", notes);
               } else {
-                local_storage.set([data]);
+                local_storage.set("notes", [data]);
               }
             }
             resetForm();
@@ -159,6 +159,7 @@ const NewNote = () => {
               onBlur={formik.handleBlur}
               isInvalid={formik.touched.title && !!formik.errors.title}
               autoComplete="off"
+              autoFocus
             />
             <Form.Control.Feedback type="invalid" tooltip>{formik.errors.title}</Form.Control.Feedback>
           </Form.Group>
