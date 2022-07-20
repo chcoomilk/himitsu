@@ -14,7 +14,7 @@ const createAlertKeys = <T extends AlertKeys[]>(
 
 const new_note: UNoteInfo = {
   title: "Test Value Title",
-  id: 0,
+  id: "debug_id",
   backend_encryption: true,
   updated_at: {
     nanos_since_epoch: 0,
@@ -70,6 +70,7 @@ const Debug = () => {
           "serverError",
           "tooManyRequests",
           "wrongPassphrase",
+          "handled",
         ).map(key => {
           return (
             <Button

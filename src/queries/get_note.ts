@@ -3,7 +3,7 @@ import { BASE_URL } from "../utils/constants";
 import { ErrorKind, RawNote } from "../utils/types";
 
 interface GetNoteField {
-	id: number,
+	id: string,
 	passphrase: string | null
 }
 
@@ -13,7 +13,7 @@ const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<Respon
 	const url = BASE_URL + "/notes/" + id;
 	let error: keyof ErrorKind;
 	let data: ResponseData = {
-		id: 0,
+		id: "",
 		title: "",
 		content: "",
 		backend_encryption: false,

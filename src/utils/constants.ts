@@ -13,7 +13,7 @@ const errors: ErrorKind = {
 };
 
 const note: Note = {
-    id: 0,
+    id: "",
     title: "",
     content: "",
     decrypted: false,

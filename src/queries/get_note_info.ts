@@ -3,7 +3,7 @@ import { BASE_URL } from "../utils/constants";
 import { NoteInfo } from "../utils/types";
 
 interface Params {
-    id: number
+    id: string
 }
 
 type ResponseData = NoteInfo;
@@ -12,7 +12,7 @@ type ResponseData = NoteInfo;
 // albeit Promise<Result<T>> does look pretty cool...
 const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
     let data: ResponseData = {
-        id: 0,
+        id: "",
         title: "",
         backend_encryption: false,
         expires_at: {

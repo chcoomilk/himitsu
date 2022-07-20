@@ -4,6 +4,7 @@ export interface ErrorKind {
   tooManyRequests: string | null,
   serverError: string | null,
   clientError: string | null,
+  handled?: "",
 }
 
 interface UserActionInfo {
@@ -26,12 +27,12 @@ export type RawNote = {
   "backend_encryption": boolean,
   "frontend_encryption": boolean,
   "expires_at": RustDateTime | null,
-  "id": number,
+  "id": string,
   "title": string,
 }
 
 export interface Note {
-  id: number,
+  id: string,
   title: string,
   content: string,
   decrypted: boolean,
@@ -49,7 +50,7 @@ export interface NoteInfo {
   created_at: RustDateTime,
   updated_at: RustDateTime,
   expires_at: RustDateTime | null,
-  id: number,
+  id: string,
   title: string
 }
 

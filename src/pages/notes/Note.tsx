@@ -15,7 +15,7 @@ interface ModifiedLocation extends Location {
 }
 
 type DetermineProps = {
-  id: null | number,
+  id: null | string,
   passphrase: null | string,
 }
 
@@ -33,8 +33,8 @@ const NotePage = () => {
 
   useEffect(() => {
     let passphrase: string | null = null;
-    if (typeof unchecked_id === "undefined" || isNaN(+unchecked_id) || +unchecked_id === 0) {
-      toast("id was not valid", {
+    if (typeof unchecked_id === "undefined" || unchecked_id.length > 32) {
+      toast("id is not valid", {
         icon: <i className="bi bi-exclamation-circle-fill" />,
       });
       navigate(PATHS.find_note, { replace: true });
@@ -45,7 +45,7 @@ const NotePage = () => {
       passphrase = state.passphrase;
     }
 
-    setProps({ id: +unchecked_id, passphrase });
+    setProps({ id: unchecked_id, passphrase });
   }, [state, navigate, setProps, unchecked_id]);
 
   if (props.id !== null) {

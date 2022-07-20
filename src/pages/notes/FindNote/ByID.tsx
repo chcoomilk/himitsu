@@ -8,7 +8,7 @@ import { Props } from "./utils";
 import { useEffect, useState } from "react";
 
 const schema = yup.object().shape({
-  id: yup.number().required(),
+  id: yup.string().required(),
   passphrase: yup.string().min(4).max(1024).nullable()
 });
 

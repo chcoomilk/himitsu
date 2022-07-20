@@ -3,18 +3,18 @@ import { BASE_URL } from "../utils/constants";
 import { ErrorKind } from "../utils/types";
 
 interface Params {
-    id: number,
+    id: string,
     passphrase: string | null
 }
 
 interface ResponseData {
-    id: number,
+    id: string,
 }
 
 export default async function delete_note({ id, passphrase }: Params): Promise<Result<ResponseData>> {
     const url = BASE_URL + "/notes/" + id;
     let error: keyof ErrorKind;
-    let data: ResponseData = { id: 0 };
+    let data: ResponseData = { id: "" };
 
     const response = await fetch(url, {
         method: "DELETE",

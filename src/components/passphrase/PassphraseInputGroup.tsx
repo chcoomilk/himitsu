@@ -10,30 +10,46 @@ type Props = {
   name: string,
   errorMessage?: string,
   autoFocus?: boolean,
+  customLabel?: string | null,
+  hide?: boolean,
+  groupcName?: string,
 } & FormControlProps
 
 const PassphraseInputGroup = ({
   name,
   errorMessage,
   autoFocus,
+  customLabel,
+  hide,
+  groupcName,
   ...attr
 }: Props) => {
   const [mask, setMask] = useState(true);
   const togglePasswordVisibility = () => setMask(!mask);
 
   return (
-    <>
-      <Form.Label>
-        Passphrase
-      </Form.Label>
+    <div hidden={hide} className={groupcName}>
+      {
+        customLabel === null
+          ? null
+          : <Form.Label>
+            {customLabel || "Passphrase"}
+          </Form.Label>
+      }
+
       <InputGroup>
         <Form.Control
+          name={name}
           type={mask ? "password" : "text"}
           autoComplete="current-passphrase"
           placeholder="Enter super secret passphrase"
-          aria-describedby="basic-addon2"
+          aria-describedby="basic-passphrase-input"
           autoFocus={autoFocus}
           {...attr}
+          style={{
+            ...attr.style,
+            zIndex: 3,
+          }}
         />
         <Button
           size="sm"
@@ -47,7 +63,7 @@ const PassphraseInputGroup = ({
         }
         <Form.Control.Feedback type="invalid" tooltip>{errorMessage}</Form.Control.Feedback>
       </InputGroup>
-    </>
+    </div>
   );
 };
 

@@ -24,6 +24,8 @@ export const bs_alert = (head: string | JSX.Element, body: string | JSX.Element,
 
 const unwrap_default = (key: keyof AlertT): void => {
   switch (key) {
+    case "handled":
+      break;
     case "clientError":
       toast.custom((t) => (
         <Alert show={t.visible} variant="secondary" dismissible onClose={() => {

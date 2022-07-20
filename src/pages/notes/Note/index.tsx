@@ -20,7 +20,7 @@ interface PasswordModalState {
 }
 
 type Props = {
-  readonly checked_id: number,
+  readonly checked_id: string,
   readonly state_passphrase: string | null,
 }
 

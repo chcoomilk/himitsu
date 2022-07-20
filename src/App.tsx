@@ -25,11 +25,11 @@ const NewNoteModal = lazy(() => import("./components/note/NewNoteModal"));
 const Debug = lazy(() => import("./Debug"));
 
 function App() {
-  const [appSettings, setAppSettings] = useState<AppSetting>(DefaultValue.settings);
+  const [appSettings, setAppSettings] = useState<AppSetting>(local_storage.get("settings") || DefaultValue.settings);
   // const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
 
   return (
-    <ContextCoupler appSettings={appSettings} setAppSettings={setAppSettings}>
+    <ContextCoupler appSettings={appSettings}>
       <Navbar />
       <Suspense fallback={
         <Spinner animation="border" role="status"
