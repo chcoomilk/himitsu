@@ -267,7 +267,7 @@ const NewNote = () => {
     </>
   );
   return (
-    <div>
+    <>
       {
         noteResult && (
           <NewNoteModal data={{ ...noteResult }} onHide={() => {
@@ -278,7 +278,7 @@ const NewNote = () => {
       }
       <SimpleConfirmationModal
         title="Reset form"
-        text="This will reset form back to empty, continue?"
+        text="This will reset the form, continue?"
         show={modal.delete}
         onHide={() => setModal(p => ({ ...p, delete: false }))}
         doDecide={c => {
@@ -295,8 +295,8 @@ const NewNote = () => {
           {extra_settings_group}
         </Modal.Body>
       </Modal>
-      <Form noValidate onSubmit={formik.handleSubmit}>
-        <Row className="mb-3">
+      <Form className="mb-3 mt-3" noValidate onSubmit={formik.handleSubmit}>
+        <Row>
           <Col md="8" xs="12">
             <Form.Group controlId="formBasicTitle" className="position-relative mb-4">
               <Form.Label>Title</Form.Label>
@@ -449,7 +449,7 @@ const NewNote = () => {
           </Col>
         </Row>
       </Form>
-    </div>
+    </>
   );
 };
 
