@@ -1,29 +1,33 @@
 import { AppSetting, AppThemeSetting, EncryptionMethod, NoteInfo } from "../types";
 
 export function is_note(item: unknown): item is NoteInfo {
-    let exist: boolean;
+    let normalomatron: boolean;
 
     try {
-        exist = (
+        normalomatron = (
             typeof (item as NoteInfo) === "object" &&
-            (item as NoteInfo).id !== undefined &&
-            (item as NoteInfo).title !== undefined &&
-            (item as NoteInfo).frontend_encryption !== undefined &&
-            (item as NoteInfo).backend_encryption !== undefined &&
-            (item as NoteInfo).created_at?.nanos_since_epoch !== undefined &&
-            (item as NoteInfo).created_at?.secs_since_epoch !== undefined &&
-            (item as NoteInfo).updated_at?.nanos_since_epoch !== undefined &&
-            (item as NoteInfo).updated_at?.secs_since_epoch !== undefined &&
-            (item as NoteInfo).expires_at?.nanos_since_epoch !== undefined &&
-            (item as NoteInfo).expires_at?.secs_since_epoch !== undefined
+                (item as NoteInfo).id !== undefined &&
+                (item as NoteInfo).title !== undefined &&
+                (item as NoteInfo).frontend_encryption !== undefined &&
+                (item as NoteInfo).backend_encryption !== undefined &&
+                (item as NoteInfo).created_at?.nanos_since_epoch !== undefined &&
+                (item as NoteInfo).created_at?.secs_since_epoch !== undefined &&
+                (item as NoteInfo).expires_at === null
+                ? true
+                : (
+                    (item as NoteInfo).expires_at?.nanos_since_epoch !== undefined &&
+                    (item as NoteInfo).expires_at?.secs_since_epoch !== undefined &&
+                    typeof (item as NoteInfo).expires_at?.nanos_since_epoch === "number" &&
+                    typeof (item as NoteInfo).expires_at?.secs_since_epoch === "number"
+                )
         );
     } catch (error) {
-        exist = false;
+        normalomatron = false;
     }
 
 
     return (
-        exist &&
+        normalomatron &&
         typeof (item as NoteInfo).id === "string" &&
         typeof (item as NoteInfo).frontend_encryption === "boolean" &&
         typeof (item as NoteInfo).backend_encryption === "boolean" &&

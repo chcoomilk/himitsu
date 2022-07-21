@@ -19,10 +19,6 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
             nanos_since_epoch: 0,
             secs_since_epoch: 0,
         },
-        updated_at: {
-            nanos_since_epoch: 0,
-            secs_since_epoch: 0,
-        },
         created_at: {
             nanos_since_epoch: 0,
             secs_since_epoch: 0,

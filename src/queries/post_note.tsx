@@ -1,10 +1,10 @@
 import { Result } from ".";
 import { BASE_URL } from "../utils/constants";
-import { EncryptionMethod, NoteInfo, NoteInfo as ResponseData } from "../utils/types";
+import { EncryptionMethod, NoteInfo } from "../utils/types";
 import CryptoJS from "crypto-js";
 import toast from "react-hot-toast";
 import { Alert } from "react-bootstrap";
-import { unwrap } from "../utils/functions";
+import { local_storage, unwrap } from "../utils/functions";
 
 interface NewNote {
     double_encrypt?: string,
@@ -27,6 +27,10 @@ interface RequestBody {
     lifetime_in_secs?: number,
 }
 
+type ResponseData = {
+    token: string
+} & NoteInfo
+
 export default async function post_note({
     double_encrypt,
     discoverable,
@@ -40,13 +44,10 @@ export default async function post_note({
     let url = BASE_URL + "/notes";
     let request: RequestBody;
     let data: ResponseData = {
+        token: "",
         id: "",
         title: "",
         backend_encryption: false,
-        updated_at: {
-            nanos_since_epoch: 0,
-            secs_since_epoch: 0,
-        },
         expires_at: {
             nanos_since_epoch: 0,
             secs_since_epoch: 0,
@@ -104,6 +105,9 @@ export default async function post_note({
     }
 
     try {
+        let old_token = local_storage.get("token");
+        if (old_token) url += ("?token=" + encodeURIComponent(old_token));
+
         const result = await fetch(url, {
             method: "POST",
             mode: "cors",
@@ -115,7 +119,7 @@ export default async function post_note({
 
         if (result.ok) {
             data = await result.json();
-
+            local_storage.set("token", data.token);
             return {
                 data,
             };

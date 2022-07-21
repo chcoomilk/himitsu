@@ -4,6 +4,7 @@ export interface ErrorKind {
   tooManyRequests: string | null,
   serverError: string | null,
   clientError: string | null,
+  accessDenied?: "",
   handled?: "",
 }
 
@@ -23,7 +24,6 @@ type RustDateTime = {
 export type RawNote = {
   "content": string,
   "created_at": RustDateTime,
-  "updated_at": RustDateTime,
   "backend_encryption": boolean,
   "frontend_encryption": boolean,
   "expires_at": RustDateTime | null,
@@ -39,7 +39,6 @@ export interface Note {
   encryption: EncryptionMethod,
   expiryTime: string,
   creationTime: string,
-  lastUpdateTime: string,
   passphrase: string | null,
   raw?: RawNote,
 }
@@ -48,7 +47,6 @@ export interface NoteInfo {
   frontend_encryption: boolean,
   backend_encryption: boolean,
   created_at: RustDateTime,
-  updated_at: RustDateTime,
   expires_at: RustDateTime | null,
   id: string,
   title: string

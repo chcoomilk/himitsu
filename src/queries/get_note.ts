@@ -22,10 +22,6 @@ const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<Respon
 			nanos_since_epoch: 0,
 			secs_since_epoch: 0,
 		},
-		updated_at: {
-			nanos_since_epoch: 0,
-			secs_since_epoch: 0,
-		},
 		expires_at: {
 			nanos_since_epoch: 0,
 			secs_since_epoch: 0,

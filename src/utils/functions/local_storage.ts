@@ -18,11 +18,11 @@ type AppSettingsKey = "settings";
 type LastSavedNoteKey = "last_saved_note";
 type TokenKey = "token";
 type LocalStorageItemKeys = NotesKey | AppSettingsKey | LastSavedNoteKey | TokenKey;
-type LocalStorageItemKind = AppSetting | NoteInfo[] | NoteInfo | String;
+type LocalStorageItemKind = AppSetting | NoteInfo[] | NoteInfo | string;
 function get(key: NotesKey): NoteInfo[] | null;
 function get(key: AppSettingsKey): AppSetting | null;
 function get(key: LastSavedNoteKey): NoteInfo | null;
-function get(key: TokenKey): String | null;
+function get(key: TokenKey): string | null;
 function get(key: LocalStorageItemKeys): LocalStorageItemKind | null {
     const saved_item = localStorage.getItem(key);
     if (!saved_item) {
@@ -82,8 +82,6 @@ function get(key: LocalStorageItemKeys): LocalStorageItemKind | null {
             console.log("...failed!");
             console.error(error);
         }
-
-        localStorage.removeItem(key);
     }
 
     return null;
@@ -92,7 +90,7 @@ function get(key: LocalStorageItemKeys): LocalStorageItemKind | null {
 function set(key: NotesKey, item: NoteInfo[]): void;
 function set(key: AppSettingsKey, item: AppSetting): void;
 function set(key: LastSavedNoteKey, item: NoteInfo): void;
-function set(key: TokenKey, item: String): void;
+function set(key: TokenKey, item: string): void;
 function set(key: LocalStorageItemKeys, item: LocalStorageItemKind) {
     try {
         localStorage.setItem(key, JSON.stringify(item));

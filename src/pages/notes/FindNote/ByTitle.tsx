@@ -8,7 +8,7 @@ import TitleSuggestions from "./TitleSuggestions";
 import { Props } from "./utils";
 
 const schema = yup.object().shape({
-  title: yup.string().required().nullable(),
+  title: yup.string().nullable(),
 });
 
 const FindByTitle = ({ params: { query }, setParams }: Props) => {
@@ -75,8 +75,8 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
               }}
             >
               {
-                formik.isValid &&
-                formik.values.title?.length &&
+                formik.isValid && formik.values.title &&
+                formik.values.title?.length > 0 &&
                 <TitleSuggestions
                   id="collapse-suggestions"
                   className="overflow-auto"

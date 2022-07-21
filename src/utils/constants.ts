@@ -20,7 +20,6 @@ const note: Note = {
     encryption: EncryptionMethod.NoEncryption,
     creationTime: "",
     expiryTime: "",
-    lastUpdateTime: "",
     passphrase: "",
 };
 

@@ -136,6 +136,8 @@ const NewNote = () => {
               let notes = local_storage.get("notes");
               if (notes) {
                 notes.push(data)
+                console.log(notes, data);
+                
                 local_storage.set("notes", notes);
               } else {
                 local_storage.set("notes", [data]);

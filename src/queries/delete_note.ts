@@ -1,5 +1,6 @@
 import { Result } from ".";
 import { BASE_URL } from "../utils/constants";
+import { local_storage } from "../utils/functions";
 import { ErrorKind } from "../utils/types";
 
 interface Params {
@@ -12,9 +13,19 @@ interface ResponseData {
 }
 
 export default async function delete_note({ id, passphrase }: Params): Promise<Result<ResponseData>> {
-    const url = BASE_URL + "/notes/" + id;
+    let url = BASE_URL + "/notes/" + id;
     let error: keyof ErrorKind;
     let data: ResponseData = { id: "" };
+
+    let token = local_storage.get("token");
+    if (token === null) {
+        return {
+            data,
+            error: "accessDenied",
+        };
+    } else {
+        url += "?token=" + token;
+    }
 
     const response = await fetch(url, {
         method: "DELETE",
@@ -36,7 +47,7 @@ export default async function delete_note({ id, passphrase }: Params): Promise<R
                 error = "notFound";
                 break;
             case 401:
-                error = "wrongPassphrase";
+                error = "accessDenied";
                 break;
             default:
                 error = "serverError";

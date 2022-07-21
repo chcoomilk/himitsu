@@ -16,10 +16,6 @@ const new_note: UNoteInfo = {
   title: "Test Value Title",
   id: "debug_id",
   backend_encryption: true,
-  updated_at: {
-    nanos_since_epoch: 0,
-    secs_since_epoch: 0,
-  },
   created_at: {
     nanos_since_epoch: 0,
     secs_since_epoch: 0,
@@ -71,6 +67,7 @@ const Debug = () => {
           "tooManyRequests",
           "wrongPassphrase",
           "handled",
+          "accessDenied",
         ).map(key => {
           return (
             <Button
