@@ -1,9 +1,7 @@
 # himitsu
 
 q: What is this?\
-Basically it's another pastebin.. but this one is special. Oi i swear this one is special, come back mate where u goin?\
-I'm kidding, there's nothing special about this one.. wait, anyway I made this at the time when I was trying to learn Rust. I figured why don't I make a web app so I don't have to login to my google account on some randos computer to access my google keep. And so I made one in [actix](https://actix.rs) [here](https://github.com/chcoomilk/himitsu-backend) and react for the web ui\
-\
+Basically it's another pastebin
 q: Where is it?\
 [https://himitsu-note.netlify.app/](https://himitsu-note.netlify.app/) and [https://himitsu-note.netlify.app/about](https://himitsu-note.netlify.app/about) for more info\
 \
