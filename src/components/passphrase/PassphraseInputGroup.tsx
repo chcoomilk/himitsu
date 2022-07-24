@@ -52,7 +52,6 @@ const PassphraseInputGroup = ({
           }}
         />
         <Button
-          size="sm"
           variant="outline-light border-start-0"
           onClick={togglePasswordVisibility}
         >

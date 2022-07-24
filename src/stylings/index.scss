@@ -89,7 +89,7 @@ a,
 .form-control[readonly],
 .form-control:focus {
   background-color: $input-bg-color;
-  border: 1px solid $input-border-color;
+  border-color: $input-border-color;
   color: $text-color-normal;
 }
 
@@ -100,7 +100,7 @@ a,
 
 .form-control:disabled {
   background-color: $input-bg-color-disabled;
-  border: 1px solid $input-border-color;
+  border: var(--bs-btn-border-width) solid $input-border-color;
   color: $text-color-normal;
 }
 
@@ -128,13 +128,17 @@ a,
 
   .accordion-item {
     background-color: $input-bg-color-disabled;
-    color: $text-color-normal
+    color: $text-color-normal;
   }
 }
 
 .btn-outline-light {
+  &:disabled {
+    background-color: $input-bg-color;
+    border: var(--bs-btn-border-width) solid $input-border-color;
+  }
   background-color: $input-bg-color;
-  border: 1px solid $input-border-color;
+  border: var(--bs-btn-border-width) solid $input-border-color;
 }
 
 input.form-range::-moz-range-track {
@@ -151,7 +155,7 @@ input.form-range::-webkit-slider-runnable-track {
 
 span.input-group-text {
   background-color: $input-bg-color-disabled;
-  border: 1px solid $input-border-color;
+  border: var(--bs-btn-border-width) solid $input-border-color;
   color: $text-color-normal;
 }
 

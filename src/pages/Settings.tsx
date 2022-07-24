@@ -1,4 +1,4 @@
-import { Col, Row, Form, InputGroup, OverlayTrigger, Tooltip, Button } from "react-bootstrap";
+import { Col, Row, Form, InputGroup, OverlayTrigger, Tooltip, Button, Stack, Spinner } from "react-bootstrap";
 import { AppSetting, AppThemeSetting, EncryptionMethod } from "../utils/types";
 import React, { useContext, useState } from "react";
 import AppContext from "../utils/app_state_context";
@@ -8,6 +8,7 @@ import { DefaultValue, PATHS } from "../utils/constants";
 import * as changeCase from "change-case";
 import SimpleConfirmationModal from "../components/SimpleConfirmationModal";
 import CopyButton from "../components/button/CopyButton";
+import toast from "react-hot-toast";
 
 type Props = {
   setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
@@ -21,15 +22,22 @@ const createEncryptionMethodKeys = <T extends EncryptionMethodKey[]>(
 const createAppThemeKeys = <T extends AppThemeKey[]>(
   ...array: T & ([AppThemeKey] extends [T[number]] ? unknown : "Missing a key")
 ) => array;
+type ChangeAccessTokenState = {
+  active: boolean,
+  value: string,
+  loading: boolean,
+}
 
 const Settings = ({ setAppSettings }: Props) => {
   const [modals, setModals] = useState({
-    deleteNotes: {
-      show: false,
-    },
-    resetSettings: {
-      show: false,
-    }
+    confirmDeleteNotes: false,
+    confirmResetSettings: false,
+    confirmDeleteAccessToken: false,
+  });
+  const [changeAccessToken, setChangeAccessToken] = useState<ChangeAccessTokenState>({
+    active: false,
+    value: "",
+    loading: false,
   });
   const { appSettings } = useContext(AppContext);
 
@@ -74,75 +82,75 @@ const Settings = ({ setAppSettings }: Props) => {
 
   const handleReset = () => {
     setModals(prev => {
-      prev.resetSettings.show = true;
+      prev.confirmResetSettings = true;
       return { ...prev };
     });
   };
 
   const handleDelete = () => {
     setModals(prev => {
-      prev.deleteNotes.show = true;
+      prev.confirmDeleteNotes = true;
       return { ...prev };
     });
   };
 
   return (
     <Row>
+      <SimpleConfirmationModal
+        centered
+        title="Delete all saved notes?"
+        text="This will delete all of your saved notes locally. Your saved notes in the server is unaffected."
+        show={modals.confirmDeleteNotes}
+        onHide={() => setModals(prev => {
+          prev.confirmDeleteNotes = false;
+          return { ...prev };
+        })}
+        doDecide={val => {
+          if (val) {
+            local_storage.remove("notes");
+          }
+          setModals(prev => {
+            prev.confirmDeleteNotes = false;
+            return { ...prev };
+          });
+        }}
+      />
+
+      <SimpleConfirmationModal
+        centered
+        title="Reset settings to default?"
+        text="This will reset all the settings back to their original value"
+        show={modals.confirmResetSettings}
+        onHide={() => setModals(prev => {
+          prev.confirmResetSettings = false;
+          return { ...prev };
+        })}
+        doDecide={val => {
+          if (val) {
+            setAppSettings(DefaultValue.settings);
+            local_storage.set("settings", DefaultValue.settings);
+          }
+          setModals(prev => {
+            prev.confirmResetSettings = false;
+            return { ...prev };
+          });
+        }}
+      />
+
       <Col xs={{ span: 6, offset: 3 }}>
-        <SimpleConfirmationModal
-          centered
-          title="Delete all saved notes?"
-          text="This will delete all of your saved notes locally. Your saved notes in the server is unaffected."
-          show={modals.deleteNotes.show}
-          onHide={() => setModals(prev => {
-            prev.deleteNotes.show = false;
-            return { ...prev };
-          })}
-          doDecide={val => {
-            if (val) {
-              local_storage.remove("notes");
-            }
-            setModals(prev => {
-              prev.deleteNotes.show = false;
-              return { ...prev };
-            });
-          }}
-        />
-
-        <SimpleConfirmationModal
-          centered
-          title="Reset settings to default?"
-          text="This will reset all the settings back to their original value"
-          show={modals.resetSettings.show}
-          onHide={() => setModals(prev => {
-            prev.resetSettings.show = false;
-            return { ...prev };
-          })}
-          doDecide={val => {
-            if (val) {
-              setAppSettings(DefaultValue.settings);
-              local_storage.set("settings", DefaultValue.settings);
-            }
-            setModals(prev => {
-              prev.resetSettings.show = false;
-              return { ...prev };
-            });
-          }}
-        />
-
         <Form onSubmit={e => {
           e.preventDefault();
           return;
         }}>
-          <Form.Group as={Row} controlId="token">
+          <Form.Group as={Row} controlId="token" className="mb-2">
             <Form.Label column lg="6">
               Your access token
             </Form.Label>
-            <Col lg="6" className="pt-2">
+            <Col lg="6">
               <OverlayTrigger placement="bottom-end" overlay={(p) => (
                 <Tooltip id="accessTokenTooltipInfo" {...p}>
                   This is your access token used for granting access
-                  to update/delete the notes you've created.
+                  to update/delete the notes you've created
                 </Tooltip>
               )}>
                 {({ ref, ...t }) => (
@@ -151,19 +159,58 @@ const Settings = ({ setAppSettings }: Props) => {
                       value={local_storage.get("token") || undefined}
                       readOnly
                     />
-                    <CopyButton copy_value={local_storage.get("token")} />
-                    <Button size="sm" variant="outline-light" ref={ref}>?</Button>
+                    <Button
+                      size="sm"
+                      variant="outline-light"
+                      disabled={changeAccessToken.loading}
+                      onClick={() => setChangeAccessToken(p => ({ ...p, active: !p.active }))}
+                    ><i className={changeAccessToken.active ? "bi bi-layers" : "bi bi-layers-half"} /></Button>
+                    <CopyButton size="sm" copy_value={local_storage.get("token")} />
+                    <Button size="sm" variant="outline-light" ref={ref}><i className="bi bi-question-lg" /></Button>
                   </InputGroup>
                 )}
               </OverlayTrigger>
+              <InputGroup hidden={!changeAccessToken.active} className="mt-2">
+                <Form.Control
+                  value={changeAccessToken.value}
+                  onChange={e => setChangeAccessToken(p => ({ ...p, value: e.target.value }))}
+                  placeholder="Replace token..."
+                  disabled={changeAccessToken.loading}
+                />
+                <Button
+                  variant={changeAccessToken.loading ? "success" : "outline-success"}
+                  disabled={changeAccessToken.loading}
+                  // verify
+                  onClick={() => {
+                    setChangeAccessToken(p => ({ ...p, loading: true }));
+                    toast("function's not ready yet, change it manually by going into localStorage, sorry uwu\"");
+                  }}
+                >
+                  {
+                    changeAccessToken.loading
+                      ? <Spinner size="sm" animation="border" />
+                      : <i className="bi bi-check-lg" />
+                  }
+                </Button>
+              </InputGroup>
+              <Stack className="mt-2" direction="horizontal" gap={2}>
+                <Button
+                  size="sm"
+                  variant="primary"
+                >Unwrap</Button>
+                <Button
+                  size="sm"
+                  variant="success"
+                >Prepend</Button>
+              </Stack>
             </Col>
           </Form.Group>
 
-          <Form.Group as={Row} controlId="encryption">
+          <Form.Group as={Row} controlId="encryption" className="mb-2">
             <Form.Label column lg="6">
               Default Encryption
             </Form.Label>
-            <Col lg="6" className="pt-2">
+            <Col lg="6">
               {
                 createEncryptionMethodKeys(
                   "BackendEncryption",
@@ -190,7 +237,7 @@ const Settings = ({ setAppSettings }: Props) => {
             <Form.Label column lg="6">
               Theme
             </Form.Label>
-            <Col lg="6" className="pt-2">
+            <Col lg="6">
               {
                 createAppThemeKeys(
                   "Normal",
@@ -217,7 +264,7 @@ const Settings = ({ setAppSettings }: Props) => {
             <Form.Label column lg="6">
               History
             </Form.Label>
-            <Col lg="6" className="pt-2">
+            <Col lg="6">
               <Form.Check
                 id="history-switch"
                 type="switch"

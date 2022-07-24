@@ -16,6 +16,7 @@
     "dotenv": "^16.0.1",
     "dotenv-expand": "^8.0.3",
     "formik": "^2.2.9",
+    "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0-beta.1",
     "react-countdown": "^2.3.2",
