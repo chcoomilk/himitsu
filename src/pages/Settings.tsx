@@ -1,4 +1,4 @@
-import { Col, Row, Form } from "react-bootstrap";
+import { Col, Row, Form, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { AppSetting, AppThemeSetting, EncryptionMethod } from "../utils/types";
 import React, { useContext, useState } from "react";
 import AppContext from "../utils/app_state_context";
@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { DefaultValue, PATHS } from "../utils/constants";
 import * as changeCase from "change-case";
 import SimpleConfirmationModal from "../components/SimpleConfirmationModal";
+import CopyButton from "../components/button/CopyButton";
 
 type Props = {
   setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
@@ -133,6 +134,28 @@ const Settings = ({ setAppSettings }: Props) => {
           e.preventDefault();
           return;
         }}>
+          <Form.Group as={Row} controlId="token">
+            <Form.Label column lg="6">
+              Your access token
+            </Form.Label>
+            <Col lg="6" className="pt-2">
+              <OverlayTrigger placement="auto" overlay={(p) => (
+                <Tooltip id="accessTokenTooltipInfo" {...p}>
+                  This is your access token
+                </Tooltip>
+              )}>
+                <InputGroup>
+                  <Form.Control
+                    value={local_storage.get("token") || undefined}
+                    readOnly
+                  />
+                  <CopyButton value={local_storage.get("token")} />
+                </InputGroup>
+
+              </OverlayTrigger>
+            </Col>
+          </Form.Group>
+
           <Form.Group as={Row} controlId="encryption">
             <Form.Label column lg="6">
               Default Encryption

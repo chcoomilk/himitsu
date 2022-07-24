@@ -8,7 +8,7 @@ import { Props } from "./utils";
 import { useEffect, useState } from "react";
 
 const schema = yup.object().shape({
-  id: yup.string(),
+  id: yup.string().required().nullable(),
   passphrase: yup.string().min(4).max(1024).nullable()
 });
 
@@ -33,21 +33,13 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
     enableReinitialize: false,
   });
 
-  // this creates infinite loop for some reason
+  // this creates infinite loop for some reason without putting query into usestate
   useEffect(() => {
-    if (formik.values.id) {
-      setParams(prev => {
-        return {
-          ...prev, query: formik.values.id,
-        };
-      });
-    } else {
-      setParams(prev => {
-        return {
-          ...prev, query: null,
-        };
-      });
-    }
+    setParams(prev => {
+      return {
+        ...prev, query: formik.values.id,
+      };
+    });
   }, [formik.values.id, setParams]);
 
   return (

@@ -23,7 +23,7 @@ const FindNote = () => {
     let q = params.query, by = params.findBy;
 
     if (by) {
-      if (q !== null) {
+      if (typeof q === "string" && q !== "") {
         setSearchParams({ by, q }, { replace: true });
       } else {
         setSearchParams({ by }, { replace: true });

@@ -21,24 +21,16 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
       title: query,
     },
     onSubmit: async ({ title }) => {
-      navigate(PATHS.notes + "?q=" + title);
+      navigate(PATHS.notes + "?src=global&q=" + title);
     },
   });
 
   useEffect(() => {
-    if (formik.values.title) {
-      setParams(prev => {
-        return {
-          ...prev, query: formik.values.title,
-        };
-      });
-    } else {
-      setParams(prev => {
-        return {
-          ...prev, query: null,
-        };
-      });
-    }
+    setParams(prev => {
+      return {
+        ...prev, query: formik.values.title,
+      };
+    });
   }, [formik.values.title, setParams]);
 
   return (

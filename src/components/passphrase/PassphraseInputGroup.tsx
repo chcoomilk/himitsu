@@ -37,7 +37,7 @@ const PassphraseInputGroup = ({
           </Form.Label>
       }
 
-      <InputGroup>
+      <InputGroup hasValidation>
         <Form.Control
           name={name}
           type={mask ? "password" : "text"}

@@ -135,9 +135,8 @@ const NewNote = () => {
             if (appSettings.history) {
               let notes = local_storage.get("notes");
               if (notes) {
-                notes.push(data)
-                console.log(notes, data);
-                
+                notes.push(data);
+
                 local_storage.set("notes", notes);
               } else {
                 local_storage.set("notes", [data]);
@@ -255,13 +254,10 @@ const NewNote = () => {
               Title can always be seen upon request
             </li>
             <li>
-              Passphrase is not stored in database, as text nor hash
+              Passphrase for data encryption is not stored in database, as text nor hash
             </li>
             <li>
-              Disabling discoverability will prevent any means of finding through metadata such as title, creation time, etc.
-            </li>
-            <li>
-              If you found any issue/bug, you can do a pull request <a href="https://github.com/chcoomilk/himitsu/pulls">here</a>
+              Disabling discoverability will prevent any means of finding through its metadata such as title, creation time, etc.
             </li>
           </ul>
         </Form.Text>
@@ -356,7 +352,7 @@ const NewNote = () => {
 
             <Form.Group controlId="formBasicId" className="position-relative mb-4">
               <Form.Label>Custom ID</Form.Label>
-              <InputGroup>
+              <InputGroup hasValidation>
                 <Form.Control
                   aria-label="Custom ID"
                   type="text"
@@ -379,7 +375,7 @@ const NewNote = () => {
               <Form.Label>
                 Duration
               </Form.Label>
-              <InputGroup>
+              <InputGroup hasValidation>
                 <FormControl
                   aria-label="Day"
                   type="text"
