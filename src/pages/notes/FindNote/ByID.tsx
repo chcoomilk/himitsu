@@ -27,7 +27,12 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
       passphrase: null
     },
     onSubmit: async (val) => {
-      navigate(PATHS.note_detail + "/" + val.id, { state: { passphrase: val.passphrase } });
+      if (val.id) {
+        navigate(PATHS.note_detail + "/" + encodeURIComponent(val.id), { state: { passphrase: val.passphrase } });
+      } else {
+        // toast error
+        formik.validateForm();
+      }
     },
     validateOnMount: true,
     enableReinitialize: false,

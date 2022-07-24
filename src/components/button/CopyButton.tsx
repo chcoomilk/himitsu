@@ -2,10 +2,10 @@ import { useRef, useState } from "react";
 import { Button, Overlay, Tooltip } from "react-bootstrap";
 
 type Props = {
-  value: any
+  copy_value: any
 }
 
-const CopyButton = ({ value }: Props) => {
+const CopyButton = ({ copy_value: value }: Props) => {
   const [tooltip, setTooltip] = useState(false);
   const target = useRef(null);
 
@@ -22,7 +22,6 @@ const CopyButton = ({ value }: Props) => {
         size="sm"
         variant="outline-light"
         id="button-addon2"
-        className="border-start-0"
         onClick={handleCopy}
         ref={target}
       >

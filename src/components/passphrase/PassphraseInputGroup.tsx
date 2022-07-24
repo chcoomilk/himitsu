@@ -59,7 +59,7 @@ const PassphraseInputGroup = ({
           {mask ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}
         </Button>
         {
-          attr.readOnly && <CopyButton value={attr.value} />
+          attr.readOnly && <CopyButton copy_value={attr.value} />
         }
         <Form.Control.Feedback type="invalid" tooltip>{errorMessage}</Form.Control.Feedback>
       </InputGroup>

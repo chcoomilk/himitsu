@@ -21,7 +21,11 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
       title: query,
     },
     onSubmit: async ({ title }) => {
-      navigate(PATHS.notes + "?src=global&q=" + title);
+      if (title) {
+        navigate(PATHS.notes + "?src=global&q=" + encodeURIComponent(title));
+      } else {
+        formik.validateForm();
+      }
     },
   });
 

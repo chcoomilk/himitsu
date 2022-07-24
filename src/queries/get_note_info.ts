@@ -26,7 +26,8 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
         frontend_encryption: false,
     };
 
-    let url = BASE_URL + "/notes/" + id;
+    let url = BASE_URL + "/notes/" + encodeURIComponent(id);
+
 
     let response = await fetch(url, {
         method: "GET",

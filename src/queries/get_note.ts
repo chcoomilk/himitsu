@@ -10,7 +10,7 @@ interface GetNoteField {
 type ResponseData = RawNote;
 
 const get_note = async ({ id, passphrase }: GetNoteField): Promise<Result<ResponseData>> => {
-	const url = BASE_URL + "/notes/" + id;
+	const url = BASE_URL + "/notes/" + encodeURIComponent(id);
 	let error: keyof ErrorKind;
 	let data: ResponseData = {
 		id: "",

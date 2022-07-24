@@ -30,6 +30,8 @@ const FindNote = () => {
       }
     } else if (q) {
       setSearchParams({ q }, { replace: true });
+    } else {
+      setSearchParams({}, { replace: true });
     }
   }, [params, setSearchParams]);
 

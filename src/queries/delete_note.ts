@@ -13,7 +13,7 @@ interface ResponseData {
 }
 
 export default async function delete_note({ id, passphrase }: Params): Promise<Result<ResponseData>> {
-    let url = BASE_URL + "/notes/" + id;
+    let url = BASE_URL + "/notes/" + encodeURIComponent(id);
     let error: keyof ErrorKind;
     let data: ResponseData = { id: "" };
 
@@ -24,7 +24,7 @@ export default async function delete_note({ id, passphrase }: Params): Promise<R
             error: "accessDenied",
         };
     } else {
-        url += "?token=" + token;
+        url += "?token=" + encodeURIComponent(token);
     }
 
     const response = await fetch(url, {

@@ -1,4 +1,4 @@
-import { Col, Row, Form, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Col, Row, Form, InputGroup, OverlayTrigger, Tooltip, Button } from "react-bootstrap";
 import { AppSetting, AppThemeSetting, EncryptionMethod } from "../utils/types";
 import React, { useContext, useState } from "react";
 import AppContext from "../utils/app_state_context";
@@ -139,19 +139,22 @@ const Settings = ({ setAppSettings }: Props) => {
               Your access token
             </Form.Label>
             <Col lg="6" className="pt-2">
-              <OverlayTrigger placement="auto" overlay={(p) => (
+              <OverlayTrigger placement="bottom-end" overlay={(p) => (
                 <Tooltip id="accessTokenTooltipInfo" {...p}>
-                  This is your access token
+                  This is your access token used for granting access
+                  to update/delete the notes you've created.
                 </Tooltip>
               )}>
-                <InputGroup>
-                  <Form.Control
-                    value={local_storage.get("token") || undefined}
-                    readOnly
-                  />
-                  <CopyButton value={local_storage.get("token")} />
-                </InputGroup>
-
+                {({ ref, ...t }) => (
+                  <InputGroup {...t}>
+                    <Form.Control
+                      value={local_storage.get("token") || undefined}
+                      readOnly
+                    />
+                    <CopyButton copy_value={local_storage.get("token")} />
+                    <Button size="sm" variant="outline-light" ref={ref}>?</Button>
+                  </InputGroup>
+                )}
               </OverlayTrigger>
             </Col>
           </Form.Group>

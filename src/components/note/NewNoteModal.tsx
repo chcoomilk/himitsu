@@ -42,7 +42,7 @@ const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide
                 aria-describedby="basic-addon2"
                 readOnly
               />
-              <CopyButton value={id.toString()} />
+              <CopyButton copy_value={id.toString()} />
             </InputGroup>
           </Form.Group>
 
