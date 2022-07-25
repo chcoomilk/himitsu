@@ -1,7 +1,7 @@
 # himitsu
 
 q: What is this?\
-Basically it's another pastebin
+Basically it's another pastebin\
 q: Where is it?\
 [https://himitsu-note.netlify.app/](https://himitsu-note.netlify.app/) and [https://himitsu-note.netlify.app/about](https://himitsu-note.netlify.app/about) for more info\
 \
