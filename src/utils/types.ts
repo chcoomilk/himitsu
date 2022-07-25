@@ -4,6 +4,8 @@ export interface ErrorKind {
   tooManyRequests: string | null,
   serverError: string | null,
   clientError: string | null,
+  accessDenied?: "",
+  handled?: "",
 }
 
 interface UserActionInfo {
@@ -19,26 +21,24 @@ type RustDateTime = {
   "secs_since_epoch": number,
 }
 
-type RawNote = {
+export type RawNote = {
   "content": string,
   "created_at": RustDateTime,
-  "updated_at": RustDateTime,
   "backend_encryption": boolean,
   "frontend_encryption": boolean,
-  "expired_at": RustDateTime | null,
-  "id": number,
+  "expires_at": RustDateTime | null,
+  "id": string,
   "title": string,
 }
 
 export interface Note {
-  id: number,
+  id: string,
   title: string,
   content: string,
   decrypted: boolean,
   encryption: EncryptionMethod,
   expiryTime: string,
   creationTime: string,
-  lastUpdateTime: string,
   passphrase: string | null,
   raw?: RawNote,
 }
@@ -47,8 +47,8 @@ export interface NoteInfo {
   frontend_encryption: boolean,
   backend_encryption: boolean,
   created_at: RustDateTime,
-  expired_at: RustDateTime | null,
-  id: number,
+  expires_at: RustDateTime | null,
+  id: string,
   title: string
 }
 

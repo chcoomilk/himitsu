@@ -5,13 +5,12 @@ import { BrowserRouter } from "react-router-dom"
 import { applyTheme } from "./theme"
 import { BASE_URL } from "./utils/constants"
 import AppContext from "./utils/app_state_context"
-import { local_storage } from "./utils/functions"
 import { AppSetting } from "./utils/types"
 
 type AppDefinitions = {
   children: React.ReactNode,
   appSettings: AppSetting,
-  setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
+  // setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
 }
 
 const queryClient = new QueryClient({
@@ -45,20 +44,14 @@ const queryClient = new QueryClient({
       staleTime: Infinity,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
+      onError: (e) => {
+        console.log("abc");
+      }
     },
   }
 });
 
-const ContextCoupler = ({ appSettings, setAppSettings, children }: AppDefinitions) => {
-  // App renders twice for no reason in development, so this fire twice
-  // but issue does not occur in production, so as expected this should only fire once
-  useEffect(() => {
-    const saved_settings = local_storage.get("settings");
-    if (saved_settings) {
-      setAppSettings(saved_settings);
-    }
-  }, [setAppSettings]);
-
+const ContextCoupler = ({ appSettings, children }: AppDefinitions) => {
   useEffect(() => applyTheme(appSettings.app_theme), [appSettings.app_theme]);
   return (
     <BrowserRouter>

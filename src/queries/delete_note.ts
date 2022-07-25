@@ -1,20 +1,31 @@
 import { Result } from ".";
 import { BASE_URL } from "../utils/constants";
+import { local_storage } from "../utils/functions";
 import { ErrorKind } from "../utils/types";
 
 interface Params {
-    id: number,
+    id: string,
     passphrase: string | null
 }
 
 interface ResponseData {
-    id: number,
+    id: string,
 }
 
 export default async function delete_note({ id, passphrase }: Params): Promise<Result<ResponseData>> {
-    const url = BASE_URL + "/notes/" + id;
+    let url = BASE_URL + "/notes/" + encodeURIComponent(id);
     let error: keyof ErrorKind;
-    let data: ResponseData = { id: 0 };
+    let data: ResponseData = { id: "" };
+
+    let token = local_storage.get("token");
+    if (token === null) {
+        return {
+            data,
+            error: "accessDenied",
+        };
+    } else {
+        url += "?token=" + encodeURIComponent(token);
+    }
 
     const response = await fetch(url, {
         method: "DELETE",
@@ -35,8 +46,8 @@ export default async function delete_note({ id, passphrase }: Params): Promise<R
             case 404:
                 error = "notFound";
                 break;
-            case 401:
-                error = "wrongPassphrase";
+            case 403 | 401:
+                error = "accessDenied";
                 break;
             default:
                 error = "serverError";

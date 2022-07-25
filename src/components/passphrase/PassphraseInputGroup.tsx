@@ -1,64 +1,68 @@
 import { useState } from "react";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { Button, Form, FormControlProps, InputGroup } from "react-bootstrap";
 import CopyButton from "../button/CopyButton";
 
 type Props = {
-  value: string,
+  // value: string,
+  // onChange?: (e: React.ChangeEvent<any>) => void,
+  // onBlur?: (e: React.ChangeEvent<any>) => void,
+  // isInvalid?: boolean,
   name: string,
-  onChange?: (e: React.ChangeEvent<any>) => void,
-  onBlur?: (e: React.ChangeEvent<any>) => void,
   errorMessage?: string,
-  isInvalid?: boolean,
-  readOnly?: boolean,
-  disabled?: boolean,
-}
+  autoFocus?: boolean,
+  customLabel?: string | null,
+  hide?: boolean,
+  groupcName?: string,
+} & FormControlProps
 
 const PassphraseInputGroup = ({
-  value,
-  onChange,
-  onBlur,
-  errorMessage,
-  isInvalid,
   name,
-  readOnly,
-  disabled,
+  errorMessage,
+  autoFocus,
+  customLabel,
+  hide,
+  groupcName,
+  ...attr
 }: Props) => {
   const [mask, setMask] = useState(true);
-
   const togglePasswordVisibility = () => setMask(!mask);
 
   return (
-    <>
-      <Form.Label>
-        Passphrase
-      </Form.Label>
-      <InputGroup>
+    <div hidden={hide} className={groupcName}>
+      {
+        customLabel === null
+          ? null
+          : <Form.Label>
+            {customLabel || "Passphrase"}
+          </Form.Label>
+      }
+
+      <InputGroup hasValidation>
         <Form.Control
           name={name}
-          readOnly={readOnly}
           type={mask ? "password" : "text"}
           autoComplete="current-passphrase"
           placeholder="Enter super secret passphrase"
-          onChange={onChange}
-          onBlur={onBlur}
-          isInvalid={isInvalid}
-          value={value}
-          aria-describedby="basic-addon2"
-          disabled={disabled}
+          aria-describedby="basic-passphrase-input"
+          autoFocus={autoFocus}
+          {...attr}
+          style={{
+            ...attr.style,
+            zIndex: 3,
+          }}
         />
         <Button
-          size="sm"
           variant="outline-light border-start-0"
           onClick={togglePasswordVisibility}
         >
           {mask ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}
         </Button>
         {
-          readOnly && <CopyButton value={value} />
+          attr.readOnly && <CopyButton copy_value={attr.value} />
         }
         <Form.Control.Feedback type="invalid" tooltip>{errorMessage}</Form.Control.Feedback>
       </InputGroup>
-    </>
+    </div>
   );
 };
 

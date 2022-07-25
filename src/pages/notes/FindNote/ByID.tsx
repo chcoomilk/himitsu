@@ -8,7 +8,7 @@ import { Props } from "./utils";
 import { useEffect, useState } from "react";
 
 const schema = yup.object().shape({
-  id: yup.number().required(),
+  id: yup.string().required().nullable(),
   passphrase: yup.string().min(4).max(1024).nullable()
 });
 
@@ -27,27 +27,24 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
       passphrase: null
     },
     onSubmit: async (val) => {
-      navigate(PATHS.note_detail + "/" + val.id, { state: { passphrase: val.passphrase } });
+      if (val.id) {
+        navigate(PATHS.note_detail + "/" + encodeURIComponent(val.id), { state: { passphrase: val.passphrase } });
+      } else {
+        // toast error
+        formik.validateForm();
+      }
     },
     validateOnMount: true,
     enableReinitialize: false,
   });
 
-  // this creates infinite loop for some reason
+  // this creates infinite loop for some reason without putting query into usestate
   useEffect(() => {
-    if (formik.values.id) {
-      setParams(prev => {
-        return {
-          ...prev, query: formik.values.id,
-        };
-      });
-    } else {
-      setParams(prev => {
-        return {
-          ...prev, query: null,
-        };
-      });
-    }
+    setParams(prev => {
+      return {
+        ...prev, query: formik.values.id,
+      };
+    });
   }, [formik.values.id, setParams]);
 
   return (
@@ -62,6 +59,7 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           isInvalid={formik.initialValues.id === null ? (formik.touched.id && !!formik.errors.id) : !!formik.errors.id}
+          autoFocus
         />
         <Form.Control.Feedback type="invalid" tooltip>{formik.errors.id}</Form.Control.Feedback>
       </Form.Group>

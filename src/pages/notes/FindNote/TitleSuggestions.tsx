@@ -47,12 +47,12 @@ const TitleSuggestions: React.FC<Props> = ({ query, ...attributes }) => {
                       {into_readable_datetime(note_info.created_at.secs_since_epoch)}
                     </div>
                     {
-                      note_info.expired_at
+                      note_info.expires_at
                         ? (
                           <>
                             <i className="bi bi-hourglass-split"></i>
                             <Countdown
-                              date={note_info.expired_at.secs_since_epoch * 1000}
+                              date={note_info.expires_at.secs_since_epoch * 1000}
                             />
                           </>
                         )

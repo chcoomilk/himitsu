@@ -13,14 +13,13 @@ const errors: ErrorKind = {
 };
 
 const note: Note = {
-    id: 0,
+    id: "",
     title: "",
     content: "",
     decrypted: false,
     encryption: EncryptionMethod.NoEncryption,
     creationTime: "",
     expiryTime: "",
-    lastUpdateTime: "",
     passphrase: "",
 };
 

@@ -24,6 +24,24 @@ export const bs_alert = (head: string | JSX.Element, body: string | JSX.Element,
 
 const unwrap_default = (key: keyof AlertT): void => {
   switch (key) {
+    case "accessDenied":
+      toast.custom((t) => (
+        <Alert show={t.visible} variant="warning" dismissible onClose={() => {
+          toast.dismiss(t.id);
+        }}>
+          <Alert.Heading>
+            <i className="bi bi-exclamation-triangle-fill"></i> {" "}
+            Access Denied
+          </Alert.Heading>
+          <p>
+            Oi, you got a license for that, mate? <br />
+            Clearly, you are not the owner of this property arent'cha?
+          </p>
+        </Alert>
+      ), { duration: 6000, ...opts });
+      break;
+    case "handled":
+      break;
     case "clientError":
       toast.custom((t) => (
         <Alert show={t.visible} variant="secondary" dismissible onClose={() => {

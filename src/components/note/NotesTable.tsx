@@ -24,7 +24,7 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
               "id",
               "title",
               "created_at",
-              "expired_at",
+              "expires_at",
             ).map(header => {
               let custom: string | undefined;
               const cc = changeCase.capitalCase;
@@ -32,7 +32,7 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
                 case "id":
                   custom = "ID";
                   break;
-                case "expired_at":
+                case "expires_at":
                   custom = cc("expires in");
                   break;
               }
@@ -52,12 +52,12 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
                   <td>{note.title}</td>
                   <td>{into_readable_datetime(note.created_at.secs_since_epoch)}</td>
                   <td>{
-                    note.expired_at
+                    note.expires_at
                       ? (
                         <>
                           <i className="bi bi-hourglass-split"></i>
                           <Countdown
-                            date={note.expired_at.secs_since_epoch * 1000}
+                            date={note.expires_at.secs_since_epoch * 1000}
                           />
                         </>
                       )

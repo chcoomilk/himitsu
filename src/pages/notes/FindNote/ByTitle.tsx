@@ -8,7 +8,7 @@ import TitleSuggestions from "./TitleSuggestions";
 import { Props } from "./utils";
 
 const schema = yup.object().shape({
-  title: yup.string().min(3, "Put at least 3 characters in to search").nullable().required(),
+  title: yup.string().nullable(),
 });
 
 const FindByTitle = ({ params: { query }, setParams }: Props) => {
@@ -21,24 +21,20 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
       title: query,
     },
     onSubmit: async ({ title }) => {
-      navigate(PATHS.notes + "?q=" + title);
+      if (title) {
+        navigate(PATHS.notes + "?src=global&q=" + encodeURIComponent(title));
+      } else {
+        formik.validateForm();
+      }
     },
   });
 
   useEffect(() => {
-    if (formik.values.title) {
-      setParams(prev => {
-        return {
-          ...prev, query: formik.values.title,
-        };
-      });
-    } else {
-      setParams(prev => {
-        return {
-          ...prev, query: null,
-        };
-      });
-    }
+    setParams(prev => {
+      return {
+        ...prev, query: formik.values.title,
+      };
+    });
   }, [formik.values.title, setParams]);
 
   return (
@@ -60,10 +56,11 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
               formik.handleBlur(e);
             }}
             onFocus={_ => setShowSuggestions(true)}
+            autoFocus
             isInvalid={formik.touched.title && !!formik.errors.title}
           />
 
-          <Collapse in={showSuggestions}>
+          <Collapse in={formik.isValid}>
             <div
               id="collapse-suggestions"
               className="position-absolute w-100"
@@ -74,17 +71,13 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
               }}
             >
               {
-                (
-                  formik.isValid &&
-                  formik.values.title /* only for passing typecheck */ &&
-                  formik.values.title.length >= 3 /* what the heck formik.. or yup idk */
-                ) ? (
-                  <TitleSuggestions
-                    id="collapse-suggestions"
-                    className="overflow-auto"
-                    query={formik.values.title}
-                  />
-                ) : null
+                formik.isValid && formik.values.title &&
+                formik.values.title?.length > 0 &&
+                <TitleSuggestions
+                  id="collapse-suggestions"
+                  className="overflow-auto"
+                  query={formik.values.title || ""}
+                />
               }
             </div>
           </Collapse>

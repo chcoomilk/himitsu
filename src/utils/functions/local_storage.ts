@@ -1,6 +1,6 @@
 import { AppSetting, NoteInfo } from "../types";
 import toast from "react-hot-toast";
-import { is_note, is_settings, unsafe_is_note, unsafe_is_settings } from "./is";
+import { is_note, is_settings } from "./is";
 
 // pikachu dies from confusion
 // please see this for updates on conditional return in typescript
@@ -16,12 +16,14 @@ import { is_note, is_settings, unsafe_is_note, unsafe_is_settings } from "./is";
 type NotesKey = "notes";
 type AppSettingsKey = "settings";
 type LastSavedNoteKey = "last_saved_note";
-type LocalStorageItemKeys = NotesKey | AppSettingsKey | LastSavedNoteKey;
-type LocalStorageitems = AppSetting | NoteInfo[] | NoteInfo | null;
+type TokenKey = "token";
+type LocalStorageItemKeys = NotesKey | AppSettingsKey | LastSavedNoteKey | TokenKey;
+type LocalStorageItemKind = AppSetting | NoteInfo[] | NoteInfo | string;
 function get(key: NotesKey): NoteInfo[] | null;
 function get(key: AppSettingsKey): AppSetting | null;
 function get(key: LastSavedNoteKey): NoteInfo | null;
-function get(key: LocalStorageItemKeys): LocalStorageitems {
+function get(key: TokenKey): string | null;
+function get(key: LocalStorageItemKeys): LocalStorageItemKind | null {
     const saved_item = localStorage.getItem(key);
     if (!saved_item) {
         return null;
@@ -30,7 +32,7 @@ function get(key: LocalStorageItemKeys): LocalStorageitems {
     try {
         let item = JSON.parse(saved_item);
 
-        let invalid_error = new Error(`${key} has invalid property, did you do this? <(｀^´)>`);
+        let invalid_error = new Error(`${key} has invalid property, did you do this <(｀^´)>`);
         switch (key) {
             case "settings":
                 if (is_settings(item)) {
@@ -58,6 +60,13 @@ function get(key: LocalStorageItemKeys): LocalStorageitems {
                 }
 
                 throw invalid_error;
+
+            case "token":
+                if (typeof item === "string") {
+                    return item;
+                }
+
+                throw invalid_error;
         }
     } catch (error) {
         console.error(error);
@@ -73,37 +82,21 @@ function get(key: LocalStorageItemKeys): LocalStorageitems {
             console.log("...failed!");
             console.error(error);
         }
-
-        localStorage.removeItem(key);
     }
 
     return null;
 };
 
-function set(item: AppSetting | NoteInfo[] | NoteInfo, key?: LocalStorageItemKeys) {
-    const save = (key: LocalStorageItemKeys, item: AppSetting | NoteInfo[] | NoteInfo) => {
-        try {
-            localStorage.setItem(key, JSON.stringify(item));
-        } catch (error) {
-            console.error(error);
-            toast(`Failed to save item of ${key}`);
-        }
-    };
-
-    if (key) {
-        save(key, item);
-        return;
-    }
-
-    if (unsafe_is_note(item)) {
-        key = "last_saved_note";
-        save(key, item);
-    } else if (unsafe_is_settings(item)) {
-        key = "settings";
-        save(key, item);
-    } else {
-        key = "notes";
-        save(key, item);
+function set(key: NotesKey, item: NoteInfo[]): void;
+function set(key: AppSettingsKey, item: AppSetting): void;
+function set(key: LastSavedNoteKey, item: NoteInfo): void;
+function set(key: TokenKey, item: string): void;
+function set(key: LocalStorageItemKeys, item: LocalStorageItemKind) {
+    try {
+        localStorage.setItem(key, JSON.stringify(item));
+    } catch (error) {
+        console.error(error);
+        toast(`Failed to save item of ${key}`);
     }
 }
 

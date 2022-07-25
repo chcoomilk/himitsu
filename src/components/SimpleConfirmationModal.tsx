@@ -3,8 +3,8 @@ import { Button, Form, Modal, ModalProps } from "react-bootstrap";
 type Props = ModalProps & {
   /** either user agrees with the term(s) given or not */
   doDecide: (decision: boolean) => void,
-  title?: string,
-  text?: string,
+  title?: string | JSX.Element,
+  text?: string | JSX.Element,
 }
 
 const SimpleConfirmationModal = ({ doDecide: result, title, text, ...attr }: Props) => {
@@ -30,10 +30,10 @@ const SimpleConfirmationModal = ({ doDecide: result, title, text, ...attr }: Pro
           }
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-danger" onClick={disagree}>
+          <Button size="lg" variant="outline-danger" onClick={disagree}>
             No
           </Button>
-          <Button variant="primary" type="submit">
+          <Button size="lg" variant="primary" type="submit" autoFocus>
             Yes
           </Button>
         </Modal.Footer>

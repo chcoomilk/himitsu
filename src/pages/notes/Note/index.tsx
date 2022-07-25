@@ -20,7 +20,7 @@ interface PasswordModalState {
 }
 
 type Props = {
-  readonly checked_id: number,
+  readonly checked_id: string,
   readonly state_passphrase: string | null,
 }
 
@@ -57,13 +57,11 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
       if (!result.error) {
         let data = result.data;
 
-        let readableExpiryTime = data.expired_at
-          ? into_readable_datetime(data.expired_at.secs_since_epoch)
+        let readableExpiryTime = data.expires_at
+          ? into_readable_datetime(data.expires_at.secs_since_epoch)
           : "Never";
 
         let readableCreationTime = into_readable_datetime(data.created_at.secs_since_epoch);
-
-        let readableUpdateTime = into_readable_datetime(data.updated_at.secs_since_epoch);
 
         let encryption: EncryptionMethod;
         if (result.data.backend_encryption) encryption = EncryptionMethod.BackendEncryption;
@@ -78,7 +76,6 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
           decrypted: !data.frontend_encryption,
           encryption,
           passphrase,
-          lastUpdateTime: readableUpdateTime,
           expiryTime: readableExpiryTime,
           creationTime: readableCreationTime,
           raw: data,
@@ -88,10 +85,6 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
       } else {
         setTitle(generate_face());
         unwrap.default(result.error);
-        // danger(
-        //   generate_alert_text({ key: result.error }),
-        //   { timeout: 6000 }
-        // );
 
         if (result.error === "wrongPassphrase") {
           setModalMutate(prev => {
@@ -286,12 +279,19 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
 
   const handleRetry = () => {
     if (note?.encryption === EncryptionMethod.BackendEncryption) {
-      setModalMutate(prev => {
-        return {
-          ...prev,
-          showModal: true
-        };
-      });
+      if (!note.decrypted) {
+        setModalDecrypt(p => ({
+          ...p,
+          showModal: true,
+        }));
+      } else {
+        setModalMutate(prev => {
+          return {
+            ...prev,
+            showModal: true
+          };
+        });
+      }
     } else {
       setModalDecrypt(prev => {
         return {
@@ -315,13 +315,13 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
 
   const handleDownload = () => {
     if (note && note.raw) {
-      const { created_at, expired_at, backend_encryption, frontend_encryption } = note.raw;
+      const { created_at, expires_at, backend_encryption, frontend_encryption } = note.raw;
       let note_to_save: NoteInfo = {
         id: note.id,
         title: note.title,
         backend_encryption,
         created_at,
-        expired_at,
+        expires_at,
         frontend_encryption,
       }
       let prev_notes = local_storage.get("notes");
@@ -334,10 +334,10 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
 
           return;
         } else {
-          local_storage.set([...prev_notes, note_to_save]);
+          local_storage.set("notes", [...prev_notes, note_to_save]);
         }
       } else {
-        local_storage.set([note_to_save]);
+        local_storage.set("notes", [note_to_save]);
       }
 
       toast.custom(t => (
@@ -354,7 +354,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         </Alert>
       ), { duration: 6000, ...unwrap.opts });
     } else {
-      toast.error("Unable to download, note is malformed");
+      toast.error("Unable to download, note is malformed or not ready");
     }
   };
 

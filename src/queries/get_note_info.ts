@@ -3,7 +3,7 @@ import { BASE_URL } from "../utils/constants";
 import { NoteInfo } from "../utils/types";
 
 interface Params {
-    id: number
+    id: string
 }
 
 type ResponseData = NoteInfo;
@@ -12,10 +12,10 @@ type ResponseData = NoteInfo;
 // albeit Promise<Result<T>> does look pretty cool...
 const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
     let data: ResponseData = {
-        id: 0,
+        id: "",
         title: "",
         backend_encryption: false,
-        expired_at: {
+        expires_at: {
             nanos_since_epoch: 0,
             secs_since_epoch: 0,
         },
@@ -26,7 +26,8 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
         frontend_encryption: false,
     };
 
-    let url = BASE_URL + "/notes/" + id;
+    let url = BASE_URL + "/notes/" + encodeURIComponent(id);
+
 
     let response = await fetch(url, {
         method: "GET",
@@ -37,10 +38,10 @@ const get_note_info = async ({ id }: Params): Promise<Result<ResponseData>> => {
     });
 
     if (response.ok) {
-        let data = await response.json();
+        data = await response.json();
         return {
             data,
-        }
+        };
     } else {
         if (response.status === 404) {
             return {

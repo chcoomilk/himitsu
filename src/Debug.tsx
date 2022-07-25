@@ -12,15 +12,15 @@ const createAlertKeys = <T extends AlertKeys[]>(
   ...array: T & ([AlertKeys] extends [T[number]] ? unknown : "Missing a key")
 ) => array;
 
-const new_note = {
+const new_note: UNoteInfo = {
   title: "Test Value Title",
-  id: 0,
+  id: "debug_id",
   backend_encryption: true,
   created_at: {
     nanos_since_epoch: 0,
     secs_since_epoch: 0,
   },
-  expired_at: {
+  expires_at: {
     nanos_since_epoch: 0,
     secs_since_epoch: 0,
   },
@@ -66,6 +66,8 @@ const Debug = () => {
           "serverError",
           "tooManyRequests",
           "wrongPassphrase",
+          "handled",
+          "accessDenied",
         ).map(key => {
           return (
             <Button

@@ -1,6 +1,7 @@
 {
     "name": "himitsu",
     "short_name": "himitsu",
+    "start_url": ".",
     "icons": [
         {
             "src": "/android-chrome-192x192.png?v=2",
@@ -11,9 +12,14 @@
             "src": "/android-chrome-384x384.png?v=2",
             "sizes": "384x384",
             "type": "image/png"
+        },
+        {
+            "src": "/splash512.png?v=1",
+            "sizes": "512x512",
+            "type": "image/png"
         }
     ],
-    "theme_color": "#000000",
-    "background_color": "#000000",
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
     "display": "standalone"
 }

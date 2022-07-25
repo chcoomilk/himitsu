@@ -44,6 +44,7 @@ const PassphraseModal = ({ title, show, setShow, newPassphrase: sendPassphraseTo
               onBlur={formik.handleBlur}
               errorMessage={formik.errors.passphrase}
               isInvalid={formik.touched.passphrase && !!formik.errors.passphrase}
+              autoFocus
             />
           </Form.Group>
         </Modal.Body>
