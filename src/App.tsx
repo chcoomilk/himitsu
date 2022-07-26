@@ -17,7 +17,6 @@ import Note from "./pages/notes/Note";
 import { default as Navbar } from "./components/Navigation";
 import ContextCoupler from "./Provision";
 import { local_storage } from "./utils/functions";
-import Test from "./pages/test";
 const NotFound = lazy(() => import("./pages/404"));
 const About = lazy(() => import("./pages/About"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -64,7 +63,6 @@ function App() {
             })()
           }
           <Routes>
-            <Route path={"/fff"} element={<Test />} />
             <Route path={"/404"} element={<NotFound />} />
             <Route path={"/debug"} element={<Debug />} />
             <Route path={PATHS.home} element={<Home />} />
