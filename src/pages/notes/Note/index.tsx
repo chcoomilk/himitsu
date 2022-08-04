@@ -166,8 +166,8 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
                 <i className="bi bi-question-circle"></i> {" "}
                 Note #{((): JSX.Element => {
                   let id_str = id.toString();
-                  if (id_str.length > 6) id_str = truncate_string(id.toString(), 6);
-                  return <span onDoubleClick={() => toast(id.toString())}>{id_str}</span>;
+                  if (id_str.length > 12) id_str = truncate_string(id.toString(), 12);
+                  return <span title={id.toString()} onClick={() => toast(id.toString())}>{id_str}</span>;
                 })()} was not found
               </Alert.Heading>
               <p>
@@ -177,7 +177,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
                 </Link>?
               </p>
             </Alert>
-          ), { ...unwrap.opts });
+          ), { ...unwrap.opts, id: "notFound" });
         } else {
           unwrap.default(note_info.error);
         }
