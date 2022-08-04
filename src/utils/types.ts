@@ -21,6 +21,12 @@ type RustDateTime = {
   "secs_since_epoch": number,
 }
 
+export type JWTToken = {
+  iat: RustDateTime,
+  ids: [[string, RustDateTime]],
+  sub: string,
+}
+
 export type RawNote = {
   "content": string,
   "created_at": RustDateTime,

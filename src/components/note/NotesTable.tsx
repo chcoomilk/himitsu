@@ -3,6 +3,8 @@ import { into_readable_datetime } from "../../utils/functions";
 import { NoteInfo } from "../../utils/types";
 import * as changeCase from "change-case";
 import Countdown from "react-countdown";
+import { Link } from "react-router-dom";
+import { PATHS } from "../../utils/constants";
 
 type Props = TableProps & {
   notes: NoteInfo[] | null,
@@ -48,7 +50,11 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
             ? notes.map(note => {
               return (
                 <tr key={note.id}>
-                  <td>{note.id}</td>
+                  <td>
+                    <Link to={PATHS.note_detail + "/" + encodeURIComponent(note.id)}>
+                      {note.id}
+                    </Link>
+                  </td>
                   <td>{note.title}</td>
                   <td>{into_readable_datetime(note.created_at.secs_since_epoch)}</td>
                   <td>{

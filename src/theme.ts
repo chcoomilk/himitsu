@@ -52,10 +52,10 @@ export const applyTheme = (theme: AppThemeSetting) => {
             css.setProperty("--himitsu-bg", increase_brightness(base_bg_color, 4));
             css.setProperty("--himitsu-body-bg", base_bg_color);
             css.setProperty("--bs-body-bg", base_bg_color);
-            css.setProperty("--himitsu-input-bg", increase_brightness(base_bg_color, 4));
-            css.setProperty("--himitsu-input-border", increase_brightness(base_bg_color, 4));
-            css.setProperty("--himitsu-input-disabled-bg", increase_brightness_linear(base_bg_color, 3));
-            css.setProperty("--himitsu-input-disabled-border", increase_brightness(base_bg_color, 4));
+            css.setProperty("--himitsu-input-bg", increase_brightness(base_bg_color, 10));
+            css.setProperty("--himitsu-input-border", increase_brightness(base_bg_color, 16));
+            css.setProperty("--himitsu-input-disabled-bg", increase_brightness_linear(base_bg_color, 20));
+            css.setProperty("--himitsu-input-disabled-border", increase_brightness(base_bg_color, 20));
             css.setProperty("--himitsu-color", (base_text_color));
             css.setProperty("--himitsu-color-darken", increase_brightness_linear((base_text_color), -25));
             css.setProperty("--bs-body-color", (base_text_color));

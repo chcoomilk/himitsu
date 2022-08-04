@@ -44,9 +44,6 @@ const queryClient = new QueryClient({
       staleTime: Infinity,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
-      onError: (e) => {
-        console.log("abc");
-      }
     },
   }
 });
