@@ -119,9 +119,11 @@ const Settings = ({ setAppSettings }: Props) => {
                 <button onClick={handleReset} className="btn-anchor link-warning text-decoration-none text-start">
                   Reset all settings to default
                 </button>
-                <Link to={PATHS.about} className="link-secondary">
-                  About page
-                </Link>
+                <div>
+                  <Link to={PATHS.about} className="link-secondary text-start text-decoration-none">
+                    About page
+                  </Link>
+                </div>
               </Col>
             </Form.Group>
 
