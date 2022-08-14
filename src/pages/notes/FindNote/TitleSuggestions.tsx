@@ -6,6 +6,7 @@ import Countdown from "react-countdown";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../utils/constants";
 import { into_readable_datetime, truncate_string } from "../../../utils/functions";
+import { get_notes } from "../../../queries/get_notes";
 
 interface Props extends ListGroupProps {
   query: string,
@@ -14,7 +15,7 @@ interface Props extends ListGroupProps {
 const TitleSuggestions: React.FC<Props> = ({ query, ...attributes }) => {
   const navigate = useNavigate();
   const { debouncedValue } = useDebounce(query, 400);
-  const { data, isFetching } = useQuery<NoteInfo[]>([`/notes?title=%${debouncedValue}%&limit=${4}`]);
+  const { data, isFetching } = useQuery<NoteInfo[]>(["notes", 4, debouncedValue], get_notes);
 
   return (
     <ListGroup {...attributes}>

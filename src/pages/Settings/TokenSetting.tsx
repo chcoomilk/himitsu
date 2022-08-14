@@ -233,8 +233,8 @@ const TokenSetting = () => {
 
       <OverlayTrigger placement="bottom-end" overlay={(p) => (
         <Tooltip id="accessTokenTooltipInfo" {...p} hidden={!showHelp}>
-          This is your access token used for granting access
-          to update/delete the notes you've created
+          This is your access token <span className="text-decoration-underline">solely</span>
+          {" "} for granting access to delete the notes you've created
         </Tooltip>
       )}>
         {({ ref, ...t }) => (

@@ -1,4 +1,5 @@
-import { Table, TableProps } from "react-bootstrap";
+import React from "react";
+import { Spinner, Table, TableProps } from "react-bootstrap";
 import { into_readable_datetime } from "../../utils/functions";
 import { NoteInfo } from "../../utils/types";
 import * as changeCase from "change-case";
@@ -7,7 +8,10 @@ import { Link } from "react-router-dom";
 import { PATHS } from "../../utils/constants";
 
 type Props = TableProps & {
-  notes: NoteInfo[] | null,
+  notes: NoteInfo[][],
+  loading?: boolean,
+  loadMore?: boolean,
+  loadMoreOnClick?: () => void,
 }
 
 type NoteInfoKey = keyof NoteInfo;
@@ -16,7 +20,7 @@ type NoteInfoKey = keyof NoteInfo;
 //   array: T & ([NoteInfoKey] extends [T[number]] ? unknown : 'Invalid')
 // ) => array;
 
-const NotesTable = ({ notes, ...attributes }: Props) => {
+const NotesTable = ({ loading, notes, loadMore, loadMoreOnClick, ...attributes }: Props) => {
   return (
     <Table {...attributes} >
       <thead>
@@ -27,7 +31,7 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
               "title",
               "created_at",
               "expires_at",
-            ).map(header => {
+            ).map((header, _, arr) => {
               let custom: string | undefined;
               const cc = changeCase.capitalCase;
               switch (header) {
@@ -39,40 +43,56 @@ const NotesTable = ({ notes, ...attributes }: Props) => {
                   break;
               }
 
-              return (<th key={header}>{custom || cc(header)}</th>);
+              return (<th style={{ width: 100 / arr.length + "%" }} key={header}>{custom || cc(header)}</th>);
             })
           }
         </tr>
       </thead>
       <tbody>
         {
-          notes && notes.length
-            ? notes.map(note => {
-              return (
-                <tr key={note.id}>
-                  <td>
-                    <Link to={PATHS.note_detail + "/" + encodeURIComponent(note.id)}>
-                      {note.id}
-                    </Link>
-                  </td>
-                  <td>{note.title}</td>
-                  <td>{into_readable_datetime(note.created_at.secs_since_epoch)}</td>
-                  <td>{
-                    note.expires_at
-                      ? (
-                        <>
-                          <i className="bi bi-hourglass-split"></i>
-                          <Countdown
-                            date={note.expires_at.secs_since_epoch * 1000}
-                          />
-                        </>
-                      )
-                      : "Never"
-                  }</td>
-                </tr>
-              );
-            })
-            : <tr><td colSpan={4} className="text-center">Bushwack, it's empty!</td></tr>
+          notes.map((gnote, i) => {
+            return (
+              <React.Fragment key={i}>
+                {gnote.map(note => {
+                  return (
+                    <tr key={note.created_at.secs_since_epoch}>
+                      <td>
+                        <Link to={PATHS.note_detail + "/" + encodeURIComponent(note.id)}>
+                          {note.id}
+                        </Link>
+                      </td>
+                      <td>{note.title}</td>
+                      <td>{into_readable_datetime(note.created_at.secs_since_epoch)}</td>
+                      <td>{
+                        note.expires_at
+                          ? (
+                            <>
+                              <i className="bi bi-hourglass-split"></i>
+                              <Countdown
+                                date={note.expires_at.secs_since_epoch * 1000}
+                              />
+                            </>
+                          )
+                          : "Never"
+                      }</td>
+                    </tr>
+                  );
+                })}
+              </React.Fragment>
+            );
+          })
+        }
+        {
+          loading === true && <tr><td colSpan={4} className="text-center"><Spinner animation="border" /></td></tr>
+        }
+        {
+          loadMore === true && loadMoreOnClick
+          && <tr style={{ cursor: "pointer" }}>
+            <td colSpan={4} className="text-center" onClick={loadMoreOnClick}>Load more!</td>
+          </tr>
+        }
+        {
+          notes.length === 0 && <tr><td colSpan={4} className="text-center">Bushwack, it's empty!</td></tr>
         }
       </tbody>
     </Table>

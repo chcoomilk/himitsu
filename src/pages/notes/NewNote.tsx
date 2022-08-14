@@ -142,7 +142,16 @@ const NewNote = () => {
                 local_storage.set("notes", [data]);
               }
             }
-            resetForm();
+            resetForm({
+              values: {
+                ...formik.initialValues,
+                double_encrypt: {
+                  enabled: val.double_encrypt.enabled,
+                  passphrase: formik.initialValues.double_encrypt.passphrase,
+                },
+                discoverable: val.discoverable,
+              },
+            });
           } else {
             unwrap.default(error);
           }

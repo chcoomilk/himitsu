@@ -6,10 +6,10 @@ import { local_storage } from "../utils/functions";
 import { Link } from "react-router-dom";
 import { DefaultValue, PATHS } from "../utils/constants";
 import SimpleConfirmationModal from "../components/SimpleConfirmationModal";
-import EncryptionOptions from "./settings/EncryptionOptions";
-import ThemeOptions from "./settings/ThemeOptions";
-import TokenSetting from "./settings/TokenSetting";
-import SettingsContext from "./settings/context";
+import EncryptionOptions from "./Settings/EncryptionOptions";
+import ThemeOptions from "./Settings/ThemeOptions";
+import TokenSetting from "./Settings/TokenSetting";
+import SettingsContext from "./Settings/context";
 
 type Props = {
   setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
@@ -119,11 +119,6 @@ const Settings = ({ setAppSettings }: Props) => {
                 <button onClick={handleReset} className="btn-anchor link-warning text-decoration-none text-start">
                   Reset all settings to default
                 </button>
-                <div>
-                  <Link to={PATHS.about} className="link-secondary text-start text-decoration-none">
-                    About page
-                  </Link>
-                </div>
               </Col>
             </Form.Group>
 
@@ -145,12 +140,40 @@ const Settings = ({ setAppSettings }: Props) => {
               </Col>
             </Form.Group>
 
-            <Form.Group as={Row} controlId="token">
+            <Form.Group as={Row} controlId="token" className="mb-2">
               <Form.Label column lg="6">
-                Your access token
+                Access token
               </Form.Label>
               <Col lg="6">
                 <TokenSetting />
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} controlId="links">
+              <Form.Label column lg="6">
+                Links
+              </Form.Label>
+              <Col lg="6">
+                <div>
+                  <Link to={PATHS.about} className="link-secondary text-start text-decoration-none">
+                    About page
+                  </Link>
+                </div>
+                <div>
+                  <a target="_blank" rel="noreferrer" href="https://github.com/chcoomilk/himitsu-backend" className="link-secondary text-decoration-none">
+                    <i className="bi bi-github" />
+                    {" "}
+                    Project's backend
+                  </a>
+
+                </div>
+                <div>
+                  <a target="_blank" rel="noreferrer" href="https://github.com/chcoomilk/himitsu" className="link-secondary text-decoration-none">
+                    <i className="bi bi-github" />
+                    {" "}
+                    Project's browser app
+                  </a>
+                </div>
               </Col>
             </Form.Group>
           </Form>
