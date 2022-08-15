@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from "react-query"
 // import { persistQueryClient } from "react-query/persistQueryClient-experimental"
 import { BrowserRouter } from "react-router-dom"
 import { applyTheme } from "./theme"
-import { BASE_URL } from "./utils/constants"
 import AppContext from "./utils/app_state_context"
 import { AppSetting } from "./utils/types"
 

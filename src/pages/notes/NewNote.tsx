@@ -25,7 +25,7 @@ const BasicNoteSchema = {
   }),
   discoverable: yup.bool(),
   custom_id: yup.string().max(32).min(1).nullable(),
-  title: yup.string(),
+  title: yup.string().min(3).nullable().trim(),
   content: yup.string().required(),
   passphrase: yup.string()
     .required("a passphrase is needed to encrypt your data")

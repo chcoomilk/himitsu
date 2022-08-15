@@ -125,7 +125,7 @@ export default async function post_note({
             };
         } else {
             if (result.status >= 400 && result.status < 500) {
-                if (result.status === 403) {
+                if (result.status === 409) {
                     toast.custom(t => (
                         <Alert show={t.visible} variant="danger" dismissible onClose={() => toast.dismiss(t.id)}>
                             <Alert.Heading>
