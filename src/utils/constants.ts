@@ -12,7 +12,12 @@ const errors: ErrorKind = {
     clientError: null,
 };
 
-const note: Note = {
+type EnforceNote = Note & {
+    title: string,
+    passphrase: string,
+}
+
+const note: EnforceNote = {
     id: "",
     title: "",
     content: "",

@@ -78,3 +78,14 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+
+self.addEventListener('fetch', (event) => {
+  (event as any).respondWith(async function () {
+    try {
+      let res = await fetch(event.request);
+      return res;
+    } catch (err) {
+      return caches.match(event.request);
+    }
+  }());
+});

@@ -344,7 +344,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         <Alert show={t.visible} variant="primary" dismissible onClose={() => toast.dismiss(t.id)}>
           <Alert.Heading>
             <i className="bi bi-check"></i> {" "}
-            {`Note "${truncate_string(note.title, 18)}" has been saved locally`}
+            {`Note "${truncate_string(note.title || note.id, 18)}" has been saved locally`}
           </Alert.Heading>
           <p>
             Ah yes that note, I remember it clearly.
@@ -420,7 +420,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.title : DefaultValue.note.title}
+                      value={note ? (note.title || undefined) : DefaultValue.note.title}
                       readOnly
                     />
                 }

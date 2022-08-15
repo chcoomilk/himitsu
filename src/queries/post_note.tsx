@@ -35,7 +35,7 @@ export default async function post_note({
     double_encrypt,
     discoverable,
     custom_id,
-    title = "",
+    title,
     passphrase,
     encryption,
     content,

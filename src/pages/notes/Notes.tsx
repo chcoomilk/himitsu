@@ -60,7 +60,7 @@ const Notes = () => {
       notesRef.current = res;
     }
     if (typeof queryKey[2] === "string") {
-      res = notesRef.current.filter((n) => n.title.includes(queryKey[2] as string));
+      res = notesRef.current.filter((n) => n.title?.includes(queryKey[2] as string));
     }
 
     return res.slice(pageParam, (pageParam || 0) + limit);
@@ -71,7 +71,7 @@ const Notes = () => {
     ["notes", limit, debouncedValue],
     get_notes,
     {
-      enabled: params.source === "global" && typeof params.query === "string" && params.query.length >= 3,
+      enabled: params.source === "global" && typeof params.query === "string",
       getNextPageParam: (nextVal, pages) => {
         if (nextVal.length !== limit) return undefined;
         return pages.length * limit;
@@ -80,7 +80,7 @@ const Notes = () => {
   );
 
   const { data: localNotes, isLoading: isLnLoading, fetchNextPage: fetchNextLocalNotes, hasNextPage: hasNextLocalNotes } = useInfiniteQuery<NoteInfo[]>(
-    ["local_notes", limit, debouncedValue],
+    ["local_notes", limit, params.query],
     get_slices,
     {
       enabled: params.source === "local",
