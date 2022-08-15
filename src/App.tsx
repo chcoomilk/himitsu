@@ -30,7 +30,6 @@ function App() {
 
   return (
     <ContextCoupler appSettings={appSettings}>
-      <button className="btn-anchor" onClick={() => document.dispatchEvent(new Event("appHasUpdate"))}>click here</button>
       <Navbar />
       <Suspense fallback={
         <Spinner animation="border" role="status"
