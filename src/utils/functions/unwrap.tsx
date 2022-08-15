@@ -52,7 +52,7 @@ const unwrap_default = (key: keyof AlertT): void => {
             (
               <>
                 There is something wrong with your himitsu app.<br />
-                Try "Shift+R (Refresh)" or clear out the cache of this site in your browser.
+                Try "Ctrl+Shift+R (Hard Refresh)" or clear out the cache of this site in your browser.
               </>
             ),
             "cloud-slash",

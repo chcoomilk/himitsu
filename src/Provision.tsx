@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from "react-query"
 // import { persistQueryClient } from "react-query/persistQueryClient-experimental"
 import { BrowserRouter } from "react-router-dom"
 import { applyTheme } from "./theme"
-import { BASE_URL } from "./utils/constants"
 import AppContext from "./utils/app_state_context"
 import { AppSetting } from "./utils/types"
 
@@ -16,23 +15,6 @@ type AppDefinitions = {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: async ({ queryKey }) => {
-        let url = BASE_URL + queryKey[0];
-
-        let response = await fetch(url, {
-          method: "GET",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json"
-          },
-        });
-
-        if (response.ok) {
-          return await response.json();
-        } else {
-          throw response.status;
-        }
-      },
       keepPreviousData: true,
       retry: (failureCount, error) => {
         if (error === 400) return false;

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
 import { useParams } from "react-router";
 import { useNavigate, useLocation, Location } from "react-router-dom";
 import { PATHS } from "../../utils/constants";
@@ -51,19 +50,7 @@ const NotePage = () => {
   if (props.id !== null) {
     return <Note checked_id={props.id} state_passphrase={props.passphrase} />;
   } else {
-    return <Spinner animation="border" role="status"
-      style={{
-        position: "absolute",
-        marginLeft: "auto",
-        marginRight: "auto",
-        top: "50vh",
-        left: 0,
-        right: 0,
-        textAlign: "center",
-      }}
-    >
-      <span className="visually-hidden">Loading...</span>
-    </Spinner>;
+    return null;
   }
 };
 

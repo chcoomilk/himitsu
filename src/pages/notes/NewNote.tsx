@@ -25,7 +25,7 @@ const BasicNoteSchema = {
   }),
   discoverable: yup.bool(),
   custom_id: yup.string().max(32).min(1).nullable(),
-  title: yup.string(),
+  title: yup.string().min(3).nullable().trim(),
   content: yup.string().required(),
   passphrase: yup.string()
     .required("a passphrase is needed to encrypt your data")
@@ -142,7 +142,16 @@ const NewNote = () => {
                 local_storage.set("notes", [data]);
               }
             }
-            resetForm();
+            resetForm({
+              values: {
+                ...formik.initialValues,
+                double_encrypt: {
+                  enabled: val.double_encrypt.enabled,
+                  passphrase: formik.initialValues.double_encrypt.passphrase,
+                },
+                discoverable: val.discoverable,
+              },
+            });
           } else {
             unwrap.default(error);
           }
