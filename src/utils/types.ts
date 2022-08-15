@@ -39,7 +39,7 @@ export type RawNote = {
 
 export interface Note {
   id: string,
-  title: string,
+  title: string | null,
   content: string,
   decrypted: boolean,
   encryption: EncryptionMethod,
@@ -55,7 +55,7 @@ export interface NoteInfo {
   created_at: RustDateTime,
   expires_at: RustDateTime | null,
   id: string,
-  title: string
+  title: string | null
 }
 
 export enum EncryptionMethod {
