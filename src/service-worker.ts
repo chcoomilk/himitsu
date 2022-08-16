@@ -64,7 +64,7 @@ registerRoute(
     plugins: [
       // Ensure that once this runtime cache reaches a maximum size the
       // least-recently used images are removed.
-      new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 24 * 60 * 60 }),
+      new ExpirationPlugin({ maxEntries: 5, maxAgeSeconds: 86400 }),
     ],
   })
 );
@@ -78,14 +78,3 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
-
-self.addEventListener('fetch', (event) => {
-  (event as any).respondWith(async function () {
-    try {
-      let res = await fetch(event.request);
-      return res;
-    } catch (err) {
-      return caches.match(event.request);
-    }
-  }());
-});
