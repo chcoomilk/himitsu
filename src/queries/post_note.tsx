@@ -136,7 +136,7 @@ export default async function post_note({
                                 Custom ID has been taken, please choose something else!
                             </p>
                         </Alert>
-                    ), { duration: 6000, ...unwrap.opts });
+                    ), { duration: 6000, ...unwrap.toast_alert_opts });
                     return {
                         data,
                         error: "handled",

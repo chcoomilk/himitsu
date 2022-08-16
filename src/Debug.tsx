@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import toast from "react-hot-toast";
 
 import { Alert as AlertT, NoteInfo } from "./utils/types";
@@ -85,18 +85,7 @@ const Debug = () => {
       <Button
         className="mb-3"
         onClick={_ => {
-          toast((t) => (
-            <Alert dismissible onClose={() => {
-              toast.dismiss(t.id);
-            }}>
-              <Alert.Heading>
-                Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello
-              </Alert.Heading>
-              <p>
-                World World World World World World World Why Stack
-              </p>
-            </Alert>
-          ), { duration: Infinity, className: "toast-alert" });
+          toast("toast");
         }}
       >
         Toast

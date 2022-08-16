@@ -2,7 +2,7 @@ import { Alert } from "react-bootstrap";
 import toast, { ToastOptions } from "react-hot-toast";
 import { Alert as AlertT, BootstrapIcon } from "../types";
 
-export const opts: ToastOptions = {
+export const toast_alert_opts: ToastOptions = {
   className: "toast-alert",
   position: "top-center",
 };
@@ -38,7 +38,7 @@ const unwrap_default = (key: keyof AlertT): void => {
             Clearly, you are not the owner of this property arent'cha?
           </p>
         </Alert>
-      ), { duration: 6000, ...opts });
+      ), { duration: 6000, ...toast_alert_opts });
       break;
     case "handled":
       break;
@@ -51,14 +51,14 @@ const unwrap_default = (key: keyof AlertT): void => {
             "Error occurred",
             (
               <>
-                There is something wrong with your himitsu app.<br />
+                There is something wrong with your himitsu app. <br />
                 Try "Ctrl+Shift+R (Hard Refresh)" or clear out the cache of this site in your browser.
               </>
             ),
             "cloud-slash",
           )}
         </Alert>
-      ), { duration: Infinity, ...opts });
+      ), { duration: Infinity, ...toast_alert_opts });
       break;
     case "genericDelete":
       toast.custom((t) => (
@@ -73,7 +73,7 @@ const unwrap_default = (key: keyof AlertT): void => {
             Well boys, we did it, racism is no more
           </p>
         </Alert>
-      ), { duration: 6000, ...opts });
+      ), { duration: 6000, ...toast_alert_opts });
       break;
     case "genericSave":
       toast.custom((t) => (
@@ -88,7 +88,7 @@ const unwrap_default = (key: keyof AlertT): void => {
             Item has been saved
           </p>
         </Alert>
-      ), { duration: 6000, ...opts });
+      ), { duration: 6000, ...toast_alert_opts });
       break;
     case "notFound":
       toast.custom((t) => (
@@ -100,10 +100,10 @@ const unwrap_default = (key: keyof AlertT): void => {
             Not found
           </Alert.Heading>
           <p>
-            We even searched through your mind and found nothing there.
+            We even searched through into your mind and found nothing there.
           </p>
         </Alert>
-      ), { duration: 6000, ...opts });
+      ), { duration: 6000, ...toast_alert_opts });
       break;
     case "serverError":
       toast.custom((t) => (
@@ -118,7 +118,7 @@ const unwrap_default = (key: keyof AlertT): void => {
             Service is unresponsive at the moment, please try again later.
           </p>
         </Alert>
-      ), { duration: Infinity, ...opts });
+      ), { duration: Infinity, ...toast_alert_opts });
       break;
     case "tooManyRequests":
       toast.custom((t) => (
@@ -133,7 +133,7 @@ const unwrap_default = (key: keyof AlertT): void => {
             You're not trying to break the server, are'ya?.
           </p>
         </Alert>
-      ), { duration: 4000, ...opts });
+      ), { duration: 4000, ...toast_alert_opts });
       break;
     case "wrongPassphrase":
       toast.custom((t) => (
@@ -148,7 +148,7 @@ const unwrap_default = (key: keyof AlertT): void => {
             Think Mark, thicc!
           </p>
         </Alert>
-      ), { duration: 6000, ...opts });
+      ), { duration: 6000, ...toast_alert_opts });
       break;
   }
 };

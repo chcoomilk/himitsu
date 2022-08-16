@@ -177,7 +177,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
                 </Link>?
               </p>
             </Alert>
-          ), { ...unwrap.opts, id: "notFound" });
+          ), { ...unwrap.toast_alert_opts, id: "notFound" });
         } else {
           unwrap.default(note_info.error);
         }
@@ -210,7 +210,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
               Content was empty when decrypted with current passphrase.
             </p>
           </Alert>
-        ), { duration: 6000, ...unwrap.opts });
+        ), { duration: 6000, ...unwrap.toast_alert_opts });
         setModalDecrypt({
           passphrase: null,
           showModal: true,
@@ -224,10 +224,10 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
             Decryption failed
           </Alert.Heading>
           <p>
-            This should've not had happened, check log for details
+            This should not had happened, check log for details
           </p>
         </Alert>
-      ), { duration: Infinity, ...unwrap.opts });
+      ), { duration: Infinity, ...unwrap.toast_alert_opts });
       console.error("h_error: ", error);
     }
   }, []);
@@ -352,7 +352,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
             ahaha such memory to behold...
           </p>
         </Alert>
-      ), { duration: 6000, ...unwrap.opts });
+      ), { duration: 6000, ...unwrap.toast_alert_opts });
     } else {
       toast.error("Unable to download, note is malformed or not ready");
     }
