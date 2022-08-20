@@ -8,7 +8,7 @@ import TitleSuggestions from "./TitleSuggestions";
 import { Props } from "./utils";
 
 const schema = yup.object().shape({
-  title: yup.string().min(1),
+  title: yup.string().min(1).required(),
 });
 
 const FindByTitle = ({ params: { query }, setParams }: Props) => {
@@ -18,7 +18,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
   const formik = useFormik({
     validationSchema: schema,
     initialValues: {
-      title: query,
+      title: query || "",
     },
     onSubmit: async ({ title }) => {
       if (title) {

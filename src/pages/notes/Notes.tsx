@@ -29,7 +29,7 @@ const Notes = () => {
       if (is_source(src)) {
         return src;
       } else {
-        return "local";
+        return undefined;
       }
     })(),
   });
@@ -71,7 +71,7 @@ const Notes = () => {
     ["notes", limit, debouncedValue],
     get_notes,
     {
-      enabled: params.source === "global" && typeof params.query === "string",
+      enabled: params.source === "global" && typeof params.query === "string" && !!params.query.length,
       getNextPageParam: (nextVal, pages) => {
         if (nextVal.length !== limit) return undefined;
         return pages.length * limit;
@@ -83,7 +83,7 @@ const Notes = () => {
     ["local_notes", limit, params.query],
     get_slices,
     {
-      enabled: params.source === "local",
+      enabled: params.source === "local" || params.source === undefined,
       getNextPageParam: (nextVal, pages) => {
         if (nextVal.length !== limit) return undefined;
         return pages.length * limit;
