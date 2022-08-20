@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import { useContext, useState } from "react";
 import { Button, Form, Row, Col, DropdownButton, Dropdown, InputGroup, FormControl, Stack, Spinner, Modal } from "react-bootstrap";
 import * as yup from "yup";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 
 import NewNoteModal from "../../components/note/NewNoteModal";
 import AppContext from "../../utils/app_state_context";
@@ -24,8 +24,8 @@ const BasicNoteSchema = {
     })
   }),
   discoverable: yup.bool(),
-  custom_id: yup.string().max(32).min(1).nullable(),
-  title: yup.string().min(3).nullable().trim(),
+  custom_id: yup.string().max(32).min(1).nullable().trim(),
+  title: yup.string().min(4).nullable().trim(),
   content: yup.string().required(),
   passphrase: yup.string()
     .required("a passphrase is needed to encrypt your data")
@@ -59,6 +59,7 @@ const NewNote = () => {
   });
   useTitle("New Note");
   const { mutateAsync } = useMutation(post_note);
+  const queryClient = useQueryClient();
 
   const formik = useFormik({
     initialValues: {
@@ -141,7 +142,20 @@ const NewNote = () => {
               } else {
                 local_storage.set("notes", [data]);
               }
+
+              let qk: [string | undefined] = [undefined];
+              if (data.title) {
+                let t: string = "";
+                for (let char of data.title) {
+                  t += char;
+                  qk.push(char);
+                  if (t.length > 1) qk.push(t);
+                }
+              }
+
+              queryClient.refetchQueries(["local_notes"], { active: true, queryKey: qk });
             }
+
             resetForm({
               values: {
                 ...formik.initialValues,

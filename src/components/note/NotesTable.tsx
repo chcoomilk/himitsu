@@ -83,7 +83,7 @@ const NotesTable = ({ loading, notes, loadMore, loadMoreOnClick, ...attributes }
           })
         }
         {
-          loading === true && <tr><td colSpan={4} className="text-center"><Spinner animation="border" /></td></tr>
+          loading === true && <tr><td colSpan={4} className="text-center py-2"><Spinner animation="border" /></td></tr>
         }
         {
           loadMore === true && loadMoreOnClick
@@ -92,7 +92,7 @@ const NotesTable = ({ loading, notes, loadMore, loadMoreOnClick, ...attributes }
           </tr>
         }
         {
-          notes.length === 0 && <tr><td colSpan={4} className="text-center">Bushwack, it's empty!</td></tr>
+          !loading && (notes[0] === undefined || !notes[0].length) && <tr><td colSpan={4} className="text-center">Bushwack, it's empty!</td></tr>
         }
       </tbody>
     </Table>
