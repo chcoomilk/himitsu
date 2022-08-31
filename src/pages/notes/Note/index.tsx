@@ -172,12 +172,12 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
               </Alert.Heading>
               <p>
                 Note doesn't exist, or perhaps it's past its expiration date, {" "}
-                <Link id="special-alert-link" to="/find" onClick={() => toast.dismiss(t.id)}>
+                <Link className="alert-link" to="/find" onClick={() => toast.dismiss(t.id)}>
                   Try Again
                 </Link>?
               </p>
             </Alert>
-          ), { ...unwrap.toast_alert_opts, id: "notFound" });
+          ), { ...unwrap.toast_alert_opts, id: "notFound", duration: Infinity });
         } else {
           unwrap.default(note_info.error);
         }

@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { Spinner, Container } from "react-bootstrap";
+import { Spinner, Container, Alert } from "react-bootstrap";
 import { Toaster } from "react-hot-toast";
 import { DefaultValue, PATHS } from "./utils/constants";
 import { AppSetting } from "./utils/types";
@@ -27,9 +27,21 @@ const Debug = lazy(() => import("./Debug"));
 function App() {
   const [appSettings, setAppSettings] = useState<AppSetting>(local_storage.get("settings") || DefaultValue.settings);
   // const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
+  const [show, setShow] = useState<boolean>(sessionStorage.getItem("read") === "true" ? false : true);
 
   return (
     <ContextCoupler appSettings={appSettings}>
+      <Alert show={show} variant="warning" dismissible closeLabel="x" onClose={() => { sessionStorage.setItem("read", "true"); setShow(false) }}>
+        {/* <Alert.Heading>
+          <i className="bi bi-exclamation-triangle-fill"></i> {" "}
+          Warning!!!
+        </Alert.Heading> */}
+        <p className="fw-bolder">
+          WARNING!!!, Please read this before using the app
+        </p>
+        Heroku will stop offering its free product plans on 26th October this year. Please make a backup of your saved notes because migrating data from Heroku seems impossible and may result in data loss.
+        As for the service, expect nothing because it's plenty difficult to deploy a Rust application anywhere. I might consider buying a raspberry pi, or a mini arm computer of some sorts but like I'm broke asf boii
+      </Alert>
       <Navbar />
       <Suspense fallback={
         <Spinner animation="border" role="status"
