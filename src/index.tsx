@@ -29,7 +29,7 @@ serviceWorkerRegistration.register({
         <p>
           The update will be applied whenever you go back to this site. <br />
           If you have the app installed, {" "}
-          <a href={window.location.href}>click here</a> {" "}
+          <a className="alert-link" href={window.location.href}>click here</a> {" "}
           to reload the app!
         </p>
       </Alert>
