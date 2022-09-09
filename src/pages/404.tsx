@@ -1,7 +1,7 @@
 import { Col, Image, Row } from "react-bootstrap";
-import aqua from "../media/404/aqua.gif";
-import heal from "../media/404/cursed.gif";
-import deku from "../media/404/deku.gif";
+import aqua from "../assets/404/aqua.gif";
+import heal from "../assets/404/cursed.gif";
+import deku from "../assets/404/deku.gif";
 
 const NotFound = () => {
   return (

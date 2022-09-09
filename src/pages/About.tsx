@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Accordion, Col, Row, Image } from "react-bootstrap";
-import kanna from "../media/kanna.gif";
-import ts_gif from "../media/ts.gif";
-import rust_gif from "../media/rust.gif";
-import disgusted from "../media/ramsay.jpg";
+import kanna from "../assets/kanna.gif";
+import ts_gif from "../assets/ts.gif";
+import rust_gif from "../assets/rust.gif";
+import disgusted from "../assets/ramsay.jpg";
 
 const holy_list = {
   normal_text_1: "To yours truly,",

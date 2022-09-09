@@ -15,10 +15,7 @@ Unfortunately, yes! There are\
 
 ## The secret env file
 
-This application uses the "dotenv" library to make use the current environment of this project running on.\
-In the project directory, create a file called ".env".\
-The env file should contains:\
-`REACT_APP_BACKEND_URL` url to the deployed backend 
+Check out the ["/src/vite-env.d.ts"](./src/vite-env.d.ts) file.
 
 # Getting Started with Create React App
 

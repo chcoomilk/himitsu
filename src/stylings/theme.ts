@@ -1,4 +1,4 @@
-import { AppThemeSetting } from "./utils/types";
+import { AppThemeSetting } from "../utils/types";
 
 function increase_brightness(hex: string, percent: number) {
     // strip the leading # if it's there

@@ -1,8 +1,8 @@
 import { EncryptionMethod, Note, ErrorKind, AppSetting, AppThemeSetting } from "./types";
 
-if (typeof process.env.REACT_APP_BACKEND_URL === "undefined") console.error("No server URL was set in .env");
+if (typeof import.meta.env.VITE_BACKEND_URL === "undefined") console.error("No server URL was set in .env: ", import.meta.env.VITE_BACKEND_URL);
 
-export const BASE_URL: string = process.env.REACT_APP_BACKEND_URL || "";
+export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL || "";
 
 const errors: ErrorKind = {
     notFound: null,

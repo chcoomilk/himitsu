@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap"
 import { useSearchParams } from "react-router-dom";
-import { useTitle } from "../../custom-hooks";
-import FindByID from "./FindNote/ByID";
-import FindByTitle from "./FindNote/ByTitle";
-import { is_opts, UrlParams } from "./FindNote/utils";
+import { useTitle } from "../../../custom-hooks";
+import FindByID from "./ByID";
+import FindByTitle from "./ByTitle";
+import { is_opts, UrlParams } from "./utils";
 
 const FindNote = () => {
   useTitle("Find");

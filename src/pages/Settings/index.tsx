@@ -1,15 +1,15 @@
 import { Col, Row, Form } from "react-bootstrap";
-import { AppSetting } from "../utils/types";
+import { AppSetting } from "../../utils/types";
 import React, { useContext, useState } from "react";
-import AppContext from "../utils/app_state_context";
-import { local_storage } from "../utils/functions";
+import AppContext from "../../utils/app_state_context";
+import { local_storage } from "../../utils/functions";
 import { Link } from "react-router-dom";
-import { DefaultValue, PATHS } from "../utils/constants";
-import SimpleConfirmationModal from "../components/SimpleConfirmationModal";
-import EncryptionOptions from "./Settings/EncryptionOptions";
-import ThemeOptions from "./Settings/ThemeOptions";
-import TokenSetting from "./Settings/TokenSetting";
-import SettingsContext from "./Settings/context";
+import { DefaultValue, PATHS } from "../../utils/constants";
+import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
+import EncryptionOptions from "./EncryptionOptions";
+import ThemeOptions from "./ThemeOptions";
+import TokenSetting from "./TokenSetting";
+import SettingsContext from "./context";
 
 type Props = {
   setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
