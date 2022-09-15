@@ -37,8 +37,10 @@ export type RawNote = {
   "title": string,
 }
 
+export type note_id = string
+
 export interface Note {
-  id: string,
+  id: note_id,
   title: string | null,
   content: string,
   decrypted: boolean,

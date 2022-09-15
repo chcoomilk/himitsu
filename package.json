@@ -11,6 +11,8 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
+    "react": "npm:@preact/compat",
+    "react-dom": "npm:@preact/compat",
     "bootstrap": "^5.2.0",
     "bootstrap-icons": "^1.9.1",
     "change-case": "^4.1.2",
@@ -19,10 +21,9 @@
     "dotenv-expand": "^8.0.3",
     "formik": "^2.2.9",
     "jwt-decode": "^3.1.2",
-    "react": "^18.2.0",
+    "preact": "^10.11.0",
     "react-bootstrap": "^2.5.0",
     "react-countdown": "^2.3.2",
-    "react-dom": "^18.2.0",
     "react-hot-toast": "^2.3.0",
     "react-loading-skeleton": "^3.1.0",
     "react-query": "^3.39.2",

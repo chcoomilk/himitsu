@@ -4,7 +4,7 @@ import React, { useContext, useState } from "react";
 import AppContext from "../../utils/app_state_context";
 import { local_storage } from "../../utils/functions";
 import { Link } from "react-router-dom";
-import { DefaultValue, PATHS } from "../../utils/constants";
+import { DefaultValues, PATHS } from "../../utils/constants";
 import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
 import EncryptionOptions from "./EncryptionOptions";
 import ThemeOptions from "./ThemeOptions";
@@ -84,8 +84,8 @@ const Settings = ({ setAppSettings }: Props) => {
           })}
           doDecide={val => {
             if (val) {
-              setAppSettings(DefaultValue.settings);
-              local_storage.set("settings", DefaultValue.settings);
+              setAppSettings(DefaultValues.settings);
+              local_storage.set("settings", DefaultValues.settings);
             }
             setModals(prev => {
               prev.confirmResetSettings = false;

@@ -34,7 +34,7 @@ const settings: AppSetting = {
     history: false,
 };
 
-export const DefaultValue = {
+export const DefaultValues = {
     errors,
     note,
     settings,

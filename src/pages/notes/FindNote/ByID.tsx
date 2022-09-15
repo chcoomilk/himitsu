@@ -8,7 +8,7 @@ import { Props } from "./utils";
 import { useEffect, useState } from "react";
 
 const schema = yup.object().shape({
-  id: yup.string().required().nullable(),
+  id: yup.string().max(32).required().nullable(),
   passphrase: yup.string().min(4).max(1024).nullable()
 });
 
@@ -17,6 +17,7 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
   // what
   const [_query] = useState(query);
   // whhhyy
+  const [afBlurCount, setAfBlurCount] = useState(0);
 
   const formik = useFormik({
     validationSchema: schema,
@@ -34,8 +35,6 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
         formik.validateForm();
       }
     },
-    validateOnMount: true,
-    enableReinitialize: false,
   });
 
   // this creates infinite loop for some reason without putting query into usestate
@@ -57,8 +56,11 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
           placeholder="Enter note's ID here"
           value={formik.values.id || ""}
           onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          isInvalid={formik.initialValues.id === null ? (formik.touched.id && !!formik.errors.id) : !!formik.errors.id}
+          onBlur={(e) => {
+            setAfBlurCount(afBlurCount + 1);
+            formik.handleBlur(e);
+          }}
+          isInvalid={(afBlurCount > 1 || !!formik.submitCount) && !!formik.errors.id}
           autoFocus
         />
         <Form.Control.Feedback type="invalid" tooltip>{formik.errors.id}</Form.Control.Feedback>

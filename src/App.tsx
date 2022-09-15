@@ -2,18 +2,16 @@ import { lazy, Suspense, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Spinner, Container } from "react-bootstrap";
 import { Toaster } from "react-hot-toast";
-import { DefaultValue, PATHS } from "./utils/constants";
+import { DefaultValues, PATHS } from "./utils/constants";
 import { AppSetting } from "./utils/types";
 
-import "bootstrap/scss/bootstrap.scss";
 import "./stylings/index.scss";
-import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-loading-skeleton/dist/skeleton.css";
 
 import Home from "./pages/Home";
 import NewNote from "./pages/notes/NewNote";
 import FindNote from "./pages/notes/FindNote";
-import Note from "./pages/notes/Note";
+import Note from "./pages/Note";
 import { default as Navbar } from "./components/Navigation";
 import ContextCoupler from "./Provision";
 import { local_storage } from "./utils/functions";
@@ -25,7 +23,7 @@ const NewNoteModal = lazy(() => import("./components/note/NewNoteModal"));
 const Debug = lazy(() => import("./Debug"));
 
 function App() {
-  const [appSettings, setAppSettings] = useState<AppSetting>(local_storage.get("settings") || DefaultValue.settings);
+  const [appSettings, setAppSettings] = useState<AppSetting>(local_storage.get("settings") || DefaultValues.settings);
   // const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
 
   return (

@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap"
 import { useSearchParams } from "react-router-dom";
 import { useTitle } from "../../../custom-hooks";
 import FindByID from "./ByID";
-import FindByTitle from "./ByTitle";
+// import FindByTitle from "./ByTitle";
 import { is_opts, UrlParams } from "./utils";
+const FindByTitle = lazy(() => import("./ByTitle"));
 
 const FindNote = () => {
   useTitle("Find");

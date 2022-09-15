@@ -15,6 +15,8 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
   const navigate = useNavigate();
 
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [afBlurCount, setAfBlurCount] = useState(0);
+
   const formik = useFormik({
     validationSchema: schema,
     initialValues: {
@@ -52,12 +54,13 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
             value={formik.values.title || ""}
             onChange={formik.handleChange}
             onBlur={e => {
+              setAfBlurCount(p => p + 1);
               setShowSuggestions(false);
               formik.handleBlur(e);
             }}
             onFocus={_ => setShowSuggestions(true)}
             autoFocus
-            isInvalid={formik.touched.title && !!formik.errors.title}
+            isInvalid={(afBlurCount > 1 || !!formik.submitCount) && !!formik.errors.title}
           />
 
           <Collapse in={formik.isValid}>
@@ -66,7 +69,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
               className="position-absolute w-100"
               tabIndex={-1}
               onFocus={() => {
-                // this is needed when the user interacts inside here (the suggestions box)
+                // this is needed when the user interacts in here (the suggestions box)
                 setShowSuggestions(true);
               }}
             >

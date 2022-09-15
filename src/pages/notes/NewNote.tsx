@@ -124,8 +124,6 @@ const NewNote = () => {
         passphrase: val.passphrase,
       })
         .then(result => {
-
-          console.log(result);
           const { data, error } = result;
           if (!error) {
             setNoteResult({
