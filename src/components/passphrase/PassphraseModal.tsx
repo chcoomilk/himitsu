@@ -36,10 +36,12 @@ const PassphraseModal = ({ title, show, setShow, newPassphrase: sendPassphraseTo
           <Form.Group className="mb-3 fs-4" controlId="formPassphrase">
             <PassphraseInputGroup
               {...form.register("passphrase", {
-                min: 4,
-                max: 1024,
-                required: true,
+                minLength: { value: 4, message: "passphrase is too short" },
+                maxLength: { value: 1024, message: "passphrase is too long" },
+                required: "passphrase is required",
               })}
+              autoFocus
+              errorMessage={form.formState.errors.passphrase?.message}
               isInvalid={form.formState.touchedFields.passphrase && !!form.formState.errors.passphrase}
             />
           </Form.Group>

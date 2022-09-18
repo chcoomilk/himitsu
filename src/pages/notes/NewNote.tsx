@@ -465,7 +465,6 @@ const NewNote = () => {
               <Col>
                 <Stack className="mb-2" direction="vertical" gap={3}>
                   <Button className="w-100 d-block d-md-none" size="lg" variant="outline-secondary" onClick={() => setModal(p => ({ ...p, extra_settings: true }))}>Options</Button>
-                  <button onClick={() => console.log(form.formState.errors, form.getValues("passphrase"))}>Hi</button>
                   <Button className="w-100" size="lg" variant="outline-danger" onClick={() => setModal(p => ({ ...p, delete: true }))} disabled={form.formState.isSubmitting}>Reset</Button>
                   <Button className="w-100" size="lg" variant="success" type="submit" disabled={form.formState.isSubmitting}>{form.formState.isSubmitting ? <Spinner size="sm" animation="border" /> : "Save"}</Button>
                 </Stack>

@@ -1,5 +1,5 @@
-import { AppSetting, NoteInfo } from "../types";
 import toast from "react-hot-toast";
+import { AppSetting, NoteInfo } from "../types";
 import { is_note, is_settings } from "./is";
 
 // pikachu dies from confusion

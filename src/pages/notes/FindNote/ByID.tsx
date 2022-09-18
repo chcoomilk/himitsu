@@ -2,8 +2,9 @@ import { Button, Form, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import PassphraseInputGroup from "../../../components/passphrase/PassphraseInputGroup";
 import { Props } from "./utils";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { PATHS } from "../../../utils/constants";
 
 type FormData = {
   id: string,
@@ -23,9 +24,7 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
 
   const submit = (data: FormData) => {
     if (data.id) {
-      // navigate(PATHS.note_detail + "/" + encodeURIComponent(data.id), { state: { passphrase: data.passphrase } });
-      console.log(form.getValues());
-
+      navigate(PATHS.note_detail + "/" + encodeURIComponent(data.id), { state: { passphrase: data.passphrase } });
     } else {
       form.trigger(undefined, { shouldFocus: true });
     }
