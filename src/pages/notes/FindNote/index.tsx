@@ -11,12 +11,12 @@ const FindNote = () => {
   useTitle("Find");
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = useState<UrlParams>({
-    query: searchParams.get("q"),
+    query: searchParams.get("q") || undefined,
     findBy: (() => {
       let x = searchParams.get("by");
       x = x?.toLowerCase().trim() || null;
 
-      return is_opts(x) ? x : null;
+      return is_opts(x) ? x : undefined;
     })(),
   });
 

@@ -1,34 +1,31 @@
-import { useState } from "react";
-import { Button, Form, FormControlProps, InputGroup } from "react-bootstrap";
+import { useState, forwardRef } from "react";
+import { Button, Form, FormControlProps, FormTextProps, InputGroup } from "react-bootstrap";
 import CopyButton from "../button/CopyButton";
 
+type Field = {
+  passphrase: string,
+}
+
 type Props = {
-  // value: string,
-  // onChange?: (e: React.ChangeEvent<any>) => void,
-  // onBlur?: (e: React.ChangeEvent<any>) => void,
-  // isInvalid?: boolean,
-  name: string,
-  errorMessage?: string,
-  autoFocus?: boolean,
   customLabel?: string | null,
   hide?: boolean,
-  groupcName?: string,
-} & FormControlProps
+  inputGroupClassName?: string,
+  errorMessage?: string | null,
+  autoFocus?: boolean,
+} & FormControlProps & FormTextProps
 
-const PassphraseInputGroup = ({
-  name,
-  errorMessage,
-  autoFocus,
+const PassphraseInputGroup = forwardRef(({
   customLabel,
   hide,
-  groupcName,
+  inputGroupClassName,
+  errorMessage,
   ...attr
-}: Props) => {
+}: Props, ref) => {
   const [mask, setMask] = useState(true);
-  const togglePasswordVisibility = () => setMask(!mask);
+  const togglePasswordVisibility = () => setMask(prev => !prev);
 
   return (
-    <div hidden={hide} className={groupcName}>
+    <div hidden={hide} className={inputGroupClassName}>
       {
         customLabel === null
           ? null
@@ -39,17 +36,20 @@ const PassphraseInputGroup = ({
 
       <InputGroup hasValidation>
         <Form.Control
-          name={name}
           type={mask ? "password" : "text"}
           autoComplete="current-passphrase"
           placeholder="Enter super secret passphrase"
           aria-describedby="basic-passphrase-input"
-          autoFocus={autoFocus}
+          ref={ref}
           {...attr}
-          style={{
-            ...attr.style,
-            zIndex: 3,
-          }}
+          style={
+            typeof attr.style == "object"
+              ? {
+                ...attr.style,
+                zIndex: 3,
+              }
+              : { zIndex: 3 }
+          }
         />
         <Button
           variant="outline-light border-start-0"
@@ -64,6 +64,6 @@ const PassphraseInputGroup = ({
       </InputGroup>
     </div>
   );
-};
+});
 
 export default PassphraseInputGroup;

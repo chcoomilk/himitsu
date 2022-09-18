@@ -50,7 +50,6 @@ const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide
             passphrase && (
               <Form.Group className="mb-3" controlId="formReadOnlyPassphrase">
                 <PassphraseInputGroup
-                  name="passphrase"
                   value={passphrase}
                   readOnly
                 />

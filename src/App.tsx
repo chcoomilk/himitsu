@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+// import { Suspense } from "preact/compat"
 import { Spinner, Container } from "react-bootstrap";
 import { Toaster } from "react-hot-toast";
 import { DefaultValues, PATHS } from "./utils/constants";
@@ -9,9 +10,11 @@ import "./stylings/index.scss";
 import "react-loading-skeleton/dist/skeleton.css";
 
 import Home from "./pages/Home";
-import NewNote from "./pages/notes/NewNote";
+// import NewNote from "./pages/notes/NewNote";
+const NewNote = lazy(() => import("./pages/notes/NewNote"));
 import FindNote from "./pages/notes/FindNote";
-import Note from "./pages/Note";
+// import Note from "./pages/Note";
+const Note = lazy(() => import("./pages/Note"));
 import { default as Navbar } from "./components/Navigation";
 import ContextCoupler from "./Provision";
 import { local_storage } from "./utils/functions";

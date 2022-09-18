@@ -1,7 +1,6 @@
-import { useFormik } from "formik";
+import { useForm } from "react-hook-form";
 import { Form, Modal, Button } from "react-bootstrap";
 import PassphraseInputGroup from "./PassphraseInputGroup";
-import * as yup from "yup";
 
 interface Props {
   title?: string,
@@ -10,24 +9,22 @@ interface Props {
   newPassphrase: (passphrase: string) => void,
 }
 
+type Fields = {
+  passphrase: string,
+}
+
 const PassphraseModal = ({ title, show, setShow, newPassphrase: sendPassphraseToParent }: Props) => {
-  const formik = useFormik({
-    validationSchema: yup.object().shape({
-      passphrase: yup.string().min(4).max(1024).required()
-    }),
-    initialValues: {
-      passphrase: ""
-    },
-    onSubmit: (value, form) => {
-      sendPassphraseToParent(value.passphrase);
-      setShow(false);
-      form.resetForm();
-    }
-  });
+  const form = useForm<Fields>();
+
+  const submit = (data: Fields) => {
+    sendPassphraseToParent(data.passphrase);
+    setShow(false);
+    form.reset();
+  };
 
   return (
     <Modal show={show} onHide={() => setShow(false)} centered className="fs-4">
-      <Form onSubmit={formik.handleSubmit}>
+      <Form onSubmit={form.handleSubmit(submit)}>
         <Modal.Header closeButton closeVariant="white">
           <Modal.Title>
             <i className="bi bi-exclamation-diamond" />
@@ -38,13 +35,12 @@ const PassphraseModal = ({ title, show, setShow, newPassphrase: sendPassphraseTo
         <Modal.Body>
           <Form.Group className="mb-3 fs-4" controlId="formPassphrase">
             <PassphraseInputGroup
-              name="passphrase"
-              onChange={formik.handleChange}
-              value={formik.values.passphrase}
-              onBlur={formik.handleBlur}
-              errorMessage={formik.errors.passphrase}
-              isInvalid={formik.touched.passphrase && !!formik.errors.passphrase}
-              autoFocus
+              {...form.register("passphrase", {
+                min: 4,
+                max: 1024,
+                required: true,
+              })}
+              isInvalid={form.formState.touchedFields.passphrase && !!form.formState.errors.passphrase}
             />
           </Form.Group>
         </Modal.Body>

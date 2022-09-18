@@ -1,4 +1,3 @@
-import { useFormik } from "formik";
 import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
 import { Button, Collapse, Form, FormGroup, InputGroup, Modal, OverlayTrigger, Spinner, Stack, Tooltip } from "react-bootstrap";
@@ -9,8 +8,8 @@ import { validate_token, combine_token } from "../../queries";
 import { PATHS } from "../../utils/constants";
 import { into_readable_datetime, local_storage } from "../../utils/functions";
 import { JWTToken } from "../../utils/types";
-import * as yup from "yup";
 import unwrap_default from "../../utils/functions/unwrap";
+import { useForm } from "react-hook-form";
 
 type ReplaceAccessToken = {
   active: boolean,
@@ -32,10 +31,10 @@ type CombineModal = {
   result?: string,
 }
 
-const CombineSchema = yup.object().shape({
-  firstToken: yup.string().required(),
-  secondToken: yup.string().required(),
-});
+type CombineTokenFields = {
+  firstToken: string,
+  secondToken: string,
+}
 
 const TokenSetting = () => {
   const [showHelp, setShowHelp] = useState(true);
@@ -67,35 +66,32 @@ const TokenSetting = () => {
     return () => clearTimeout(t);
   }, [combineToken.availableToSubmit]);
 
-  const combineTokenFormik = useFormik({
-    initialValues: {
-      firstToken: "",
-      secondToken: "",
-    },
-    validationSchema: CombineSchema,
-    onSubmit: async (val) => {
-      if (val.firstToken === val.secondToken) {
-        toast.error("Two of the same token!");
-        return;
-      }
+  const combineTokenForm = useForm<CombineTokenFields>({
+    mode: "onBlur",
+  });
 
-      let res = await combine_token(val.firstToken, val.secondToken);
-      if (!res.error) {
+  const submitCombineToken = async (data: CombineTokenFields) => {
+    if (data.firstToken === data.secondToken) {
+      toast.error("Two of the same token!");
+      return;
+    }
+
+    let res = await combine_token(data.firstToken, data.secondToken);
+    if (!res.error) {
+      setCombineToken(p => ({
+        ...p,
+        result: res.data.token,
+      }));
+    } else {
+      if (res.error === "tooManyRequests") {
         setCombineToken(p => ({
           ...p,
-          result: res.data.token,
+          availableToSubmit: false,
         }));
-      } else {
-        if (res.error === "tooManyRequests") {
-          setCombineToken(p => ({
-            ...p,
-            availableToSubmit: false,
-          }));
-        }
-        unwrap_default(res.error);
       }
+      unwrap_default(res.error);
     }
-  });
+  };
 
   const toastInvalidJWT = () => toast.error("Invalid JWT token");
 
@@ -168,7 +164,7 @@ const TokenSetting = () => {
       </Modal>
 
       <Modal centered show={combineToken.show} onHide={() => setCombineToken(p => ({ ...p, show: false }))}>
-        <Form noValidate onSubmit={combineTokenFormik.handleSubmit}>
+        <Form noValidate onSubmit={combineTokenForm.handleSubmit(submitCombineToken)}>
           <Modal.Header closeButton closeVariant="white">
             Combine tokens
           </Modal.Header>
@@ -177,36 +173,43 @@ const TokenSetting = () => {
               <Form.Label>First Token</Form.Label>
               <InputGroup hasValidation className="mb-3">
                 <Form.Control
-                  name="firstToken"
-                  value={combineTokenFormik.values.firstToken}
-                  onChange={combineTokenFormik.handleChange}
-                  onBlur={combineTokenFormik.handleBlur}
-                  isInvalid={combineTokenFormik.touched.firstToken && !!combineTokenFormik.errors.firstToken}
-                  style={{ zIndex: !!combineTokenFormik.errors.firstToken ? 3 : 2, }}
+                  {...combineTokenForm.register("firstToken")}
+                  isInvalid={combineTokenForm.formState.touchedFields.firstToken && !!combineTokenForm.formState.errors.firstToken}
+                  style={{ zIndex: !!combineTokenForm.formState.errors.firstToken ? 3 : 2, }}
                 />
                 <Button
                   variant="outline-light"
                   title="Paste your current token"
-                  onClick={() => combineTokenFormik.setValues(
-                    p => ({ ...p, firstToken: currentToken })
-                  )}
+                  onClick={() => combineTokenForm.setValue("firstToken", currentToken)}
                 >
                   <i className="bi bi-pencil-square" />
                 </Button>
-                <Form.Control.Feedback type="invalid" tooltip>{combineTokenFormik.errors.firstToken}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid" tooltip>{combineTokenForm.formState.errors.firstToken?.message}</Form.Control.Feedback>
               </InputGroup>
             </FormGroup>
             <FormGroup>
               <Form.Label>Second Token</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
-                  name="secondToken"
-                  value={combineTokenFormik.values.secondToken}
-                  onChange={combineTokenFormik.handleChange}
-                  onBlur={combineTokenFormik.handleBlur}
-                  isInvalid={combineTokenFormik.touched.secondToken && !!combineTokenFormik.errors.secondToken}
+                  {...combineTokenForm.register("secondToken", {
+                    required: "token to replace with is required",
+                    validate: {
+                      isJwt: (v) => {
+                        try {
+
+                          jwtDecode(v);
+                        } catch (error) {
+                          console.log(error);
+
+                        }
+
+                        return undefined;
+                      }
+                    }
+                  })}
+                  isInvalid={combineTokenForm.formState.touchedFields.secondToken && !!combineTokenForm.formState.errors.secondToken}
                 />
-                <Form.Control.Feedback type="invalid" tooltip>{combineTokenFormik.errors.secondToken}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid" tooltip>{combineTokenForm.formState.errors.secondToken?.message}</Form.Control.Feedback>
               </InputGroup>
             </FormGroup>
 
@@ -224,9 +227,8 @@ const TokenSetting = () => {
           <Modal.Footer>
             <Button variant="outline-danger" onClick={() => {
               setCombineToken(p => ({ ...p, show: false }));
-              combineTokenFormik.setErrors({});
             }}>Cancel</Button>
-            <Button type="submit" disabled={!combineToken.availableToSubmit || combineTokenFormik.isSubmitting} variant="success">Submit</Button>
+            <Button type="submit" disabled={!combineToken.availableToSubmit || combineTokenForm.formState.isSubmitting} variant="success">Submit</Button>
           </Modal.Footer>
         </Form>
       </Modal>

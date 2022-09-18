@@ -1,7 +1,6 @@
-import { useFormik } from "formik";
+import { useForm } from "react-hook-form";
 import { useContext, useState } from "react";
 import { Button, Form, Row, Col, DropdownButton, Dropdown, InputGroup, FormControl, Stack, Spinner, Modal } from "react-bootstrap";
-import * as yup from "yup";
 import { useMutation, useQueryClient } from "react-query";
 
 import NewNoteModal from "../../components/note/NewNoteModal";
@@ -13,37 +12,26 @@ import { local_storage, unwrap } from "../../utils/functions";
 import PassphraseInputGroup from "../../components/passphrase/PassphraseInputGroup";
 import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
 
-const BasicNoteSchema = {
-  double_encrypt: yup.object().shape({
-    enabled: yup.bool(),
-    passphrase: yup.string().when("enabled", {
-      is: true,
-      then: yup.string().required("a passphrase is needed to encrypt your data")
-        .min(4, "passphrase must be at least 4 characters")
-        .max(1024)
-    })
-  }),
-  discoverable: yup.bool(),
-  custom_id: yup.string().max(32).min(1).nullable().trim(),
-  title: yup.string().min(4).nullable().trim(),
-  content: yup.string().required(),
-  passphrase: yup.string()
-    .required("a passphrase is needed to encrypt your data")
-    .min(4, "passphrase must be at least 4 characters")
-    .max(1024),
-  duration: yup.object().shape({
-    day: yup.number().positive(),
-    hour: yup.number().positive(),
-    minute: yup.number().positive(),
-    second: yup.number()
-      .when(["day", "hour", "minute"], {
-        is: (d: number, h: number, m: number) => !(d || h || m),
-        then: yup
-          .number()
-          .min(30, "Duration must be greater or equals to 30 seconds"),
-      })
-  }),
-};
+type Fields = {
+  title: string,
+  passphrase: string,
+  content: string,
+  custom_id: string,
+  encryption: EncryptionMethod,
+  duration: {
+    day: number,
+    hour: number,
+    minute: number,
+    second: number,
+  }
+  extra: {
+    double_encryption: {
+      enable: boolean,
+      passphrase: string,
+    },
+    discoverable: boolean,
+  }
+}
 
 type UNoteInfo = NoteInfo & {
   passphrase?: string,
@@ -61,120 +49,92 @@ const NewNote = () => {
   const { mutateAsync } = useMutation(post_note);
   const queryClient = useQueryClient();
 
-  const formik = useFormik({
-    initialValues: {
-      double_encrypt: {
-        enabled: false,
-        passphrase: ""
-      },
-      discoverable: false,
-      custom_id: "",
-      title: "",
-      content: "",
-      passphrase: "",
-      duration: {
-        day: "",
-        hour: "",
-        minute: "",
-        second: "",
+  const form = useForm<Fields>({
+    mode: "all",
+    defaultValues: {
+      extra: {
+        discoverable: false,
+        double_encryption: {
+          enable: false,
+        }
       }
     },
+  });
+  const watchOut = form.watch();
 
-    validationSchema: () => {
-      switch (encryption) {
-        case EncryptionMethod.BackendEncryption:
-          const BackendSchema = yup.object().shape({
-            ...BasicNoteSchema
+  const resetForm = () => {
+    form.reset({
+      extra: {
+        double_encryption: {
+          enable: form.getValues().extra.double_encryption.enable,
+        },
+        discoverable: form.getValues().extra.discoverable,
+      }
+    })
+  };
+
+  const submit = async (form_data: Fields) => {
+    let duration_in_secs: number = form_data.duration.second || 0;
+    if (form_data.duration.day) {
+      duration_in_secs += form_data.duration.day * 86400;
+    }
+    if (form_data.duration.hour) {
+      duration_in_secs += form_data.duration.hour * 3600;
+    }
+    if (form_data.duration.minute) {
+      duration_in_secs += form_data.duration.minute * 60;
+    }
+
+    await mutateAsync({
+      discoverable: encryption == EncryptionMethod.NoEncryption ? form_data.extra.discoverable : undefined,
+      custom_id: form_data.custom_id == null || form_data.custom_id == "" ? undefined : form_data.custom_id,
+      double_encrypt: form_data.extra.double_encryption.enable && encryption === EncryptionMethod.BackendEncryption ? form_data.extra.double_encryption.passphrase : undefined,
+      encryption: encryption,
+      title: form_data.title == "" || form_data.title == null ? undefined : form_data.title,
+      content: form_data.content,
+      lifetime_in_secs: duration_in_secs === 0 ? undefined : duration_in_secs,
+      passphrase: form_data.passphrase || "",
+    })
+      .then(result => {
+        const { data, error } = result;
+        if (!error) {
+          setNoteResult({
+            ...data,
+            passphrase: form_data.passphrase,
           });
-          return BackendSchema;
-        case EncryptionMethod.FrontendEncryption:
-          const FrontendSchema = yup.object().shape({
-            ...BasicNoteSchema
-          });
-          return FrontendSchema;
-        case EncryptionMethod.NoEncryption:
-          const NoEncryptionSchema = yup.object().shape({
-            ...BasicNoteSchema,
-            passphrase: yup.string().nullable(),
-          });
-          return NoEncryptionSchema;
-      }
-    },
+          local_storage.set("last_saved_note", data);
+          if (appSettings.history) {
+            let notes = local_storage.get("notes");
+            if (notes) {
+              notes.push(data);
 
-    onSubmit: (val, { resetForm, setSubmitting }) => {
-      let duration_in_secs: number = +val.duration.second;
-      if (val.duration.day) {
-        duration_in_secs += +val.duration.day * 86400;
-      }
-      if (val.duration.hour) {
-        duration_in_secs += +val.duration.hour * 3600;
-      }
-      if (val.duration.minute) {
-        duration_in_secs += +val.duration.minute * 60;
-      }
-
-      mutateAsync({
-        discoverable: encryption === EncryptionMethod.NoEncryption ? val.discoverable : undefined,
-        custom_id: val.custom_id === "" ? undefined : val.custom_id,
-        double_encrypt: val.double_encrypt.enabled && encryption === EncryptionMethod.BackendEncryption ? val.double_encrypt.passphrase : undefined,
-        encryption: encryption,
-        title: val.title === "" ? undefined : val.title,
-        content: val.content,
-        lifetime_in_secs: duration_in_secs === 0 ? undefined : duration_in_secs,
-        passphrase: val.passphrase,
-      })
-        .then(result => {
-          const { data, error } = result;
-          if (!error) {
-            setNoteResult({
-              ...data,
-              passphrase: val.passphrase || undefined,
-            });
-            local_storage.set("last_saved_note", data);
-            if (appSettings.history) {
-              let notes = local_storage.get("notes");
-              if (notes) {
-                notes.push(data);
-
-                local_storage.set("notes", notes);
-              } else {
-                local_storage.set("notes", [data]);
-              }
-
-              let qk: [string | undefined] = [undefined];
-              if (data.title) {
-                let t: string = "";
-                for (let char of data.title) {
-                  t += char;
-                  qk.push(char);
-                  if (t.length > 1) qk.push(t);
-                }
-              }
-
-              queryClient.refetchQueries(["local_notes"], { active: true, queryKey: qk });
+              local_storage.set("notes", notes);
+            } else {
+              local_storage.set("notes", [data]);
             }
 
-            resetForm({
-              values: {
-                ...formik.initialValues,
-                double_encrypt: {
-                  enabled: val.double_encrypt.enabled,
-                  passphrase: formik.initialValues.double_encrypt.passphrase,
-                },
-                discoverable: val.discoverable,
-              },
-            });
-          } else {
-            unwrap.default(error);
+            let qk: [string | undefined] = [undefined];
+            if (data.title) {
+              let t: string = "";
+              for (let char of data.title) {
+                t += char;
+                qk.push(char);
+                if (t.length > 1) qk.push(t);
+              }
+            }
+
+            queryClient.refetchQueries(["local_notes"], { active: true, queryKey: qk });
           }
-        })
-        .catch((e) => {
-          console.error("error occurred: ", e);
-        }).finally(() => {
-          setSubmitting(false);
-        });
-    }
-  });
+
+          resetForm();
+        } else {
+          unwrap.default(error);
+        }
+      })
+      .catch((e) => {
+        console.error("error occurred: ", e);
+      });
+  };
 
   let extra_settings_group = (
     <>
@@ -186,6 +146,7 @@ const NewNote = () => {
             menuVariant="dark"
             title={`${EncryptionMethod[encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}`}
             id="input-group-dropdown-1"
+            disabled={form.formState.isSubmitting}
           >
             <Dropdown.Item
               onClick={() => setEncryption(EncryptionMethod.BackendEncryption)}
@@ -214,30 +175,51 @@ const NewNote = () => {
             case EncryptionMethod.BackendEncryption:
               return (
                 <>
-                  <Form.Group controlId="formBasicDiscoverable" className="mb-4">
+                  <Form.Group controlId="formBasicExtraDoubleEncrypt" className="mb-4">
                     <Form.Label>EXTRA POWAH!!</Form.Label>
                     <InputGroup>
                       <Form.Switch
                         inline
                         id="fe-switch"
-                        name="double_encrypt.enabled"
-                        checked={formik.values.double_encrypt.enabled}
-                        onChange={e => { formik.setTouched({ ...formik.touched, double_encrypt: { passphrase: false } }); formik.handleChange(e); }}
-                        onBlur={formik.handleBlur}
+                        {...form.register("extra.double_encryption.enable", {
+                          onChange: () => {
+                            // onChange={e => { formik.setTouched({ ...formik.touched, double_encrypt: { passphrase: false } }); formik.handleChange(e); }}
+                          }
+                        })}
                         label={"Frontend Encryption"}
+                        disabled={form.formState.isSubmitting}
                       />
                       <PassphraseInputGroup
-                        hide={!formik.values.double_encrypt.enabled}
+                        // hide={!formik.values.double_encrypt.enabled}
+                        hide={!watchOut.extra.double_encryption.enable}
                         customLabel={null}
-                        groupcName="mt-2"
+                        inputGroupClassName="mt-2"
                         aria-label="Passphrase"
-                        name="double_encrypt.passphrase"
+                        disabled={form.formState.isSubmitting}
+                        {...form.register(
+                          "extra.double_encryption.passphrase", {
+                          validate: {
+                            required: () =>
+                              form.getValues("extra.double_encryption.enable")
+                                ? "passphrase is required to encrypt before going to the server"
+                                : undefined
+                          },
+                          minLength: {
+                            value: 4,
+                            message: "passphrase is too short",
+                          },
+                          maxLength: {
+                            value: 1024,
+                            message: "passphrase is too long (max length: 1024 chars)"
+                          },
+                        }
+                        )}
                         placeholder="Secondary passphrase"
-                        value={formik.values.double_encrypt.passphrase}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        isInvalid={formik.touched.double_encrypt?.passphrase && !!formik.errors.double_encrypt?.passphrase}
-                        errorMessage={formik.errors.double_encrypt?.passphrase}
+                        errorMessage={form.formState.errors.extra?.double_encryption?.passphrase?.message}
+                        isInvalid={
+                          form.formState.touchedFields.extra?.double_encryption?.passphrase &&
+                          !!form.formState.errors.extra?.double_encryption?.passphrase
+                        }
                       />
                     </InputGroup>
                   </Form.Group>
@@ -255,12 +237,9 @@ const NewNote = () => {
                     <Form.Switch
                       inline
                       id="public-switch"
-                      name="discoverable"
-                      disabled={encryption !== EncryptionMethod.NoEncryption}
-                      checked={formik.values.discoverable}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      label={"Note can" + (formik.values.discoverable ? "" : "'t") + " be found publicly"}
+                      {...form.register("extra.discoverable")}
+                      label={"Note can" + (watchOut.extra.discoverable ? "" : "'t") + " be found publicly"}
+                      disabled={form.formState.isSubmitting}
                     />
                   </InputGroup>
                 </Form.Group>
@@ -301,7 +280,7 @@ const NewNote = () => {
         show={modal.delete}
         onHide={() => setModal(p => ({ ...p, delete: false }))}
         doDecide={c => {
-          if (c) formik.resetForm();
+          if (c) resetForm();
           setModal(p => ({ ...p, delete: false }))
         }}
         centered
@@ -314,7 +293,7 @@ const NewNote = () => {
           {extra_settings_group}
         </Modal.Body>
       </Modal>
-      <Form className="mb-3 mt-3" noValidate onSubmit={formik.handleSubmit}>
+      <Form className="mb-3 mt-3" noValidate onSubmit={form.handleSubmit(submit)}>
         <Row>
           <Col md="8" xs="12">
             <Form.Group controlId="formBasicTitle" className="position-relative mb-4">
@@ -324,16 +303,15 @@ const NewNote = () => {
               </Form.Text>
               <Form.Control
                 type="text"
-                name="title"
                 placeholder="Enter note's title here"
-                value={formik.values.title}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                isInvalid={formik.touched.title && !!formik.errors.title}
+                {...form.register("title", {
+                  min: { value: 4, message: "title is too short" },
+                })}
+                isInvalid={form.formState.touchedFields.title && !!form.formState.errors.title}
                 autoComplete="off"
                 autoFocus
               />
-              <Form.Control.Feedback type="invalid" tooltip>{formik.errors.title}</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.title?.message}</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="formBasicDescription" className="position-relative mb-4">
@@ -343,31 +321,43 @@ const NewNote = () => {
               </Form.Text>
               <Form.Control
                 as="textarea"
-                name="content"
                 placeholder="Enter note here"
                 rows={3}
-                value={formik.values.content}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                isInvalid={formik.touched.content && !!formik.errors.content}
+                {...form.register("content", {
+                  required: { value: true, message: "a note can't be empty" },
+                })}
+                isInvalid={form.formState.touchedFields.content && !!form.formState.errors.content}
               />
-              <Form.Control.Feedback type="invalid" tooltip>{formik.errors.content}</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.content?.message}</Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group controlId="formBasicPassphrase" className="position-relative mb-4">
               <PassphraseInputGroup
                 aria-label="Passphrase"
-                name="passphrase"
                 placeholder="Enter super secret passphrase"
-                value={formik.values.passphrase}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
+                {...form.register(
+                  "passphrase",
+                  {
+                    required: {
+                      value: form.getValues("encryption") != EncryptionMethod.NoEncryption,
+                      message: "passphrase is required to encrypt before going to the server",
+                    },
+                    minLength: {
+                      value: 4,
+                      message: "passphrase is too short",
+                    },
+                    maxLength: {
+                      value: 1024,
+                      message: "passphrase is too long (max length: 1024 chars)"
+                    },
+                  }
+                )}
+                errorMessage={form.formState.errors.passphrase?.message}
                 disabled={encryption === EncryptionMethod.NoEncryption}
                 isInvalid={encryption !== EncryptionMethod.NoEncryption
-                  ? (formik.touched.passphrase && !!formik.errors.passphrase)
+                  ? (form.formState.touchedFields.passphrase && !!form.formState.errors.passphrase)
                   : undefined
                 }
-                errorMessage={formik.errors.passphrase}
               />
             </Form.Group>
 
@@ -377,15 +367,15 @@ const NewNote = () => {
                 <Form.Control
                   aria-label="Custom ID"
                   type="text"
-                  name="custom_id"
                   placeholder="Enter note's custom ID here"
-                  value={formik.values.custom_id}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  isInvalid={formik.touched.custom_id && !!formik.errors.custom_id}
+                  {...form.register("custom_id", {
+                    max: { value: 32, message: "custom id is too long" },
+                    min: { value: 1, message: "custom id is invalid" },
+                  })}
+                  isInvalid={form.formState.touchedFields.custom_id && !!form.formState.errors.custom_id}
                   autoComplete="off"
                 />
-                <Form.Control.Feedback type="invalid" tooltip>{formik.errors.custom_id}</Form.Control.Feedback>
+                <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.custom_id?.message}</Form.Control.Feedback>
               </InputGroup>
               <Form.Text muted>
                 * Omit this field to set a random ID
@@ -400,51 +390,66 @@ const NewNote = () => {
                 <FormControl
                   aria-label="Day"
                   type="text"
-                  name="duration.day"
                   placeholder="Days"
-                  value={formik.values.duration.day}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  isInvalid={formik.touched.duration?.day && !!formik.errors.duration?.day}
+                  {...form.register("duration.day", {
+                    validate: {
+                      gte: v => +v >= 0 || "day should be greater than 0",
+                    }
+                  })}
+                  isInvalid={form.formState.touchedFields.duration?.day && !!form.formState.errors.duration?.day}
                   autoComplete="off"
                 />
-                <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.day}</FormControl.Feedback>
+                <FormControl.Feedback type="invalid" tooltip>{form.formState.errors.duration?.day?.message}</FormControl.Feedback>
                 <FormControl
                   aria-label="Hour"
                   type="text"
-                  name="duration.hour"
                   placeholder="Hrs"
-                  value={formik.values.duration.hour}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  isInvalid={formik.touched.duration?.hour && !!formik.errors.duration?.hour}
+                  {...form.register("duration.hour", {
+                    validate: {
+                      gte: v => +v >= 0 || "hour should be greater than 0",
+                    }
+                  })}
+                  isInvalid={form.formState.touchedFields.duration?.hour && !!form.formState.errors.duration?.hour}
                   autoComplete="off"
                 />
-                <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.hour}</FormControl.Feedback>
+                <FormControl.Feedback type="invalid" tooltip>{form.formState.errors.duration?.hour?.message}</FormControl.Feedback>
                 <FormControl
                   aria-label="Minute"
                   type="text"
-                  name="duration.minute"
                   placeholder="Mins"
-                  value={formik.values.duration.minute}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  isInvalid={formik.touched.duration?.minute && !!formik.errors.duration?.minute}
+                  {...form.register("duration.minute", {
+                    validate: {
+                      gte: v => +v >= 0 || "minute should be greater than 0",
+                    },
+                    onBlur: () => form.trigger("duration.second")
+                  })}
+                  isInvalid={form.formState.touchedFields.duration?.minute && !!form.formState.errors.duration?.minute}
                   autoComplete="off"
                 />
-                <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.minute}</FormControl.Feedback>
+                <FormControl.Feedback type="invalid" tooltip>{form.formState.errors.duration?.minute?.message}</FormControl.Feedback>
                 <FormControl
                   aria-label="Second"
                   type="text"
-                  name="duration.second"
                   placeholder="Secs"
-                  value={formik.values.duration.second}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  isInvalid={formik.touched.duration?.second && !!formik.errors.duration?.second}
+                  {...form.register("duration.second", {
+                    validate: {
+                      gte: v => +v >= 0 || "",
+                      // min: () => (
+
+                      // )
+                    },
+                    min: {
+                      value: !!(form.getValues("duration.day")
+                        + form.getValues("duration.hour")
+                        + form.getValues("duration.minute")
+                      ) ? 0 : 30,
+                      message: "second should be greater than 30"
+                    }
+                  })}
+                  isInvalid={form.formState.touchedFields.duration?.second && !!form.formState.errors.duration?.second}
                   autoComplete="off"
                 />
-                <FormControl.Feedback type="invalid" tooltip>{formik.errors.duration?.second}</FormControl.Feedback>
+                <FormControl.Feedback type="invalid" tooltip>{form.formState.errors.duration?.second?.message}</FormControl.Feedback>
               </InputGroup>
               <Form.Text muted>
                 * Omit these fields to set it permanent
@@ -459,9 +464,10 @@ const NewNote = () => {
             <Row>
               <Col>
                 <Stack className="mb-2" direction="vertical" gap={3}>
-                  <Button className="w-100 d-block d-md-none" size="lg" variant="outline-secondary" onClick={() => setModal(p => ({ ...p, extra_settings: true }))} disabled={formik.isSubmitting}>Options</Button>
-                  <Button className="w-100" size="lg" variant="outline-danger" onClick={() => setModal(p => ({ ...p, delete: true }))} disabled={formik.isSubmitting}>Reset</Button>
-                  <Button className="w-100" size="lg" variant="success" type="submit" disabled={formik.isSubmitting}>{formik.isSubmitting ? <Spinner size="sm" animation="border" /> : "Save"}</Button>
+                  <Button className="w-100 d-block d-md-none" size="lg" variant="outline-secondary" onClick={() => setModal(p => ({ ...p, extra_settings: true }))}>Options</Button>
+                  <button onClick={() => console.log(form.formState.errors, form.getValues("passphrase"))}>Hi</button>
+                  <Button className="w-100" size="lg" variant="outline-danger" onClick={() => setModal(p => ({ ...p, delete: true }))} disabled={form.formState.isSubmitting}>Reset</Button>
+                  <Button className="w-100" size="lg" variant="success" type="submit" disabled={form.formState.isSubmitting}>{form.formState.isSubmitting ? <Spinner size="sm" animation="border" /> : "Save"}</Button>
                 </Stack>
               </Col>
             </Row>
