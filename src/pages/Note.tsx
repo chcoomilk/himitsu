@@ -333,7 +333,8 @@ const Note = () => {
 
   const handleRetry = () => {
     if (note?.encryption === EncryptionMethod.BackendEncryption) {
-      if (!note.decrypted) {
+      // check if backend + EXTRA POWAH, otherwise mutate
+      if (note.raw?.frontend_encryption) {
         setModalDecrypt(p => ({
           ...p,
           showModal: true,
