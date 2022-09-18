@@ -1,6 +1,7 @@
 {
 	"name": "himitsu",
 	"short_name": "himitsu",
+	"description": "private note web app, or a pastebin",
 	"start_url": ".",
 	"icons": [
 		{

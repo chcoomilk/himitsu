@@ -1,30 +1,75 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
-import { Link } from "react-router-dom";
+import { Link, Location, useLocation, useNavigate, useParams } from "react-router-dom";
 import cryptojs from "crypto-js";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import toast from "react-hot-toast";
 
-import PassphraseModal from "../../../components/passphrase/PassphraseModal";
-import { DefaultValue } from "../../../utils/constants";
-import { NoteInfo, EncryptionMethod, Note as NoteT } from "../../../utils/types";
-import { get_note, get_note_info, delete_note } from "../../../queries";
-import { generate_face, into_readable_datetime, local_storage, truncate_string, unwrap } from "../../../utils/functions";
-import { useTitle } from "../../../custom-hooks";
-import SimpleConfirmationModal from "../../../components/SimpleConfirmationModal";
+import PassphraseModal from "../components/passphrase/PassphraseModal";
+import { DefaultValues, PATHS } from "../utils/constants";
+import { NoteInfo, EncryptionMethod, Note as NoteT, note_id } from "../utils/types";
+import { get_note, get_note_info, delete_note } from "../queries";
+import { generate_face, into_readable_datetime, local_storage, truncate_string, unwrap } from "../utils/functions";
+import { useTitle } from "../custom-hooks";
+import SimpleConfirmationModal from "../components/SimpleConfirmationModal";
+import { is_note_id } from "../utils/functions/is";
 
 interface PasswordModalState {
   showModal: boolean,
   passphrase: string | null,
 }
 
-type Props = {
-  readonly checked_id: string,
-  readonly state_passphrase: string | null,
+type URLParamState = {
+  readonly id: note_id,
+  readonly passphrase: string | null,
 }
 
-const Note = ({ checked_id: id, state_passphrase }: Props) => {
+interface State {
+  passphrase: string | null
+}
+
+interface ModifiedLocation extends Location {
+  state: State | unknown
+}
+
+const is_state_valid = (state: State | unknown): state is State => {
+  return (state !== null && (state as State).passphrase !== undefined);
+}
+
+const Note = () => {
+  const { id: unchecked_id } = useParams();
+  const { state: unchecked_state }: ModifiedLocation = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!is_note_id(unchecked_id)) {
+      toast("id is not valid", {
+        icon: <i className="bi bi-exclamation-circle-fill" />,
+        id: "invalid_id",
+        duration: 4000,
+      });
+      navigate(PATHS.find_note, { replace: true });
+    }
+  }, [unchecked_id]);
+
+  const [state] = useState<URLParamState>({
+    id: (() => {
+      let _id = "";
+      if (is_note_id(unchecked_id)) {
+        _id = unchecked_id;
+      }
+
+      return _id;
+    })(),
+    passphrase: (() => {
+      let _passphrase = null;
+      if (is_state_valid(unchecked_state) && unchecked_state.passphrase !== null) {
+        _passphrase = unchecked_state.passphrase;
+      }
+
+      return _passphrase;
+    })(),
+  });
   const [note, setNote] = useState<NoteT | null>(null);
   const [modalDecrypt, setModalDecrypt] = useState<PasswordModalState>({
     showModal: false,
@@ -42,6 +87,22 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
 
   const setTitle = useTitle("Loading...");
 
+  // getting the info
+  const {
+    data: note_info,
+    isError: is_info_error,
+    error: info_error,
+    isPreviousData: is_info_called,
+    isFetching: is_info_loading,
+  } = useQuery(
+    ["note_info", state.id],
+    () => get_note_info({ id: state.id }),
+    {
+      enabled: is_note_id(unchecked_id),
+    }
+  );
+
+  // should execute when delete button is clicked
   const { mutate: del_note, isLoading: is_deleting, isSuccess: is_deleted } = useMutation(delete_note, {
     onSuccess: ({ error }) => {
       if (!error) {
@@ -52,6 +113,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
     }
   });
 
+  // gets note with password if present, should retry if password is not valid and back-end protected
   const { mutate: mutate_get_note, isLoading, isSuccess } = useMutation(get_note, {
     onSuccess: result => {
       if (!result.error) {
@@ -68,7 +130,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         else if (result.data.frontend_encryption) encryption = EncryptionMethod.FrontendEncryption;
         else encryption = EncryptionMethod.NoEncryption;
 
-        let passphrase = state_passphrase || modalMutate.passphrase;
+        let passphrase = state.passphrase || modalMutate.passphrase;
         setNote({
           id: data.id,
           title: data.title,
@@ -102,17 +164,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
     },
   });
 
-  const {
-    data: note_info,
-    isError: is_info_error,
-    error: info_error,
-    isPreviousData: is_info_called,
-    isFetching: is_info_loading,
-  } = useQuery(
-    ["note_info", id],
-    () => get_note_info({ id }),
-  );
-
+  // only possible case is server was not setup properly
   useEffect(() => {
     if (is_info_error) {
       unwrap.default("serverError");
@@ -121,6 +173,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
     }
   }, [is_info_error, setTitle, info_error]);
 
+  // determines whether note requested is real/valid
   useEffect(() => {
     if (note_info) {
       if (!note_info.error) {
@@ -130,15 +183,15 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         else encryption = EncryptionMethod.NoEncryption;
 
         setNote({
-          ...DefaultValue.note,
+          ...DefaultValues.note,
           encryption,
           title: note_info.data.title,
           content: generate_face(),
         });
 
         if (note_info.data.backend_encryption) {
-          if (state_passphrase) {
-            mutate_get_note({ id: note_info.data.id, passphrase: state_passphrase });
+          if (state.passphrase) {
+            mutate_get_note({ id: note_info.data.id, passphrase: state.passphrase });
           } else {
             setTitle("🔒 Locked " + generate_face());
 
@@ -150,7 +203,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
             });
           }
         } else {
-          if (!note_info.data.frontend_encryption && state_passphrase) {
+          if (!note_info.data.frontend_encryption && state.passphrase) {
             toast("Passphrase was not needed", {
               icon: <i className="bi bi-asterisk" />
             });
@@ -165,9 +218,9 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
               <Alert.Heading>
                 <i className="bi bi-question-circle"></i> {" "}
                 Note #{((): JSX.Element => {
-                  let id_str = id.toString();
-                  if (id_str.length > 12) id_str = truncate_string(id.toString(), 12);
-                  return <span title={id.toString()} onClick={() => toast(id.toString())}>{id_str}</span>;
+                  let id_str = state.id.toString();
+                  if (id_str.length > 12) id_str = truncate_string(state.id.toString(), 12);
+                  return <span title={state.id.toString()} onClick={() => toast(state.id.toString())}>{id_str}</span>;
                 })()} was not found
               </Alert.Heading>
               <p>
@@ -183,8 +236,9 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         }
       }
     }
-  }, [id, note_info, is_info_called, is_info_error, state_passphrase, mutate_get_note, setTitle]);
+  }, [state.id, note_info, is_info_called, is_info_error, state.passphrase, mutate_get_note, setTitle]);
 
+  // function to decrypt the note if frontend encryption is true
   const try_decrypt = useCallback((note: NoteT, passphrase: string): void => {
     try {
       let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
@@ -235,13 +289,13 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
   // try to decrypt note on backend
   useEffect(() => {
     if (modalMutate.passphrase !== null) {
-      mutate_get_note({ id, passphrase: modalMutate.passphrase });
+      mutate_get_note({ id: state.id, passphrase: modalMutate.passphrase });
     }
-  }, [id, modalMutate.passphrase, mutate_get_note]);
+  }, [state.id, modalMutate.passphrase, mutate_get_note]);
 
   // try to decrypt note on frontend
   useEffect(() => {
-    if (modalDecrypt.passphrase !== null && note) {
+    if (modalDecrypt.passphrase !== null && note && !note.decrypted) {
       try_decrypt(note, modalDecrypt.passphrase);
     }
   }, [note, modalDecrypt.passphrase, try_decrypt]);
@@ -249,8 +303,8 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
   // check if frontend decryption succeed or not
   useEffect(() => {
     if (isSuccess && note && note.encryption === EncryptionMethod.FrontendEncryption && !note.decrypted) {
-      if (state_passphrase) {
-        try_decrypt(note, state_passphrase);
+      if (state.passphrase) {
+        try_decrypt(note, state.passphrase);
       } else {
         setModalDecrypt(prev => {
           return {
@@ -260,13 +314,13 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         });
       }
     }
-  }, [isSuccess, note, state_passphrase, try_decrypt, setModalDecrypt]);
+  }, [isSuccess, note, state.passphrase, try_decrypt, setModalDecrypt]);
 
   // delete confirmation 
   useEffect(() => {
     if (modalDelete.passphrase && note) {
       if (modalDelete.passphrase === note.passphrase) {
-        del_note({ id, passphrase: note.passphrase });
+        del_note({ id: state.id, passphrase: note.passphrase });
       } else {
         setModalDelete({
           showModal: false,
@@ -275,7 +329,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         unwrap.default("wrongPassphrase");
       }
     }
-  }, [modalDelete.passphrase, note, del_note, id]);
+  }, [modalDelete.passphrase, note, del_note, state.id]);
 
   const handleRetry = () => {
     if (note?.encryption === EncryptionMethod.BackendEncryption) {
@@ -383,7 +437,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         }} />
 
       <PassphraseModal
-        title={`Confirm to delete ${note?.title ? `"${note.title}"` : `note #${id}`}`}
+        title={`Confirm to delete ${note?.title ? `"${note.title}"` : `note #${state.id}`}`}
         show={modalDelete.showModal}
         setShow={(show) => setModalDelete(prev => {
           return { ...prev, showModal: show };
@@ -400,7 +454,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
         text={`You are about to delete ${note?.title}`}
         doDecide={val => {
           if (val) {
-            del_note({ id: id, passphrase: null })
+            del_note({ id: state.id, passphrase: null })
           }
 
           setModalConfirmDelete(false);
@@ -420,7 +474,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? (note.title || undefined) : DefaultValue.note.title}
+                      value={note ? (note.title || undefined) : DefaultValues.note.title}
                       readOnly
                     />
                 }
@@ -435,7 +489,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
                       as="textarea"
                       type="text"
                       name="expires"
-                      value={note ? note.content : DefaultValue.note.content}
+                      value={note ? note.content : DefaultValues.note.content}
                       rows={(() => {
                         // const len = note?.content.length;
                         // const max_until_break = 4;
@@ -454,7 +508,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.creationTime : DefaultValue.note.creationTime}
+                      value={note ? note.creationTime : DefaultValues.note.creationTime}
                       readOnly
                     />
                 }
@@ -468,7 +522,7 @@ const Note = ({ checked_id: id, state_passphrase }: Props) => {
                     : <Form.Control
                       type="text"
                       name="expires"
-                      value={note ? note.expiryTime : DefaultValue.note.expiryTime}
+                      value={note ? note.expiryTime : DefaultValues.note.expiryTime}
                       readOnly
                     />
                 }

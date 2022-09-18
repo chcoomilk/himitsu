@@ -1,8 +1,8 @@
 type ValidOpts = "id" | "title";
 
 export type UrlParams = {
-    readonly findBy: ValidOpts | null;
-    readonly query: string | null;
+    readonly findBy?: ValidOpts;
+    readonly query?: string;
 }
 
 export type Props = {

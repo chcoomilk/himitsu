@@ -1,21 +1,22 @@
-import { useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap"
 import { useSearchParams } from "react-router-dom";
 import { useTitle } from "../../../custom-hooks";
 import FindByID from "./ByID";
-import FindByTitle from "./ByTitle";
+// import FindByTitle from "./ByTitle";
 import { is_opts, UrlParams } from "./utils";
+const FindByTitle = lazy(() => import("./ByTitle"));
 
 const FindNote = () => {
   useTitle("Find");
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = useState<UrlParams>({
-    query: searchParams.get("q"),
+    query: searchParams.get("q") || undefined,
     findBy: (() => {
       let x = searchParams.get("by");
       x = x?.toLowerCase().trim() || null;
 
-      return is_opts(x) ? x : null;
+      return is_opts(x) ? x : undefined;
     })(),
   });
 

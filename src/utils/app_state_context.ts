@@ -1,5 +1,5 @@
 import React from "react";
-import { DefaultValue } from "./constants";
+import { DefaultValues } from "./constants";
 import { AppSetting } from "./types";
 
 interface MainAppState {
@@ -7,7 +7,7 @@ interface MainAppState {
 }
 
 const AppContext = React.createContext<MainAppState>({
-  appSettings: DefaultValue.settings,
+  appSettings: DefaultValues.settings,
 });
 
 export default AppContext;
