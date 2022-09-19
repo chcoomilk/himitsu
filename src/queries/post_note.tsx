@@ -1,9 +1,9 @@
+import AES from "crypto-js/aes";
+import toast from "react-hot-toast";
+import { Alert } from "react-bootstrap";
 import { Result } from ".";
 import { BASE_URL } from "../utils/constants";
 import { EncryptionMethod, NoteInfo } from "../utils/types";
-import CryptoJS from "crypto-js";
-import toast from "react-hot-toast";
-import { Alert } from "react-bootstrap";
 import { local_storage, unwrap } from "../utils/functions";
 
 interface NewNote {
@@ -73,11 +73,11 @@ export default async function post_note({
             let fe = false;
             if (double_encrypt) {
                 try {
-                    content = CryptoJS.AES.encrypt(content, double_encrypt).toString();
+                    content = AES.encrypt(content, double_encrypt).toString();
+                    fe = true;
                 } catch (error) {
                     throw error;
                 }
-                fe = true;
             }
             request = {
                 id: custom_id,
@@ -93,7 +93,7 @@ export default async function post_note({
                 request = {
                     id: custom_id,
                     title,
-                    content: CryptoJS.AES.encrypt(content, passphrase).toString(),
+                    content: AES.encrypt(content, passphrase).toString(),
                     passphrase,
                     is_currently_encrypted: true,
                     lifetime_in_secs,
