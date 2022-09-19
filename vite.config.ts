@@ -29,18 +29,5 @@ export default ({ mode }) => {
             }),
             splitVendorChunkPlugin(),
         ],
-        experimental: {
-            renderBuiltUrl(filename, { hostId, type }) {
-                if (type === 'public') {
-                    return { relative: false };
-                }
-                else if (path.extname(hostId) === '.js') {
-                    return { runtime: `window.__assetsPath(${JSON.stringify(filename)})` };
-                }
-                else {
-                    return { relative: true };
-                }
-            }
-        },
     });
 } 
