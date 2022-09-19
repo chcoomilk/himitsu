@@ -1,8 +1,7 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 import { VitePWA } from "vite-plugin-pwa";
-import dynamicImport from 'vite-plugin-dynamic-import';
 
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -27,12 +26,16 @@ export default ({ mode }) => {
                 },
                 injectRegister: "auto",
             }),
-            dynamicImport(),
+            splitVendorChunkPlugin(),
         ],
-        optimizeDeps: {
-            include: [
-                "./"
-            ]
-        }
+        experimental: {
+            renderBuiltUrl(filename, { hostType }) {
+                if (hostType === 'js') {
+                    return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
+                } else {
+                    return { relative: true }
+                }
+            }
+        },
     });
 } 
