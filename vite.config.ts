@@ -32,13 +32,13 @@ export default ({ mode }) => {
         experimental: {
             renderBuiltUrl(filename, { hostId, type }) {
                 if (type === 'public') {
-                    return 'https://www.domain.com/' + filename
+                    return { runtime: `window.__baseUrl(${JSON.stringify(filename)})` };
                 }
                 else if (path.extname(hostId) === '.js') {
-                    return { runtime: `window.__assetsPath(${JSON.stringify(filename)})` }
+                    return { runtime: `window.__assetsPath(${JSON.stringify(filename)})` };
                 }
                 else {
-                    return 'https://cdn.domain.com/assets/' + filename
+                    return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` };
                 }
             }
         },
