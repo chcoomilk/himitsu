@@ -2,6 +2,7 @@ import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 import { VitePWA } from "vite-plugin-pwa";
+import path from 'path';
 
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -29,11 +30,15 @@ export default ({ mode }) => {
             splitVendorChunkPlugin(),
         ],
         experimental: {
-            renderBuiltUrl(filename, { hostType }) {
-                if (hostType === 'js') {
-                    return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` }
-                } else {
-                    return { relative: true }
+            renderBuiltUrl(filename, { hostId, type }) {
+                if (type === 'public') {
+                    return 'https://www.domain.com/' + filename
+                }
+                else if (path.extname(hostId) === '.js') {
+                    return { runtime: `window.__assetsPath(${JSON.stringify(filename)})` }
+                }
+                else {
+                    return 'https://cdn.domain.com/assets/' + filename
                 }
             }
         },
