@@ -32,13 +32,13 @@ export default ({ mode }) => {
         experimental: {
             renderBuiltUrl(filename, { hostId, type }) {
                 if (type === 'public') {
-                    return { runtime: `window.__baseUrl(${JSON.stringify(filename)})` };
+                    return { relative: false };
                 }
                 else if (path.extname(hostId) === '.js') {
                     return { runtime: `window.__assetsPath(${JSON.stringify(filename)})` };
                 }
                 else {
-                    return { runtime: `window.__toCdnUrl(${JSON.stringify(filename)})` };
+                    return { relative: true };
                 }
             }
         },
