@@ -2,10 +2,6 @@ import { useState, forwardRef } from "react";
 import { Button, Form, FormControlProps, FormTextProps, InputGroup } from "react-bootstrap";
 import CopyButton from "../button/CopyButton";
 
-type Field = {
-  passphrase: string,
-}
-
 type Props = {
   customLabel?: string | null,
   hide?: boolean,

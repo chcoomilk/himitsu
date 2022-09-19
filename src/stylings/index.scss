@@ -4,6 +4,7 @@ $font-size-base: 1.1rem;
   font-size: $font-size-base * 3.25;
 }
 
+/// render button as link (<a>)
 .btn-anchor {
   background-color: transparent;
   border: none;

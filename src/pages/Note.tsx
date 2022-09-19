@@ -41,6 +41,7 @@ const Note = () => {
   const { id: unchecked_id } = useParams();
   const { state: unchecked_state }: ModifiedLocation = useLocation();
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!is_note_id(unchecked_id)) {
       toast("id is not valid", {
@@ -50,7 +51,7 @@ const Note = () => {
       });
       navigate(PATHS.find_note, { replace: true });
     }
-  }, [unchecked_id]);
+  }, [unchecked_id, navigate]);
 
   const [state] = useState<URLParamState>({
     id: (() => {

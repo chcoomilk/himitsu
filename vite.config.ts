@@ -1,8 +1,8 @@
 import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
+import { VitePWA } from "vite-plugin-pwa";
 import react from '@vitejs/plugin-react';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
-import { VitePWA } from "vite-plugin-pwa";
-import path from 'path';
+import eslint from "vite-plugin-eslint";
 
 export default ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -28,6 +28,13 @@ export default ({ mode }) => {
                 injectRegister: "auto",
             }),
             splitVendorChunkPlugin(),
+            eslint({
+                emitError: false,
+                emitWarning: true,
+                failOnWarning: false,
+                cache: true,
+                extensions: ["react-app"],
+            }),
         ],
     });
 } 

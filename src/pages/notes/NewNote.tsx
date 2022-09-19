@@ -86,11 +86,11 @@ const NewNote = () => {
     }
 
     await mutateAsync({
-      discoverable: encryption == EncryptionMethod.NoEncryption ? form_data.extra.discoverable : undefined,
-      custom_id: form_data.custom_id == null || form_data.custom_id == "" ? undefined : form_data.custom_id,
+      discoverable: encryption === EncryptionMethod.NoEncryption ? form_data.extra.discoverable : undefined,
+      custom_id: form_data.custom_id === null || form_data.custom_id === "" ? undefined : form_data.custom_id,
       double_encrypt: form_data.extra.double_encryption.enable && encryption === EncryptionMethod.BackendEncryption ? form_data.extra.double_encryption.passphrase : undefined,
       encryption: encryption,
-      title: form_data.title == "" || form_data.title == null ? undefined : form_data.title,
+      title: form_data.title === "" || form_data.title === null ? undefined : form_data.title,
       content: form_data.content,
       lifetime_in_secs: duration_in_secs === 0 ? undefined : duration_in_secs,
       passphrase: form_data.passphrase || "",
@@ -339,7 +339,7 @@ const NewNote = () => {
                   "passphrase",
                   {
                     required: {
-                      value: form.getValues("encryption") != EncryptionMethod.NoEncryption,
+                      value: form.getValues("encryption") !== EncryptionMethod.NoEncryption,
                       message: "passphrase is required to encrypt before going to the server",
                     },
                     minLength: {

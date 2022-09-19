@@ -48,7 +48,7 @@ const Notes = () => {
     } else {
       setSearchParams({}, { replace: true });
     }
-  }, [params, setSearchParams]);
+  }, [params, setSearchParams, notesRef]);
 
   const [limit] = useState(5);
 
