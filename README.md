@@ -14,7 +14,7 @@ Unfortunately, yes! There are\
 [https://ghostbin.co (rip)](https://ghostbin.co)\
 [https://privatebin.info](https://privatebin.info/)\
 \
-My intention doing this project was to learn rust, but I wanted to create something that's actually going to be useful. I guess the main attraction of this app is the ability to create/delete notes or secrets (whatever you want to call it) without signing in by authorizing JWT keys for each created notes. In the time being the process is not fully efficient and there is a lot of improvements need to be made. But so far it's functioning as intended and I'm quite fulfilled by it.\
+My intention doing this project was to learn rust, but I wanted to create something that's actually going to be useful. I guess the main attraction of this app is the ability to create/delete notes or secrets (whatever you want to call it) without the need to create an account by authorizing JWT keys for each created notes. In the time being the process is not fully efficient and there is a lot of improvements need to be made. But so far it's functioning as intended and I'm quite fulfilled by it.\
 \
 No, I'm not writing this to make the readme look good\
 ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡝⣿⣿⣿⣿⣷⠀\
