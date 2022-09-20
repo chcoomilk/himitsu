@@ -1,23 +1,24 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useContext, useState } from "react";
 import { Button, Form, Row, Col, DropdownButton, Dropdown, InputGroup, FormControl, Stack, Spinner, Modal } from "react-bootstrap";
 import { useMutation, useQueryClient } from "react-query";
+import { capitalCase } from "change-case"
 
 import NewNoteModal from "../../components/note/NewNoteModal";
 import AppContext from "../../utils/app_state_context";
-import { EncryptionMethod, NoteInfo } from "../../utils/types";
+import { createEncryptionMethodKeys, EncryptionMethod, NoteInfo } from "../../utils/types";
 import { post_note } from "../../queries";
 import { useTitle } from "../../custom-hooks";
-import { local_storage, unwrap } from "../../utils/functions";
+import { local_storage } from "../../utils/functions";
 import PassphraseInputGroup from "../../components/passphrase/PassphraseInputGroup";
 import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
+import unwrap_default from "../../utils/functions/unwrap";
 
 type Fields = {
   title: string,
   passphrase: string,
   content: string,
   custom_id: string,
-  encryption: EncryptionMethod,
   duration: {
     day: number,
     hour: number,
@@ -25,6 +26,7 @@ type Fields = {
     second: number,
   }
   extra: {
+    encryption: EncryptionMethod,
     double_encryption: {
       enable: boolean,
       passphrase: string,
@@ -39,8 +41,7 @@ type UNoteInfo = NoteInfo & {
 
 const NewNote = () => {
   const { appSettings } = useContext(AppContext);
-  const [noteResult, setNoteResult] = useState<UNoteInfo | null>(null);
-  const [encryption, setEncryption] = useState<EncryptionMethod>(appSettings.encryption);
+  const [noteResult, setNoteResult] = useState<UNoteInfo>();
   const [modal, setModal] = useState({
     delete: false,
     extra_settings: false,
@@ -53,6 +54,7 @@ const NewNote = () => {
     mode: "all",
     defaultValues: {
       extra: {
+        encryption: appSettings.encryption,
         discoverable: false,
         double_encryption: {
           enable: false,
@@ -62,15 +64,19 @@ const NewNote = () => {
   });
   const watchOut = form.watch();
 
-  const resetForm = () => {
-    form.reset({
-      extra: {
+  const resetForm = (skipExtra?: boolean) => {
+    skipExtra ? (() => {
+      let prev_values = form.getValues();
+      form.reset(undefined, { keepDefaultValues: true });
+      form.setValue("extra", {
+        discoverable: prev_values.extra.discoverable,
         double_encryption: {
-          enable: form.getValues().extra.double_encryption.enable,
+          enable: prev_values.extra.double_encryption.enable,
+          passphrase: form.getValues("extra.double_encryption.passphrase"),
         },
-        discoverable: form.getValues().extra.discoverable,
-      }
-    })
+        encryption: prev_values.extra.encryption,
+      })
+    })() : form.reset(undefined, { keepDefaultValues: true });
   };
 
   const submit = async (form_data: Fields) => {
@@ -86,10 +92,10 @@ const NewNote = () => {
     }
 
     await mutateAsync({
-      discoverable: encryption === EncryptionMethod.NoEncryption ? form_data.extra.discoverable : undefined,
+      discoverable: form_data.extra.encryption === EncryptionMethod.NoEncryption ? form_data.extra.discoverable : undefined,
       custom_id: form_data.custom_id === null || form_data.custom_id === "" ? undefined : form_data.custom_id,
-      double_encrypt: form_data.extra.double_encryption.enable && encryption === EncryptionMethod.BackendEncryption ? form_data.extra.double_encryption.passphrase : undefined,
-      encryption: encryption,
+      double_encrypt: form_data.extra.double_encryption.enable && form_data.extra.encryption === EncryptionMethod.BackendEncryption ? form_data.extra.double_encryption.passphrase : undefined,
+      encryption: form_data.extra.encryption,
       title: form_data.title === "" || form_data.title === null ? undefined : form_data.title,
       content: form_data.content,
       lifetime_in_secs: duration_in_secs === 0 ? undefined : duration_in_secs,
@@ -126,9 +132,9 @@ const NewNote = () => {
             queryClient.refetchQueries(["local_notes"], { active: true, queryKey: qk });
           }
 
-          resetForm();
+          resetForm(true);
         } else {
-          unwrap.default(error);
+          unwrap_default(error);
         }
       })
       .catch((e) => {
@@ -141,37 +147,35 @@ const NewNote = () => {
       <Form.Group controlId="formBasicEncryption" className="mb-4">
         <Form.Label>Encryption</Form.Label>
         <InputGroup>
-          <DropdownButton
-            variant="outline-light"
-            menuVariant="dark"
-            title={`${EncryptionMethod[encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}`}
-            id="input-group-dropdown-1"
-            disabled={form.formState.isSubmitting}
-          >
-            <Dropdown.Item
-              onClick={() => setEncryption(EncryptionMethod.BackendEncryption)}
-              href="#"
-            >
-              Use Backend
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => setEncryption(EncryptionMethod.FrontendEncryption)}
-              href="#"
-            >
-              Use Frontend
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => setEncryption(EncryptionMethod.NoEncryption)}
-              href="#"
-            >
-              No Encryption
-            </Dropdown.Item>
-          </DropdownButton>
+          <Controller
+            control={form.control}
+            name="extra.encryption"
+            render={({ field }) => (
+              <DropdownButton
+                variant="outline-light"
+                menuVariant="dark"
+                title={`${EncryptionMethod[watchOut.extra.encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}`}
+                id="input-group-dropdown-1"
+                disabled={form.formState.isSubmitting}
+              >
+                {
+                  createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
+                    method => (
+                      <Dropdown.Item
+                        key={method}
+                        onClick={() => field.onChange(EncryptionMethod[method])}
+                      >{capitalCase(method)}</Dropdown.Item>
+                    )
+                  )
+                }
+              </DropdownButton>
+            )}
+          />
         </InputGroup>
       </Form.Group>
       {
         (() => {
-          switch (encryption) {
+          switch (watchOut.extra.encryption) {
             case EncryptionMethod.BackendEncryption:
               return (
                 <>
@@ -190,20 +194,15 @@ const NewNote = () => {
                         disabled={form.formState.isSubmitting}
                       />
                       <PassphraseInputGroup
-                        // hide={!formik.values.double_encrypt.enabled}
                         hide={!watchOut.extra.double_encryption.enable}
-                        customLabel={null}
                         inputGroupClassName="mt-2"
                         aria-label="Passphrase"
                         disabled={form.formState.isSubmitting}
                         {...form.register(
                           "extra.double_encryption.passphrase", {
-                          validate: {
-                            required: () =>
-                              form.getValues("extra.double_encryption.enable")
-                                ? "passphrase is required to encrypt before going to the server"
-                                : undefined
-                          },
+                          required: form.getValues("extra.encryption") === EncryptionMethod.BackendEncryption && form.getValues("extra.double_encryption.enable")
+                            ? "passphrase is required to encrypt before going to the server"
+                            : undefined,
                           minLength: {
                             value: 4,
                             message: "passphrase is too short",
@@ -212,8 +211,7 @@ const NewNote = () => {
                             value: 1024,
                             message: "passphrase is too long (max length: 1024 chars)"
                           },
-                        }
-                        )}
+                        })}
                         placeholder="Secondary passphrase"
                         errorMessage={form.formState.errors.extra?.double_encryption?.passphrase?.message}
                         isInvalid={
@@ -269,7 +267,7 @@ const NewNote = () => {
       {
         noteResult && (
           <NewNoteModal data={{ ...noteResult }} onHide={() => {
-            setNoteResult(null);
+            setNoteResult(undefined);
             local_storage.remove("last_saved_note");
           }} />
         )
@@ -317,7 +315,7 @@ const NewNote = () => {
             <Form.Group controlId="formBasicDescription" className="position-relative mb-4">
               <Form.Label>Secret</Form.Label>
               <Form.Text muted>
-                {` (${!encryption ? "unencrypted" : "encrypted"})`}
+                {` (${!watchOut.extra.encryption ? "unencrypted" : "encrypted"})`}
               </Form.Text>
               <Form.Control
                 as="textarea"
@@ -338,10 +336,9 @@ const NewNote = () => {
                 {...form.register(
                   "passphrase",
                   {
-                    required: {
-                      value: form.getValues("encryption") !== EncryptionMethod.NoEncryption,
-                      message: "passphrase is required to encrypt before going to the server",
-                    },
+                    required: form.getValues("extra.encryption") === EncryptionMethod.NoEncryption
+                      ? undefined
+                      : "passphrase is required to encrypt before going to the server",
                     minLength: {
                       value: 4,
                       message: "passphrase is too short",
@@ -353,8 +350,8 @@ const NewNote = () => {
                   }
                 )}
                 errorMessage={form.formState.errors.passphrase?.message}
-                disabled={encryption === EncryptionMethod.NoEncryption}
-                isInvalid={encryption !== EncryptionMethod.NoEncryption
+                disabled={watchOut.extra.encryption === EncryptionMethod.NoEncryption}
+                isInvalid={watchOut.extra.encryption !== EncryptionMethod.NoEncryption
                   ? (form.formState.touchedFields.passphrase && !!form.formState.errors.passphrase)
                   : undefined
                 }
@@ -432,19 +429,13 @@ const NewNote = () => {
                   type="text"
                   placeholder="Secs"
                   {...form.register("duration.second", {
-                    validate: {
-                      gte: v => +v >= 0 || "",
-                      // min: () => (
-
-                      // )
-                    },
                     min: {
                       value: !!(form.getValues("duration.day")
                         + form.getValues("duration.hour")
                         + form.getValues("duration.minute")
                       ) ? 0 : 30,
                       message: "second should be greater than 30"
-                    }
+                    },
                   })}
                   isInvalid={form.formState.touchedFields.duration?.second && !!form.formState.errors.duration?.second}
                   autoComplete="off"

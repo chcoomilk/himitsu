@@ -70,7 +70,7 @@ const NotesTable = ({ loading, notes, loadMore, loadMoreOnClick, ...attributes }
                               <i className="bi bi-hourglass-split"></i>
                               <Countdown
                                 date={note.expires_at.secs_since_epoch * 1000}
-                              />
+                              ><>Expired</></Countdown>
                             </>
                           )
                           : "Never"
