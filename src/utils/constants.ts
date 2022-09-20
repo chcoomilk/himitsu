@@ -15,7 +15,7 @@ const errors: ErrorKind = {
 type EnforceNote = Note & {
     title: string,
     passphrase: string,
-}
+};
 
 const note: EnforceNote = {
     id: "",
@@ -49,4 +49,4 @@ export const PATHS = {
     note_detail: "/n",
     settings: "/settings",
     not_found: "/404",
-}
+};

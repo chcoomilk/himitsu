@@ -4,7 +4,7 @@ import { AppSetting } from "./types";
 
 interface MainAppState {
   appSettings: AppSetting,
-}
+};
 
 const AppContext = React.createContext<MainAppState>({
   appSettings: DefaultValues.settings,
