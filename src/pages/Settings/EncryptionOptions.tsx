@@ -1,16 +1,10 @@
 import { Form } from "react-bootstrap";
-import { EncryptionMethod } from "../../utils/types";
-import * as changeCase from "change-case";
+import { createEncryptionMethodKeys, EncryptionMethod } from "../../utils/types";
+import { capitalCase } from "change-case";
 import { useContext } from "react";
 import AppContext from "../../utils/app_state_context";
 import { local_storage } from "../../utils/functions";
 import SettingsContext from "./context";
-
-type EncryptionMethodKey = keyof typeof EncryptionMethod;
-
-const createEncryptionMethodKeys = <T extends EncryptionMethodKey[]>(
-  ...array: T & ([EncryptionMethodKey] extends [T[number]] ? unknown : "Missing a key")
-) => array;
 
 const EncryptionOptions = () => {
   const { appSettings } = useContext(AppContext);
@@ -43,7 +37,7 @@ const EncryptionOptions = () => {
               key={method}
               id={method}
               checked={appSettings.encryption === EncryptionMethod[method]}
-              label={changeCase.capitalCase(method)}
+              label={capitalCase(method)}
               onChange={_ => setDefaultEncryption(EncryptionMethod[method])}
             />
           );

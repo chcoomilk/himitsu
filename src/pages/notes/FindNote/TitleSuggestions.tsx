@@ -54,7 +54,7 @@ const TitleSuggestions: React.FC<Props> = ({ query, ...attributes }) => {
                             <i className="bi bi-hourglass-split"></i>
                             <Countdown
                               date={note_info.expires_at.secs_since_epoch * 1000}
-                            />
+                            ><>Expired</></Countdown>
                           </>
                         )
                         : null

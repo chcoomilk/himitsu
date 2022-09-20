@@ -66,6 +66,11 @@ export enum EncryptionMethod {
   BackendEncryption,
 };
 
+type EncryptionMethodKey = keyof typeof EncryptionMethod;
+export const createEncryptionMethodKeys = <T extends EncryptionMethodKey[]>(
+  ...array: T & ([EncryptionMethodKey] extends [T[number]] ? unknown : "Missing a key")
+) => array;
+
 export enum AppThemeSetting {
   // System = "system default",
   Normal,

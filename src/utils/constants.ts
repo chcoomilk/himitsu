@@ -1,16 +1,8 @@
-import { EncryptionMethod, Note, ErrorKind, AppSetting, AppThemeSetting } from "./types";
+import { EncryptionMethod, Note, AppSetting, AppThemeSetting } from "./types";
 
 if (typeof import.meta.env.VITE_BACKEND_URL === "undefined") console.error("No server URL was set in .env: ", import.meta.env.VITE_BACKEND_URL);
 
 export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL || "";
-
-const errors: ErrorKind = {
-    notFound: null,
-    serverError: null,
-    wrongPassphrase: null,
-    tooManyRequests: null,
-    clientError: null,
-};
 
 type EnforceNote = Note & {
     title: string,
@@ -35,7 +27,6 @@ const settings: AppSetting = {
 };
 
 export const DefaultValues = {
-    errors,
     note,
     settings,
 };
