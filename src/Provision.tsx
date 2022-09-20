@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
-// import { persistQueryClient } from "react-query/persistQueryClient-experimental"
+// import { persistQueryClient } from "react-query/persistQueryClient-experimental";
 import { BrowserRouter } from "react-router-dom";
 import { applyTheme } from "./stylings/theme";
 import AppContext from "./utils/app_state_context";
