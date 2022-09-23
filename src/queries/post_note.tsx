@@ -120,6 +120,7 @@ export default async function post_note({
         if (result.ok) {
             data = await result.json();
             local_storage.set("token", data.token);
+            delete (data as Partial<ResponseData>).token;
             return {
                 data,
             };
