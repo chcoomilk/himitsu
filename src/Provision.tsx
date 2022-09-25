@@ -8,7 +8,10 @@ import { AppSetting } from "./utils/types";
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import toast from "react-hot-toast";
 import { Alert } from "react-bootstrap";
-import { toast_alert_opts } from "./utils/functions/unwrap";
+import unwrap_default, { toast_alert_opts } from "./utils/functions/unwrap";
+import { local_storage } from "./utils/functions";
+import { BASE_URL } from "./utils/constants";
+import jwtDecode from "jwt-decode";
 
 type AppDefinitions = {
   children: React.ReactNode,
@@ -35,10 +38,24 @@ const queryClient = new QueryClient({
 });
 
 const ContextCoupler = ({ appSettings, children }: AppDefinitions) => {
+  const reloadSW = "__RELOAD_SW__";
+  const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
+    onOfflineReady: () => console.log("sw is installed for offline use"),
+    onRegisterError: (e) => console.log("registration error!", e),
+    onRegisteredSW: (_, r) => {
+      // @ts-expect-error just ignore
+      if (reloadSW === "true") {
+        r && setInterval(() => {
+          r.update()
+        }, 60 * 30 * 1000);
+      }
+    },
+  });
+
   useEffect(() => applyTheme(appSettings.app_theme), [appSettings.app_theme]);
 
-  const sw = useRegisterSW({
-    onNeedRefresh() {
+  useEffect(() => {
+    if (needRefresh) {
       toast.custom((t) => (
         <Alert show={t.visible} variant="primary" dismissible onClose={() => {
           toast.dismiss(t.id);
@@ -50,7 +67,7 @@ const ContextCoupler = ({ appSettings, children }: AppDefinitions) => {
           <p>
             The update will be applied whenever you go back to this site. <br />
             If you have the app installed, {" "}
-            <button className="btn-anchor alert-link" onClick={() => sw.updateServiceWorker(true)}>click here</button> {" "}
+            <button className="btn-anchor alert-link" onClick={() => updateServiceWorker(true)}>click here</button> {" "}
             to reload the app!
           </p>
         </Alert>
@@ -59,15 +76,61 @@ const ContextCoupler = ({ appSettings, children }: AppDefinitions) => {
         id: "himitsu-app-update",
         duration: Infinity,
       });
-    },
-    onOfflineReady: () => console.log("sw is installed for offline use"),
-    onRegisterError: (e) => console.log("registration error!", e),
-    onRegisteredSW: (_, r) => {
-      r && setInterval(() => {
-        r.update()
-      }, 60 * 30 * 1000);
-    },
-  });
+    }
+  }, [needRefresh, updateServiceWorker]);
+
+  useEffect(() => {
+    let refresh_token_interval = setInterval(() => {
+      const token = local_storage.get("token");
+      if (token) {
+        const sch_ls = localStorage.getItem("refresh_token_timestamp");
+
+        let schedule: Date = new Date();
+        if (sch_ls) {
+          let _sch_ls = new Date(sch_ls);
+          if (_sch_ls instanceof Date && !isNaN(_sch_ls.valueOf())) {
+            schedule = _sch_ls;
+          }
+        }
+
+        if (schedule <= new Date()) {
+          fetch(BASE_URL + "/token", {
+            method: "PATCH",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              token,
+            })
+          }).then(resp => (resp.json().then(res => {
+            let is_token: boolean;
+            try {
+              jwtDecode(res.token);
+              is_token = true;
+            } catch (error) {
+              is_token = false;
+            }
+
+            if (is_token) {
+              local_storage.set("token", res.token);
+            } else {
+              // client's outdated
+              unwrap_default("clientError");
+            }
+          }).catch(() => (unwrap_default("clientError")))).catch(() => ("retry later"))).finally(() => {
+            let d = new Date();
+            d.setHours(d.getHours() + 2);
+            localStorage.setItem("refresh_token_timestamp", d.toString());
+          });
+        }
+      }
+    }, 30000);
+
+    return () => {
+      clearInterval(refresh_token_interval);
+    };
+  }, []);
 
   return (
     <BrowserRouter>

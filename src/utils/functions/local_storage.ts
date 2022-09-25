@@ -31,8 +31,8 @@ function get(key: LocalStorageItemKeys): LocalStorageItemKind | null {
 
     try {
         let item = JSON.parse(saved_item);
-
         let invalid_error = new Error(`${key} has invalid property, did you do this <(｀^´)>`);
+
         switch (key) {
             case "settings":
                 if (is_settings(item)) {
