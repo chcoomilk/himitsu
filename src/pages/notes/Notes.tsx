@@ -48,12 +48,12 @@ const Notes = () => {
     } else {
       setSearchParams({}, { replace: true });
     }
-  }, [params, setSearchParams, notesRef]);
+  }, [params, setSearchParams]);
 
   const [limit] = useState(5);
 
   const get_slices = useCallback(({ queryKey, pageParam }: QueryFunctionContext<QueryKey, number>): NoteInfo[] => {
-    let res: NoteInfo[] = notesRef.current;
+    let res: NoteInfo[];
     if (notesRef.current.length) res = notesRef.current;
     else {
       res = local_storage.get("notes") || [];

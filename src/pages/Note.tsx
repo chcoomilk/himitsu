@@ -214,6 +214,7 @@ const Note = () => {
         }
       } else {
         if (note_info.error === "notFound") {
+          setTitle(generate_face());
           toast.custom(t => (
             <Alert show={t.visible} variant="warning" dismissible onClose={() => toast.dismiss(t.id)}>
               <Alert.Heading>
