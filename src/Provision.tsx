@@ -38,18 +38,9 @@ const queryClient = new QueryClient({
 });
 
 const ContextCoupler = ({ appSettings, children }: AppDefinitions) => {
-  const reloadSW = "__RELOAD_SW__";
   const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
     onOfflineReady: () => console.log("sw is installed for offline use"),
     onRegisterError: (e) => console.log("registration error!", e),
-    onRegisteredSW: (_, r) => {
-      // @ts-expect-error just ignore
-      if (reloadSW === "true") {
-        r && setInterval(() => {
-          r.update()
-        }, 60 * 30 * 1000);
-      }
-    },
   });
 
   useEffect(() => applyTheme(appSettings.app_theme), [appSettings.app_theme]);

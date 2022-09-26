@@ -6,7 +6,7 @@ import AppContext from "../../utils/app_state_context";
 import { local_storage } from "../../utils/functions";
 import SettingsContext from "./context";
 
-const EncryptionOptions = () => {
+const DefaultEncryptionOptions = () => {
   const { appSettings } = useContext(AppContext);
   const setAppSettings = useContext(SettingsContext);
   const setDefaultEncryption = (method: EncryptionMethod) => {
@@ -48,4 +48,4 @@ const EncryptionOptions = () => {
 
 };
 
-export default EncryptionOptions;
+export default DefaultEncryptionOptions;

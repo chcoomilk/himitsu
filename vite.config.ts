@@ -34,6 +34,11 @@ export default ({ mode }) => {
                 failOnWarning: false,
                 cache: true,
                 extensions: ["react-app"],
+                overrideConfig: {
+                    rules: {
+                        "import/first": "off",
+                    }
+                }
             }),
         ],
     });

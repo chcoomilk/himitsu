@@ -14,7 +14,7 @@ import Home from "./pages/Home";
 import Navbar from "./components/Navigation";
 import FindNote from "./pages/notes/FindNote";
 import NewNote from "./pages/notes/NewNote";
-import Note from "./pages/Note";
+import Note from "./pages/notes/Note";
 const NotFound = lazy(() => import("./pages/404"));
 const About = lazy(() => import("./pages/About"));
 const Settings = lazy(() => import("./pages/Settings"));

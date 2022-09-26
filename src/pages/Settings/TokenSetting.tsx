@@ -233,14 +233,14 @@ const TokenSetting = () => {
         </Form>
       </Modal>
 
-      <OverlayTrigger placement="bottom-end" overlay={(p) => (
-        <Tooltip id="accessTokenTooltipInfo" {...p} hidden={!showHelp}>
+      <OverlayTrigger show={showHelp ? undefined : showHelp} placement="auto" rootClose={true} overlay={(p) => (
+        <Tooltip id="accessTokenTooltipInfo" {...p}>
           This is your access token <span className="text-decoration-underline">solely</span>
           {" "} for granting access to delete the notes you've created
         </Tooltip>
       )}>
         {({ ref, ...t }) => (
-          <InputGroup {...t}>
+          <InputGroup>
             <Form.Control
               value={currentToken}
               readOnly
@@ -253,7 +253,7 @@ const TokenSetting = () => {
               onClick={() => setReplaceAccessToken(p => ({ ...p, active: !p.active }))}
             ><i className={replaceAccessToken.active ? "bi bi-layers" : "bi bi-layers-half"} /></Button>
             <CopyButton size="sm" copy_value={currentToken} />
-            <Button size="sm" variant="outline-light" ref={ref} onClick={() => setShowHelp(!showHelp)}><i className="bi bi-question-lg" /></Button>
+            <Button size="sm" variant="outline-light" ref={ref} {...t} onClick={() => setShowHelp(p => (!p))}>{showHelp ? <i className="bi bi-question-lg" /> : <i className="bi bi-x" />}</Button>
           </InputGroup>
         )}
       </OverlayTrigger>
