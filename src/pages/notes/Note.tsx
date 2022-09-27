@@ -37,6 +37,7 @@ const is_state_valid = (state: State | unknown): state is State => {
   return (state !== null && (state as State).passphrase !== undefined);
 }
 
+// spaghetti codes, o' spaghetti codes
 const Note = () => {
   const { id: unchecked_id } = useParams();
   const { state: unchecked_state }: ModifiedLocation = useLocation();
@@ -288,23 +289,23 @@ const Note = () => {
     }
   }, []);
 
-  // try to decrypt note on backend
+  // try to decrypt note on backend from modal
   useEffect(() => {
     if (modalMutate.passphrase !== null) {
       mutate_get_note({ id: state.id, passphrase: modalMutate.passphrase });
     }
   }, [state.id, modalMutate.passphrase, mutate_get_note]);
 
-  // try to decrypt note on frontend
+  // try to decrypt note on frontend from modal
   useEffect(() => {
     if (modalDecrypt.passphrase !== null && note && !note.decrypted) {
       try_decrypt(note, modalDecrypt.passphrase);
     }
   }, [note, modalDecrypt.passphrase, try_decrypt]);
 
-  // check if frontend decryption succeed or not
+  // try to decrypt note on frontend
   useEffect(() => {
-    if (isSuccess && note && note.encryption === EncryptionMethod.FrontendEncryption && !note.decrypted) {
+    if (isSuccess && note && !note.decrypted) {
       if (state.passphrase) {
         try_decrypt(note, state.passphrase);
       } else {
@@ -316,7 +317,7 @@ const Note = () => {
         });
       }
     }
-  }, [isSuccess, note, state.passphrase, try_decrypt, setModalDecrypt]);
+  }, [isSuccess, note, note?.decrypted, state.passphrase, try_decrypt, setModalDecrypt]);
 
   // delete confirmation 
   useEffect(() => {

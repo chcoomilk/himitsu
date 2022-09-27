@@ -84,8 +84,6 @@ const NewNote = () => {
   };
 
   const submit = async (form_data: Fields) => {
-    console.log(form_data);
-
     let duration_in_secs: number = form_data.duration.second || 0;
     if (form_data.duration.day) {
       duration_in_secs += form_data.duration.day * 86400;
@@ -100,7 +98,7 @@ const NewNote = () => {
     await mutateAsync({
       discoverable: form_data.extra.encryption === EncryptionMethod.NoEncryption ? form_data.extra.discoverable : undefined,
       custom_id: form_data.custom_id === null || form_data.custom_id === "" ? undefined : form_data.custom_id,
-      double_encrypt: form_data.extra.double_encryption.enable && form_data.extra.encryption === EncryptionMethod.BackendEncryption ? form_data.extra.double_encryption.passphrase : undefined,
+      double_encrypt: form_data.extra.double_encryption.enable ? form_data.extra.double_encryption.passphrase : undefined,
       encryption: form_data.extra.encryption,
       title: form_data.title === "" || form_data.title === null ? undefined : form_data.title,
       content: form_data.content,

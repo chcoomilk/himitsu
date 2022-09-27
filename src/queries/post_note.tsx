@@ -94,7 +94,6 @@ export default async function post_note({
                     id: custom_id,
                     title,
                     content: AES.encrypt(content, passphrase).toString(),
-                    passphrase,
                     is_currently_encrypted: true,
                     lifetime_in_secs,
                 };
