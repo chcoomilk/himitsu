@@ -277,7 +277,7 @@ const TokenSetting = () => {
         <OverlayTrigger show={showHelp ? undefined : showHelp} placement="auto" rootClose={true} overlay={(p) => (
           <Tooltip id="accessTokenTooltipInfo" {...p}>
             This is your access token <span className="text-decoration-underline">solely</span>
-            {" "} for granting access to delete the notes you've created
+            {" "} for granting access to delete the notes you've created. Token will clean out bad ids (nonexistent) periodically.
           </Tooltip>
         )}>
           <Button size="sm" variant="outline-light" onClick={() => setShowHelp(p => (!p))}>{showHelp ? <i className="bi bi-question-lg" /> : <i className="bi bi-x" />}</Button>
