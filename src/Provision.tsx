@@ -12,7 +12,7 @@ import { toast_alert_opts } from "./utils/functions/unwrap";
 import { local_storage } from "./utils/functions";
 import { patch_token } from "./queries";
 
-type AppDefinitions = {
+type AppDefinition = {
   children: React.ReactNode,
   appSettings: AppSetting,
   // setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
@@ -36,7 +36,7 @@ const queryClient = new QueryClient({
   }
 });
 
-const ContextCoupler = ({ appSettings, children }: AppDefinitions) => {
+const ContextCoupler = ({ appSettings, children }: AppDefinition) => {
   const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
     onOfflineReady: () => console.log("sw is installed for offline use"),
     onRegisterError: (e) => console.log("registration error!", e),
