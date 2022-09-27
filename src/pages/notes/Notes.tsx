@@ -88,6 +88,8 @@ const Notes = () => {
         if (nextVal.length !== limit) return undefined;
         return pages.length * limit;
       },
+      staleTime: 0,
+      cacheTime: 0,
     }
   );
 

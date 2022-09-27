@@ -66,9 +66,24 @@ const TokenSetting = () => {
     return () => clearTimeout(t);
   }, [combineToken.availableToSubmit]);
 
+  useEffect(() => {
+    let t: NodeJS.Timeout;
+    if (replaceAccessToken.success) {
+      t = setTimeout(() => {
+        setReplaceAccessToken(p => ({
+          ...p,
+          success: false,
+        }));
+      }, 3000);
+    }
+    return () => clearTimeout(t);
+  }, [replaceAccessToken.success]);
+
   const combineTokenForm = useForm<CombineTokenFields>({
-    mode: "onBlur",
+    mode: "all",
   });
+
+  const toastInvalidJWT = () => toast.error("Invalid JWT token");
 
   const submitCombineToken = async (data: CombineTokenFields) => {
     if (data.firstToken === data.secondToken) {
@@ -93,9 +108,7 @@ const TokenSetting = () => {
     }
   };
 
-  const toastInvalidJWT = () => toast.error("Invalid JWT token");
-
-  const handleReplace = async () => {
+  const submitReplaceToken = async () => {
     setReplaceAccessToken(p => ({ ...p, loading: true, error: undefined }));
     if (replaceAccessToken.value) {
       if (replaceAccessToken.value === currentToken) {
@@ -112,7 +125,7 @@ const TokenSetting = () => {
           setReplaceAccessToken(p => ({ ...p, loading: false, success: true, value: "" }));
         } else {
           setReplaceAccessToken(p => ({ ...p, loading: false }));
-          setReplaceAccessToken(p => ({ ...p, error: "Replacement unsuccessful, invalid token", loading: false }));
+          setReplaceAccessToken(p => ({ ...p, error: "Replacement unsuccessful", loading: false }));
         }
       } catch {
         toastInvalidJWT();
@@ -173,7 +186,20 @@ const TokenSetting = () => {
               <Form.Label>First Token</Form.Label>
               <InputGroup hasValidation className="mb-3">
                 <Form.Control
-                  {...combineTokenForm.register("firstToken")}
+                  {...combineTokenForm.register("firstToken", {
+                    required: "token to replace with is required",
+                    validate: {
+                      isJwt: (v) => {
+                        try {
+                          jwtDecode(v);
+                        } catch (error) {
+                          console.log(error);
+                        }
+
+                        return undefined;
+                      }
+                    }
+                  })}
                   isInvalid={combineTokenForm.formState.touchedFields.firstToken && !!combineTokenForm.formState.errors.firstToken}
                   style={{ zIndex: !!combineTokenForm.formState.errors.firstToken ? 3 : 2, }}
                 />
@@ -196,11 +222,9 @@ const TokenSetting = () => {
                     validate: {
                       isJwt: (v) => {
                         try {
-
                           jwtDecode(v);
                         } catch (error) {
                           console.log(error);
-
                         }
 
                         return undefined;
@@ -233,30 +257,32 @@ const TokenSetting = () => {
         </Form>
       </Modal>
 
-      <OverlayTrigger show={showHelp ? undefined : showHelp} placement="auto" rootClose={true} overlay={(p) => (
-        <Tooltip id="accessTokenTooltipInfo" {...p}>
-          This is your access token <span className="text-decoration-underline">solely</span>
-          {" "} for granting access to delete the notes you've created
-        </Tooltip>
-      )}>
-        {({ ref, ...t }) => (
-          <InputGroup>
-            <Form.Control
-              value={currentToken}
-              readOnly
-              isValid={replaceAccessToken.success}
-            />
-            <Button
-              size="sm"
-              variant="outline-light"
-              disabled={replaceAccessToken.loading}
-              onClick={() => setReplaceAccessToken(p => ({ ...p, active: !p.active }))}
-            ><i className={replaceAccessToken.active ? "bi bi-layers" : "bi bi-layers-half"} /></Button>
-            <CopyButton size="sm" copy_value={currentToken} />
-            <Button size="sm" variant="outline-light" ref={ref} {...t} onClick={() => setShowHelp(p => (!p))}>{showHelp ? <i className="bi bi-question-lg" /> : <i className="bi bi-x" />}</Button>
-          </InputGroup>
-        )}
-      </OverlayTrigger>
+      <InputGroup>
+        <Form.Control
+          title="Your token here"
+          value={currentToken}
+          readOnly
+          isValid={replaceAccessToken.success}
+        />
+        <Button
+          title="Replace Token"
+          size="sm"
+          variant="outline-light"
+          disabled={replaceAccessToken.loading}
+          onClick={() => setReplaceAccessToken(p => ({ ...p, active: !p.active }))}
+        >
+          <i className={replaceAccessToken.active ? "bi bi-layers" : "bi bi-layers-half"} />
+        </Button>
+        <CopyButton size="sm" copy_value={currentToken} />
+        <OverlayTrigger show={showHelp ? undefined : showHelp} placement="auto" rootClose={true} overlay={(p) => (
+          <Tooltip id="accessTokenTooltipInfo" {...p}>
+            This is your access token <span className="text-decoration-underline">solely</span>
+            {" "} for granting access to delete the notes you've created
+          </Tooltip>
+        )}>
+          <Button size="sm" variant="outline-light" onClick={() => setShowHelp(p => (!p))}>{showHelp ? <i className="bi bi-question-lg" /> : <i className="bi bi-x" />}</Button>
+        </OverlayTrigger>
+      </InputGroup>
       <Collapse in={replaceAccessToken.active}>
         <InputGroup hasValidation className="mt-2">
           <Form.Control
@@ -271,7 +297,7 @@ const TokenSetting = () => {
           <Button
             variant={replaceAccessToken.loading ? "success" : "outline-success"}
             disabled={replaceAccessToken.loading}
-            onClick={handleReplace}
+            onClick={submitReplaceToken}
           >
             {
               replaceAccessToken.loading

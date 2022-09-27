@@ -9,10 +9,13 @@ const Navigation = () => {
         <Navbar.Brand className="py-0 m-0">
           <Nav>
             <Nav.Link
+              title="himitsu"
               aria-label="home"
               className="py-0 fs-3"
               as={NavLink}
               to={PATHS.home}
+              active={false}
+              end
             >
               <i className="bi bi-hash"></i>
             </Nav.Link>
@@ -23,6 +26,7 @@ const Navigation = () => {
           <Nav className="me-auto" />
           <Nav>
             <Nav.Link
+              title="Saved Notes"
               aria-label="saved notes"
               className="py-0 fs-3"
               as={NavLink}
@@ -33,6 +37,7 @@ const Navigation = () => {
           </Nav>
           <Nav className="ms-3">
             <Nav.Link
+              title="Settings"
               aria-label="settings"
               className="py-0 fs-3"
               as={NavLink}

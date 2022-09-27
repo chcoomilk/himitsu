@@ -6,13 +6,13 @@ import cryptojs from "crypto-js";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import toast from "react-hot-toast";
 
-import PassphraseModal from "../../components/passphrase/PassphraseModal";
+import PassphraseModal from "../../components/modal/PassphraseModal";
 import { DefaultValues, PATHS } from "../../utils/constants";
 import { NoteInfo, EncryptionMethod, Note as NoteT, note_id } from "../../utils/types";
 import { get_note, get_note_info, delete_note } from "../../queries";
 import { generate_face, into_readable_datetime, local_storage, truncate_string, unwrap } from "../../utils/functions";
 import { useTitle } from "../../custom-hooks";
-import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
+import SimpleConfirmationModal from "../../components/modal/SimpleConfirmationModal";
 import { is_note_id } from "../../utils/functions/is";
 
 interface PasswordModalState {

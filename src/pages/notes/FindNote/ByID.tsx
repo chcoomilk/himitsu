@@ -1,6 +1,6 @@
 import { Button, Form, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import PassphraseInputGroup from "../../../components/passphrase/PassphraseInputGroup";
+import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import { Props } from "./utils";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";

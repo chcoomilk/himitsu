@@ -20,6 +20,7 @@ const CopyButton = ({ copy_value: value, size }: Props) => {
   return (
     <>
       <Button
+        title="Copy value"
         size={size}
         variant="outline-light"
         id="button-addon2"

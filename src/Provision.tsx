@@ -8,10 +8,9 @@ import { AppSetting } from "./utils/types";
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import toast from "react-hot-toast";
 import { Alert } from "react-bootstrap";
-import unwrap_default, { toast_alert_opts } from "./utils/functions/unwrap";
+import { toast_alert_opts } from "./utils/functions/unwrap";
 import { local_storage } from "./utils/functions";
-import { BASE_URL } from "./utils/constants";
-import jwtDecode from "jwt-decode";
+import { patch_token } from "./queries";
 
 type AppDefinitions = {
   children: React.ReactNode,
@@ -85,35 +84,7 @@ const ContextCoupler = ({ appSettings, children }: AppDefinitions) => {
         }
 
         if (schedule <= new Date()) {
-          fetch(BASE_URL + "/token", {
-            method: "PATCH",
-            mode: "cors",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              token,
-            })
-          }).then(resp => (resp.json().then(res => {
-            let is_token: boolean;
-            try {
-              jwtDecode(res.token);
-              is_token = true;
-            } catch (error) {
-              is_token = false;
-            }
-
-            if (is_token) {
-              local_storage.set("token", res.token);
-            } else {
-              // client's outdated
-              unwrap_default("clientError");
-            }
-          }).catch(() => (unwrap_default("clientError")))).catch(() => ("retry later"))).finally(() => {
-            let d = new Date();
-            d.setHours(d.getHours() + 2);
-            localStorage.setItem("refresh_token_timestamp", d.toString());
-          });
+          patch_token({ token });
         }
       }
     }, 30000);

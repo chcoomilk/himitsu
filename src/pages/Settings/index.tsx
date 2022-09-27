@@ -5,7 +5,7 @@ import AppContext from "../../utils/app_state_context";
 import { local_storage } from "../../utils/functions";
 import { Link } from "react-router-dom";
 import { DefaultValues, PATHS } from "../../utils/constants";
-import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
+import SimpleConfirmationModal from "../../components/modal/SimpleConfirmationModal";
 import DefaultEncryptionOptions from "./DefaultEncryptionOptions";
 import ThemeOptions from "./ThemeOptions";
 import TokenSetting from "./TokenSetting";

@@ -4,6 +4,7 @@ export { default as get_note_info } from "./get_note_info";
 export { default as post_note } from "./post_note";
 export { default as validate_token } from "./post_token_validation";
 export { default as combine_token } from "./put_two_token";
+export { default as patch_token } from "./patch_token";
 
 import { ErrorKind } from "../utils/types";
 
