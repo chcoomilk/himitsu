@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Form, FormControl, InputGroup, Modal, Stack } from "react-bootstrap";
 import CopyButton from "../button/CopyButton";
-import PassphraseInputGroup from "../passphrase/PassphraseInputGroup";
+import PassphraseInputGroup from "../input/PassphraseInputGroup";
 import { PATHS } from "../../utils/constants";
 import { NoteInfo } from "../../utils/types";
 import { into_readable_datetime } from "../../utils/functions";

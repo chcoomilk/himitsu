@@ -1,18 +1,12 @@
+export { default as delete_note } from "./delete_note";
+export { default as get_note } from "./get_note";
+export { default as get_note_info } from "./get_note_info";
+export { default as post_note } from "./post_note";
+export { default as validate_token } from "./post_token_validation";
+export { default as combine_token } from "./put_two_token";
+export { default as patch_token } from "./patch_token";
+
 import { ErrorKind } from "../utils/types";
-import delete_note from "./delete_note";
-import get_note from "./get_note";
-import get_note_info from "./get_note_info";
-import post_note from "./post_note";
-import validate_token from "./post_token_validation";
-import combine_token from "./put_two_token";
-export {
-    delete_note,
-    get_note,
-    get_note_info,
-    post_note,
-    validate_token,
-    combine_token
-};
 
 export interface Result<T> {
     data: T,

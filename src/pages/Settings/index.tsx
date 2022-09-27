@@ -5,8 +5,8 @@ import AppContext from "../../utils/app_state_context";
 import { local_storage } from "../../utils/functions";
 import { Link } from "react-router-dom";
 import { DefaultValues, PATHS } from "../../utils/constants";
-import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
-import EncryptionOptions from "./EncryptionOptions";
+import SimpleConfirmationModal from "../../components/modal/SimpleConfirmationModal";
+import DefaultEncryptionOptions from "./DefaultEncryptionOptions";
 import ThemeOptions from "./ThemeOptions";
 import TokenSetting from "./TokenSetting";
 import SettingsContext from "./context";
@@ -30,7 +30,6 @@ const Settings = ({ setAppSettings }: Props) => {
         history: val,
       };
 
-      // localStorage.setItem("settings", JSON.stringify(settings));
       local_storage.set("settings", settings);
       return settings;
     });
@@ -127,7 +126,7 @@ const Settings = ({ setAppSettings }: Props) => {
                 Default Encryption
               </Form.Label>
               <Col lg="6">
-                <EncryptionOptions />
+                <DefaultEncryptionOptions />
               </Col>
             </Form.Group>
 
@@ -165,8 +164,8 @@ const Settings = ({ setAppSettings }: Props) => {
                     {" "}
                     Project's backend
                   </a>
-
                 </div>
+
                 <div>
                   <a target="_blank" rel="noreferrer" href="https://github.com/chcoomilk/himitsu" className="link-secondary text-decoration-none">
                     <i className="bi bi-github" />

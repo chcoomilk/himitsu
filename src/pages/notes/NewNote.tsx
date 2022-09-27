@@ -1,7 +1,7 @@
 import { Controller, useForm } from "react-hook-form";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Form, Row, Col, DropdownButton, Dropdown, InputGroup, FormControl, Stack, Spinner, Modal } from "react-bootstrap";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from "react-query";
 import { capitalCase } from "change-case"
 
 import NewNoteModal from "../../components/note/NewNoteModal";
@@ -10,8 +10,8 @@ import { createEncryptionMethodKeys, EncryptionMethod, NoteInfo } from "../../ut
 import { post_note } from "../../queries";
 import { useTitle } from "../../custom-hooks";
 import { local_storage } from "../../utils/functions";
-import PassphraseInputGroup from "../../components/passphrase/PassphraseInputGroup";
-import SimpleConfirmationModal from "../../components/SimpleConfirmationModal";
+import PassphraseInputGroup from "../../components/input/PassphraseInputGroup";
+import SimpleConfirmationModal from "../../components/modal/SimpleConfirmationModal";
 import unwrap_default from "../../utils/functions/unwrap";
 
 type Fields = {
@@ -48,7 +48,6 @@ const NewNote = () => {
   });
   useTitle("New Note");
   const { mutateAsync } = useMutation(post_note);
-  const queryClient = useQueryClient();
 
   const form = useForm<Fields>({
     mode: "all",
@@ -62,7 +61,12 @@ const NewNote = () => {
       }
     },
   });
+
   const watchOut = form.watch();
+
+  useEffect(() => {
+    form.trigger("duration.second");
+  }, [form, watchOut.duration?.day, watchOut.duration?.hour, watchOut.duration?.minute]);
 
   const resetForm = (skipExtra?: boolean) => {
     skipExtra ? (() => {
@@ -80,6 +84,8 @@ const NewNote = () => {
   };
 
   const submit = async (form_data: Fields) => {
+    console.log(form_data);
+
     let duration_in_secs: number = form_data.duration.second || 0;
     if (form_data.duration.day) {
       duration_in_secs += form_data.duration.day * 86400;
@@ -128,8 +134,6 @@ const NewNote = () => {
                 if (t.length > 1) qk.push(t);
               }
             }
-
-            queryClient.refetchQueries(["local_notes"], { active: true, queryKey: qk });
           }
 
           resetForm(true);
@@ -303,7 +307,7 @@ const NewNote = () => {
                 type="text"
                 placeholder="Enter note's title here"
                 {...form.register("title", {
-                  min: { value: 4, message: "title is too short" },
+                  minLength: { value: 4, message: "title is too short" },
                 })}
                 isInvalid={form.formState.touchedFields.title && !!form.formState.errors.title}
                 autoComplete="off"
@@ -390,6 +394,7 @@ const NewNote = () => {
                   placeholder="Days"
                   {...form.register("duration.day", {
                     validate: {
+                      type: v => isNaN(+v) ? "second should represent a number" : undefined,
                       gte: v => +v >= 0 || "day should be greater than 0",
                     }
                   })}
@@ -403,6 +408,7 @@ const NewNote = () => {
                   placeholder="Hrs"
                   {...form.register("duration.hour", {
                     validate: {
+                      type: v => isNaN(+v) ? "second should represent a number" : undefined,
                       gte: v => +v >= 0 || "hour should be greater than 0",
                     }
                   })}
@@ -416,9 +422,9 @@ const NewNote = () => {
                   placeholder="Mins"
                   {...form.register("duration.minute", {
                     validate: {
+                      type: v => isNaN(+v) ? "second should represent a number" : undefined,
                       gte: v => +v >= 0 || "minute should be greater than 0",
                     },
-                    onBlur: () => form.trigger("duration.second")
                   })}
                   isInvalid={form.formState.touchedFields.duration?.minute && !!form.formState.errors.duration?.minute}
                   autoComplete="off"
@@ -429,12 +435,15 @@ const NewNote = () => {
                   type="text"
                   placeholder="Secs"
                   {...form.register("duration.second", {
+                    validate: {
+                      type: v => isNaN(+v) ? "second should represent a number" : undefined,
+                    },
                     min: {
                       value: !!(form.getValues("duration.day")
                         + form.getValues("duration.hour")
                         + form.getValues("duration.minute")
                       ) ? 0 : 30,
-                      message: "second should be greater than 30"
+                      message: "second should be greater or equal 30"
                     },
                   })}
                   isInvalid={form.formState.touchedFields.duration?.second && !!form.formState.errors.duration?.second}

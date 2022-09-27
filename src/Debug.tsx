@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 import { Alert as AlertT, NoteInfo } from "./utils/types";
 import { unwrap } from "./utils/functions";
-import SimpleConfirmationModal from "./components/SimpleConfirmationModal";
+import SimpleConfirmationModal from "./components/modal/SimpleConfirmationModal";
 import NewNoteModal from "./components/note/NewNoteModal";
 
 type AlertKeys = keyof AlertT;

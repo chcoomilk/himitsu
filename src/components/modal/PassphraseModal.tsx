@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Form, Modal, Button } from "react-bootstrap";
-import PassphraseInputGroup from "./PassphraseInputGroup";
+import PassphraseInputGroup from "../input/PassphraseInputGroup";
 
 interface Props {
   title?: string,

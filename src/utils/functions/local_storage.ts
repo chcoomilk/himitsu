@@ -72,7 +72,7 @@ function get(key: LocalStorageItemKeys): LocalStorageItemKind | null {
         console.error(error);
         toast.error(`Invalid item in ${key}`);
         let prefix = "_trashed-error";
-        console.warn("saved notes might get reset, saving last known (invalid) item in local storage prefixed " + prefix);
+        console.warn("item might get reset, saving last known (invalid) item in local storage prefixed " + prefix);
         console.log("trying to save\n", saved_item);
         console.log("...");
         try {
@@ -116,47 +116,3 @@ const local_storage = {
 }
 
 export default local_storage;
-
-// class SafeLocalStorage {
-//     private readonly kind: Save;
-//     constructor(kind: Save) {
-//         this.kind = kind;
-//     }
-
-//     get(): NoteInfo;
-//     get(): AppSetting;
-//     get() {
-//         switch (this.kind) {
-//             case Save.Note:
-//                 let item: NoteInfo = {
-//                     id: 0,
-//                     backend_encryption: false,
-//                     created_at: { nanos_since_epoch: 0, secs_since_epoch: 0 },
-//                     expired_at: { nanos_since_epoch: 0, secs_since_epoch: 0 },
-//                     frontend_encryption: false,
-//                     title: ""
-//                 };
-//                 return item;
-
-//             case Save.Settings:
-//                 return DefaultValue.settings;
-//         }
-//     }
-// }
-
-// let k = new SafeLocalStorage(Save.Note).get();
-
-// enum LocalStorageItems {
-//     Note,
-//     NotesHistory,
-//     Settings,
-//     Theme,
-// }
-// type LocalStorageItems = {
-//     notes_history: NoteInfo[],
-//     settings: AppSetting,
-//     last_saved_note: NoteInfo,
-// };
-// type KeyOfType<LocalStorageItems, V> = keyof {
-//     [P in keyof LocalStorageItems as LocalStorageItems[P] extends V? P: never]: any
-// }
