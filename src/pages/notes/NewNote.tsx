@@ -394,6 +394,7 @@ const NewNote = () => {
                   placeholder="Days"
                   {...form.register("duration.day", {
                     validate: {
+                      type: v => isNaN(+v) ? "second should represent a number" : undefined,
                       gte: v => +v >= 0 || "day should be greater than 0",
                     }
                   })}
@@ -407,6 +408,7 @@ const NewNote = () => {
                   placeholder="Hrs"
                   {...form.register("duration.hour", {
                     validate: {
+                      type: v => isNaN(+v) ? "second should represent a number" : undefined,
                       gte: v => +v >= 0 || "hour should be greater than 0",
                     }
                   })}
@@ -420,6 +422,7 @@ const NewNote = () => {
                   placeholder="Mins"
                   {...form.register("duration.minute", {
                     validate: {
+                      type: v => isNaN(+v) ? "second should represent a number" : undefined,
                       gte: v => +v >= 0 || "minute should be greater than 0",
                     },
                   })}
