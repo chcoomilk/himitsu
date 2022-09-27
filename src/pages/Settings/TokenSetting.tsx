@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import CopyButton from "../../components/button/CopyButton";
 import { validate_token, combine_token } from "../../queries";
 import { PATHS } from "../../utils/constants";
-import { into_readable_datetime, local_storage } from "../../utils/functions";
+import { generate_face, into_readable_datetime, local_storage } from "../../utils/functions";
 import { JWTToken } from "../../utils/types";
 import unwrap_default from "../../utils/functions/unwrap";
 import { useForm } from "react-hook-form";
@@ -162,17 +162,28 @@ const TokenSetting = () => {
         </Modal.Header>
         <Modal.Body>
           Below, you can see which notes you have access to modify
-          <ul style={{ paddingLeft: "1.5rem", paddingRight: "1rem" }}>
-            {viewToken.content?.ids.map(n => (
-              <li key={n[0].toString()}>
-                <Link to={PATHS.note_detail + "/" + encodeURIComponent(n[0].toString())}>
-                  {n[0].toString()}
-                </Link>
-                {" / "}
-                {into_readable_datetime(n[1].secs_since_epoch)}
-              </li>
-            ))}
-          </ul>
+          {
+            viewToken.content && viewToken.content.ids.length
+              ? <ul style={{ paddingLeft: "1.5rem", paddingRight: "1rem" }}>
+                {viewToken.content.ids.map(n => (
+                  <li key={n[0].toString()}>
+                    <Link to={PATHS.note_detail + "/" + encodeURIComponent(n[0].toString())}>
+                      {n[0].toString()}
+                    </Link>
+                    {" / "}
+                    {into_readable_datetime(n[1].secs_since_epoch)}
+                  </li>
+                ))}
+              </ul>
+              : <div className="text-center my-4">
+                <p className="fs-2">
+                  {generate_face()}
+                </p>
+                <p>
+                  Nothing here...
+                </p>
+              </div>
+          }
         </Modal.Body>
       </Modal>
 
@@ -302,11 +313,10 @@ const TokenSetting = () => {
             {
               replaceAccessToken.loading
                 ? <Spinner size="sm" animation="border" />
-                : <i className="bi bi-check-lg" />
+                : <i className="bi bi-send" />
             }
           </Button>
           <Form.Control.Feedback type="invalid" tooltip>{replaceAccessToken.error}</Form.Control.Feedback>
-          <Form.Control.Feedback type="valid" tooltip>Token successfully replaced!</Form.Control.Feedback>
         </InputGroup>
       </Collapse>
       <Stack className="mt-2" direction="horizontal" gap={2}>
