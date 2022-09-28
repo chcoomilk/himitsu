@@ -3,7 +3,7 @@ import { generate_face } from "../utils/functions";
 
 const useTitle = (initialTitle: string) => {
   const [title, setTitle] = useState(initialTitle);
-  const [defaultTitle] = useState(document.title);
+  const [defaultTitle] = useState("himitsu");
 
   useEffect(() => {
     if (title.trim().replace(" ", () => { return ""; })) {
