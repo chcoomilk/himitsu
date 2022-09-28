@@ -73,7 +73,7 @@ export default async function post_note({
             let fe = false;
             if (double_encrypt) {
                 try {
-                    content = AES.encrypt(content, double_encrypt).toString();
+                    content = AES.encrypt(JSON.stringify(content), double_encrypt).toString();
                     fe = true;
                 } catch (error) {
                     throw error;
@@ -93,7 +93,7 @@ export default async function post_note({
                 request = {
                     id: custom_id,
                     title,
-                    content: AES.encrypt(content, passphrase).toString(),
+                    content: AES.encrypt(JSON.stringify(content), passphrase).toString(),
                     is_currently_encrypted: true,
                     lifetime_in_secs,
                 };

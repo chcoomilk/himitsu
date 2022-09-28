@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { Link, Location, useLocation, useNavigate, useParams } from "react-router-dom";
-import cryptojs from "crypto-js";
+import { AES, enc as Encoder } from "crypto-js";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import toast from "react-hot-toast";
 
@@ -244,7 +244,7 @@ const Note = () => {
   // function to decrypt the note if frontend encryption is true
   const try_decrypt = useCallback((note: NoteT, passphrase: string): void => {
     try {
-      let content = cryptojs.AES.decrypt(note.content, passphrase).toString(cryptojs.enc.Utf8);
+      let content: string = JSON.parse(AES.decrypt(note.content, passphrase).toString(Encoder.Utf8));
       if (content) {
         setModalDecrypt({
           passphrase: null,
@@ -281,7 +281,7 @@ const Note = () => {
             Decryption failed
           </Alert.Heading>
           <p>
-            This should not had happened, check log for details
+            This was not supposed to happen, check log for details
           </p>
         </Alert>
       ), { duration: Infinity, ...unwrap.toast_alert_opts });
