@@ -37,7 +37,7 @@ const is_state_valid = (state: State | unknown): state is State => {
   return (state !== null && (state as State).passphrase !== undefined);
 }
 
-// spaghetti codes, o' spaghetti codes
+// lo' and behold! spaghetti codes, o' spaghetti codes
 const Note = () => {
   const { id: unchecked_id } = useParams();
   const { state: unchecked_state }: ModifiedLocation = useLocation();
@@ -170,7 +170,7 @@ const Note = () => {
   useEffect(() => {
     if (is_info_error) {
       unwrap.default("serverError");
-      console.error("h_error: ", info_error);
+      console.error("server_error: ", info_error);
       setTitle(generate_face());
     }
   }, [is_info_error, setTitle, info_error]);
@@ -188,7 +188,6 @@ const Note = () => {
           ...DefaultValues.note,
           encryption,
           title: note_info.data.title,
-          content: generate_face(),
         });
 
         if (note_info.data.backend_encryption) {
@@ -243,51 +242,54 @@ const Note = () => {
 
   // function to decrypt the note if frontend encryption is true
   const try_decrypt = useCallback((note: NoteT, passphrase: string): void => {
-    try {
-      let content: string = JSON.parse(AES.decrypt(note.content, passphrase).toString(Encoder.Utf8));
-      if (content) {
-        setModalDecrypt({
-          passphrase: null,
-          showModal: false,
-        });
-        setNote({
-          ...note,
-          passphrase,
-          decrypted: true,
-          content
-        });
-      } else {
+    if (note.content) {
+      try {
+        let content: string = AES.decrypt(note.content, passphrase).toString(Encoder.Utf8);
+        if (content) {
+          content = JSON.parse(content);
+          setModalDecrypt({
+            passphrase: null,
+            showModal: false,
+          });
+          setNote({
+            ...note,
+            passphrase,
+            decrypted: true,
+            content
+          });
+        } else {
+          toast.custom(t => (
+            <Alert show={t.visible} variant="danger" dismissible onClose={() => toast.dismiss(t.id)}>
+              <Alert.Heading>
+                <i className="bi bi-x"></i> {" "}
+                Decryption failed
+              </Alert.Heading>
+              <p>
+                This is because the decryption function used with your passphrase returned an empty string.
+              </p>
+            </Alert>
+          ), { duration: 6000, ...unwrap.toast_alert_opts });
+          setModalDecrypt({
+            passphrase: null,
+            showModal: true,
+          });
+        }
+      } catch (error) {
         toast.custom(t => (
-          <Alert show={t.visible} variant="danger" dismissible onClose={() => toast.dismiss(t.id)}>
+          <Alert show={t.visible} variant="secondary" dismissible onClose={() => toast.dismiss(t.id)}>
             <Alert.Heading>
               <i className="bi bi-x"></i> {" "}
-              Wrong passphrase?
+              Decryption failed
             </Alert.Heading>
             <p>
-              Content was empty when decrypted with current passphrase.
+              This was not supposed to happen, check log for details
             </p>
           </Alert>
-        ), { duration: 6000, ...unwrap.toast_alert_opts });
-        setModalDecrypt({
-          passphrase: null,
-          showModal: true,
-        });
+        ), { duration: Infinity, ...unwrap.toast_alert_opts });
+        console.error("decryption_error: ", error);
       }
-    } catch (error) {
-      toast.custom(t => (
-        <Alert show={t.visible} variant="secondary" dismissible onClose={() => toast.dismiss(t.id)}>
-          <Alert.Heading>
-            <i className="bi bi-x"></i> {" "}
-            Decryption failed
-          </Alert.Heading>
-          <p>
-            This was not supposed to happen, check log for details
-          </p>
-        </Alert>
-      ), { duration: Infinity, ...unwrap.toast_alert_opts });
-      console.error("h_error: ", error);
     }
-  }, []);
+  }, [setNote, setModalDecrypt]);
 
   // try to decrypt note on backend from modal
   useEffect(() => {
@@ -298,14 +300,14 @@ const Note = () => {
 
   // try to decrypt note on frontend from modal
   useEffect(() => {
-    if (modalDecrypt.passphrase !== null && note && !note.decrypted) {
+    if (modalDecrypt.passphrase !== null && note && note.content && !note.decrypted) {
       try_decrypt(note, modalDecrypt.passphrase);
     }
   }, [note, modalDecrypt.passphrase, try_decrypt]);
 
   // try to decrypt note on frontend
   useEffect(() => {
-    if (isSuccess && note && !note.decrypted) {
+    if (isSuccess && note && note.content && !note.decrypted) {
       if (state.passphrase) {
         try_decrypt(note, state.passphrase);
       } else {
@@ -493,7 +495,7 @@ const Note = () => {
                       as="textarea"
                       type="text"
                       name="expires"
-                      value={note ? note.content : DefaultValues.note.content}
+                      value={note && note.content ? note.content : generate_face()}
                       rows={(() => {
                         // const len = note?.content.length;
                         // const max_until_break = 4;
