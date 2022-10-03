@@ -7,10 +7,10 @@ import { EncryptionMethod, NoteInfo } from "../utils/types";
 import { local_storage, unwrap } from "../utils/functions";
 
 interface NewNote {
-    double_encrypt?: string,
-    discoverable?: boolean,
-    custom_id?: string,
-    title?: string,
+    double_encrypt: string,
+    discoverable: boolean,
+    custom_id: string,
+    title: string,
     encryption: EncryptionMethod,
     content: string,
     passphrase: string,
@@ -42,7 +42,15 @@ export default async function post_note({
     lifetime_in_secs
 }: NewNote): Promise<Result<NoteInfo>> {
     let url = BASE_URL + "/notes";
-    let request: RequestBody;
+    let request: RequestBody = {
+        content: "",
+        discoverable: undefined,
+        id: undefined,
+        is_currently_encrypted: undefined,
+        lifetime_in_secs: undefined,
+        passphrase: undefined,
+        title: undefined,
+    };
     let data: ResponseData = {
         token: "",
         id: "",

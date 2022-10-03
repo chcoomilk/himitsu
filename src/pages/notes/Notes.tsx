@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
-// import { Container, Pagination } from "react-bootstrap";
 import { QueryFunctionContext, QueryKey, useInfiniteQuery, } from "react-query";
 import { useSearchParams } from "react-router-dom";
 import NotesTable from "../../components/note/NotesTable";

@@ -84,7 +84,7 @@ const NewNote = () => {
   };
 
   const submit = async (form_data: Fields) => {
-    let duration_in_secs: number = form_data.duration.second || 0;
+    let duration_in_secs: number | undefined = form_data.duration.second;
     if (form_data.duration.day) {
       duration_in_secs += form_data.duration.day * 86400;
     }
@@ -94,16 +94,19 @@ const NewNote = () => {
     if (form_data.duration.minute) {
       duration_in_secs += form_data.duration.minute * 60;
     }
+    if (duration_in_secs || isNaN(duration_in_secs)) {
+      duration_in_secs = undefined;
+    }
 
-    await mutateAsync({
-      discoverable: form_data.extra.encryption === EncryptionMethod.NoEncryption ? form_data.extra.discoverable : undefined,
-      custom_id: form_data.custom_id === null || form_data.custom_id === "" ? undefined : form_data.custom_id,
-      double_encrypt: form_data.extra.double_encryption.enable ? form_data.extra.double_encryption.passphrase : undefined,
+    mutateAsync({
+      discoverable: form_data.extra.discoverable,
+      custom_id: form_data.custom_id,
+      double_encrypt: form_data.extra.double_encryption.passphrase,
       encryption: form_data.extra.encryption,
-      title: form_data.title === "" || form_data.title === null ? undefined : form_data.title,
+      title: form_data.title,
       content: form_data.content,
-      lifetime_in_secs: duration_in_secs === 0 ? undefined : duration_in_secs,
-      passphrase: form_data.passphrase || "",
+      lifetime_in_secs: duration_in_secs,
+      passphrase: form_data.passphrase,
     })
       .then(result => {
         const { data, error } = result;
@@ -368,8 +371,8 @@ const NewNote = () => {
                   type="text"
                   placeholder="Enter note's custom ID here"
                   {...form.register("custom_id", {
-                    max: { value: 32, message: "custom id is too long" },
-                    min: { value: 1, message: "custom id is invalid" },
+                    maxLength: { value: 32, message: "custom id is too long" },
+                    minLength: { value: 1, message: "custom id is invalid" },
                   })}
                   isInvalid={form.formState.touchedFields.custom_id && !!form.formState.errors.custom_id}
                   autoComplete="off"
