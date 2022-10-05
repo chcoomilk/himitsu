@@ -42,15 +42,7 @@ export default async function post_note({
     lifetime_in_secs
 }: NewNote): Promise<Result<NoteInfo>> {
     let url = BASE_URL + "/notes";
-    let request: RequestBody = {
-        content: "",
-        discoverable: undefined,
-        id: undefined,
-        is_currently_encrypted: undefined,
-        lifetime_in_secs: undefined,
-        passphrase: undefined,
-        title: undefined,
-    };
+    let request: RequestBody;
     let data: ResponseData = {
         token: "",
         id: "",
@@ -67,14 +59,16 @@ export default async function post_note({
         frontend_encryption: false,
     };
 
+    if (!content) throw "clientError";
+
     switch (encryption) {
         case EncryptionMethod.NoEncryption:
             request = {
-                discoverable,
+                discoverable: discoverable || undefined,
                 id: custom_id,
-                title,
+                title: title || undefined,
                 content,
-                lifetime_in_secs,
+                lifetime_in_secs: lifetime_in_secs || undefined,
             };
             break;
         case EncryptionMethod.BackendEncryption:
@@ -89,21 +83,21 @@ export default async function post_note({
             }
             request = {
                 id: custom_id,
-                title,
+                title: title || undefined,
                 content,
-                passphrase,
-                is_currently_encrypted: fe,
-                lifetime_in_secs,
+                passphrase: passphrase || undefined,
+                is_currently_encrypted: fe || undefined,
+                lifetime_in_secs: lifetime_in_secs || undefined,
             };
             break;
         case EncryptionMethod.FrontendEncryption:
             try {
                 request = {
-                    id: custom_id,
-                    title,
+                    id: custom_id || undefined,
+                    title: title || undefined,
                     content: AES.encrypt(JSON.stringify(content), passphrase).toString(),
                     is_currently_encrypted: true,
-                    lifetime_in_secs,
+                    lifetime_in_secs: lifetime_in_secs || undefined,
                 };
             } catch (error) {
                 throw error;
