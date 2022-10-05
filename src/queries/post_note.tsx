@@ -141,7 +141,7 @@ export default async function post_note({
                                 Taken ID
                             </Alert.Heading>
                             <p>
-                                Custom ID has been taken, please choose something else!
+                                Custom ID has been taken, please put in something else!
                             </p>
                         </Alert>
                     ), { duration: 6000, ...unwrap.toast_alert_opts });

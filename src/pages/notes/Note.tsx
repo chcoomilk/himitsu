@@ -388,7 +388,7 @@ const Note = () => {
 
       if (prev_notes) {
         if (prev_notes.find((note) => note.id === note_to_save.id)) {
-          toast("This note had already been saved before", {
+          toast("This note is already in your saved notes", {
             icon: <i className="bi bi-chevron-bar-contract"></i>
           });
 
