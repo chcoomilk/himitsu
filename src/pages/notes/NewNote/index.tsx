@@ -97,7 +97,7 @@ const NewNote = () => {
         if (!error) {
           setNoteResult({
             ...data,
-            passphrase: form_data.passphrase,
+            passphrase: form_data.extra.encryption !== EncryptionMethod.NoEncryption ? form_data.passphrase : undefined,
           });
           local_storage.set("last_saved_note", data);
           if (appSettings.history) {

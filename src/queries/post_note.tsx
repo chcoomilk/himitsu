@@ -59,7 +59,7 @@ export default async function post_note({
         frontend_encryption: false,
     };
 
-    if (!content) throw "clientError";
+    if (!content) throw new Error("clientError");
 
     switch (encryption) {
         case EncryptionMethod.NoEncryption:
