@@ -101,7 +101,7 @@ a,
 
 .form-control:disabled {
   background-color: $input-bg-color-disabled;
-  border: var(--bs-btn-border-width) solid $input-border-color;
+  border-color: $input-border-color;
   color: $text-color-normal;
 }
 
