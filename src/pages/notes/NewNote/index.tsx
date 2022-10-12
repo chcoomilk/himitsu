@@ -64,7 +64,7 @@ const NewNote = () => {
     })() : form.reset(undefined, { keepDefaultValues: true });
   };
 
-  const submit = async (form_data: Fields) => {
+  const submit = async (form_data: Fields) => new Promise<void>((resolve) => {
     let duration_in_secs: number | undefined = form_data.duration.second;
     if (form_data.duration.day) {
       duration_in_secs += form_data.duration.day * 86400;
@@ -81,7 +81,7 @@ const NewNote = () => {
     if (!duration_in_secs || isNaN(duration_in_secs)) {
       duration_in_secs = undefined;
     }
-    console.log(duration_in_secs);
+
     mutateAsync({
       discoverable: form_data.extra.discoverable,
       custom_id: form_data.custom_id,
@@ -97,7 +97,7 @@ const NewNote = () => {
         if (!error) {
           setNoteResult({
             ...data,
-            passphrase: form_data.passphrase,
+            passphrase: form_data.extra.encryption !== EncryptionMethod.NoEncryption ? form_data.passphrase : undefined,
           });
           local_storage.set("last_saved_note", data);
           if (appSettings.history) {
@@ -128,8 +128,11 @@ const NewNote = () => {
       })
       .catch((e) => {
         console.error("error occurred: ", e);
+      })
+      .finally(() => {
+        resolve();
       });
-  };
+  });
 
   let extra_settings_group = (
     <>

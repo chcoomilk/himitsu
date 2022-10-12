@@ -29,7 +29,7 @@ const CopyButton = ({ copy_value: value, size }: Props) => {
       >
         <i className="bi bi-clipboard2-plus" />
       </Button>
-      <Overlay target={target.current} show={tooltip} placement="right">
+      <Overlay target={target.current} show={tooltip} placement="bottom-end">
         {(props) => (
           <Tooltip {...props}>
             Copied!

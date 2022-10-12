@@ -6,7 +6,7 @@ import { Fields } from "./form";
 import NewNoteDurationGroupForm from "./groups/duration";
 
 type Props = {
-  onSubmit: (form_data: Fields) => Promise<void>,
+  onSubmit: (form_data: Fields) => void,
   setModal: React.Dispatch<React.SetStateAction<{
     delete: boolean;
     extra_settings: boolean;
@@ -28,6 +28,7 @@ const NewNoteForm = ({ onSubmit: submit, setModal, extra_settings_group }: Props
               {" "}(unencrypted)
             </Form.Text>
             <Form.Control
+              disabled={form.formState.isSubmitting}
               type="text"
               placeholder="Enter note's title here"
               {...form.register("title", {
@@ -46,6 +47,7 @@ const NewNoteForm = ({ onSubmit: submit, setModal, extra_settings_group }: Props
               {` (${!watch.extra.encryption ? "unencrypted" : "encrypted"})`}
             </Form.Text>
             <Form.Control
+              disabled={form.formState.isSubmitting}
               as="textarea"
               placeholder="Enter note here"
               rows={3}
@@ -90,6 +92,7 @@ const NewNoteForm = ({ onSubmit: submit, setModal, extra_settings_group }: Props
             <Form.Label>Custom ID</Form.Label>
             <InputGroup hasValidation>
               <Form.Control
+                disabled={form.formState.isSubmitting}
                 aria-label="Custom ID"
                 type="text"
                 placeholder="Enter note's custom ID here"

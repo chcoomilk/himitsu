@@ -16,6 +16,7 @@ const NewNoteDurationGroupForm = () => {
         <Form.Group as={Col} xs={6} xl={3}>
           <InputGroup hasValidation inputMode="numeric">
             <Form.Control
+              disabled={form.formState.isSubmitting}
               aria-label="Day"
               type="text"
               placeholder="2 days"
@@ -40,6 +41,7 @@ const NewNoteDurationGroupForm = () => {
         <Form.Group as={Col} xs={6} xl={3}>
           <InputGroup hasValidation>
             <Form.Control
+              disabled={form.formState.isSubmitting}
               aria-label="Hour"
               type="text"
               placeholder="3 hours"
@@ -64,6 +66,7 @@ const NewNoteDurationGroupForm = () => {
         <Form.Group as={Col} xs={6} xl={3}>
           <InputGroup hasValidation>
             <Form.Control
+              disabled={form.formState.isSubmitting}
               aria-label="Minute"
               type="text"
               placeholder="4 mins"
@@ -88,6 +91,7 @@ const NewNoteDurationGroupForm = () => {
         <Form.Group as={Col} xs={6} xl={3}>
           <InputGroup hasValidation>
             <Form.Control
+              disabled={form.formState.isSubmitting}
               aria-label="Second"
               type="text"
               placeholder="5 secs"
