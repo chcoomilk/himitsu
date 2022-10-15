@@ -80,7 +80,7 @@ const NewNoteForm = ({ onSubmit: submit, setModal, extra_settings_group }: Props
                 }
               )}
               errorMessage={form.formState.errors.passphrase?.message}
-              disabled={watch.extra.encryption === EncryptionMethod.NoEncryption}
+              disabled={form.formState.isSubmitting || watch.extra.encryption === EncryptionMethod.NoEncryption}
               isInvalid={watch.extra.encryption !== EncryptionMethod.NoEncryption
                 ? (form.formState.touchedFields.passphrase && !!form.formState.errors.passphrase)
                 : undefined

@@ -1,6 +1,6 @@
 import { Col, Form, InputGroup, Row } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
-import UnitInput from "../../../../components/input/unit";
+import UnitInput from "../../../../components/input/Unit";
 import { Fields } from "../form";
 
 const NewNoteDurationGroupForm = () => {
