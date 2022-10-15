@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { Button, Form, FormControl, InputGroup, Modal, Stack } from "react-bootstrap";
+import { useEffect, useRef, useState } from "react";
+import { Button, ButtonGroup, Form, FormControl, InputGroup, Modal, Overlay, Stack, Tooltip } from "react-bootstrap";
 import CopyButton from "../button/CopyButton";
 import PassphraseInputGroup from "../input/PassphraseInputGroup";
 import { PATHS } from "../../utils/constants";
 import { NoteInfo } from "../../utils/types";
 import { into_readable_datetime } from "../../utils/functions";
+import { useNavigate } from "react-router-dom";
 
 type UNoteInfo = NoteInfo & {
   passphrase?: string,
@@ -17,13 +18,36 @@ interface Props {
 }
 
 const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide: doUponHide, show: _show }: Props) => {
+  const nav = useNavigate();
   const [show, setShow] = useState(true);
+  const [tooltip, setTooltip] = useState(false);
+  const target = useRef(null);
 
-  let handleClose = () => {
-    setShow(false);
+  useEffect(() => {
+    if (tooltip) {
+      let timer = setTimeout(() => setTooltip(false), 1200);
+      return () => {
+        setTooltip(false);
+        clearTimeout(timer);
+      };
+    }
+  }, [tooltip]);
+
+  const handleClose = () => {
     if (doUponHide) doUponHide();
+    setShow(false);
   };
-  const handleCopyAll = () => navigator.clipboard.writeText(`${window.location.host + PATHS.note_detail + `/${id.toString()}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
+
+  const handleCopyAll = () => {
+    navigator.clipboard.writeText(`${window.location.host + PATHS.note_detail + `/${id.toString()}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
+    setTooltip(true);
+  };
+
+  const handleGoToNote = () => {
+    if (doUponHide) doUponHide();
+    setShow(false);
+    nav(PATHS.note_detail + `/${id.toString()}`, { state: { passphrase } });
+  };
 
   return (
     <Modal show={_show !== undefined ? _show : show} onHide={handleClose} centered contentClassName="fs-4">
@@ -69,10 +93,28 @@ const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide
               />
             </InputGroup>
           </Form.Group>
-          <Stack direction="horizontal" gap={3}>
-            <Button className="ms-auto" variant="outline-warning" onClick={handleCopyAll}>Copy</Button>
-            <Button variant="primary" onClick={handleClose}>Okay</Button>
+          <Stack direction="horizontal" gap={2}>
+            <Button title="Copy all the value" className="ms-auto" variant="warning" onClick={handleCopyAll} ref={target}>Copy</Button>
+            <ButtonGroup>
+              <Button title="Close this popup modal" variant="primary" onClick={handleClose}>Okay</Button>
+              <Button
+                title="Go see the note"
+                style={{ paddingLeft: "5px", paddingRight: "5px" }}
+                variant="outline-primary"
+                href={`${window.location.host + PATHS.note_detail + `/${id.toString()}`}`}
+                onClick={handleGoToNote}
+              >
+                <i className="bi bi-caret-right-fill" />
+              </Button>
+            </ButtonGroup>
           </Stack>
+          <Overlay target={target.current} show={tooltip} placement="bottom-end">
+            {(props) => (
+              <Tooltip {...props}>
+                Copied!
+              </Tooltip>
+            )}
+          </Overlay>
         </Form>
       </Modal.Body>
     </Modal>
