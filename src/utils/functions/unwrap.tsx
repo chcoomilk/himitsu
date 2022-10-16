@@ -100,7 +100,7 @@ const unwrap_default = (key: keyof AlertT): void => {
             Not found
           </Alert.Heading>
           <p>
-            We even searched through into your mind and found nothing there.
+            Possibly expired or deleted
           </p>
         </Alert>
       ), { duration: 6000, ...toast_alert_opts });

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, ButtonGroup, Form, FormControl, InputGroup, Modal, Overlay, Stack, Tooltip } from "react-bootstrap";
 import CopyButton from "../button/CopyButton";
 import PassphraseInputGroup from "../input/PassphraseInputGroup";
@@ -18,7 +18,7 @@ interface Props {
 }
 
 const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide: doUponHide, show: _show }: Props) => {
-  const nav = useNavigate();
+  const navigate = useNavigate();
   const [show, setShow] = useState(true);
   const [tooltip, setTooltip] = useState(false);
   const target = useRef(null);
@@ -43,10 +43,11 @@ const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide
     setTooltip(true);
   };
 
-  const handleGoToNote = () => {
+  const handleGoToNote = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (doUponHide) doUponHide();
     setShow(false);
-    nav(PATHS.note_detail + `/${id.toString()}`, { state: { passphrase } });
+    navigate(PATHS.note_detail + `/${id.toString()}`, { state: { passphrase } });
   };
 
   return (
@@ -96,15 +97,19 @@ const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide
           <Stack direction="horizontal" gap={2}>
             <Button title="Copy all the value" className="ms-auto" variant="warning" onClick={handleCopyAll} ref={target}>Copy</Button>
             <ButtonGroup>
-              <Button title="Close this popup modal" variant="primary" onClick={handleClose}>Okay</Button>
+              <Button style={{ borderRight: "1px solid #0a58ca" }} title="Close this popup modal" variant="primary" onClick={handleClose}>Okay</Button>
               <Button
                 title="Go see the note"
-                style={{ paddingLeft: "5px", paddingRight: "5px" }}
-                variant="outline-primary"
-                href={`${window.location.host + PATHS.note_detail + `/${id.toString()}`}`}
+                style={{
+                  paddingLeft: "5px",
+                  paddingRight: "5px",
+                  borderLeft: "1px solid #0a58ca"
+                }}
+                variant="primary"
+                href={`${PATHS.note_detail + `/${id.toString()}`}`}
                 onClick={handleGoToNote}
               >
-                <i className="bi bi-caret-right-fill" />
+                <i style={{ fontSize: "0.8rem" }} className="bi bi-caret-right-fill" />
               </Button>
             </ButtonGroup>
           </Stack>

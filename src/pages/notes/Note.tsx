@@ -265,7 +265,7 @@ const Note = () => {
                 Decryption failed
               </Alert.Heading>
               <p>
-                This is because the decryption function used with your passphrase returned an empty string.
+                This is because the decryption function used with your passphrase returned an empty string
               </p>
             </Alert>
           ), { duration: 6000, ...unwrap.toast_alert_opts });
