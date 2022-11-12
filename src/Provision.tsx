@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 // import { persistQueryClient } from "react-query/persistQueryClient-experimental";
 import { BrowserRouter } from "react-router-dom";
@@ -7,7 +7,7 @@ import AppContext from "./utils/app_state_context";
 import { AppSetting } from "./utils/types";
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import toast from "react-hot-toast";
-import { Alert } from "react-bootstrap";
+import { Alert, Spinner } from "react-bootstrap";
 import { toast_alert_opts } from "./utils/functions/unwrap";
 import { local_storage } from "./utils/functions";
 import { patch_token } from "./queries";
@@ -36,7 +36,7 @@ const queryClient = new QueryClient({
   }
 });
 
-const ContextCoupler = ({ appSettings, children }: AppDefinition) => {
+const Initialization = ({ appSettings, children }: AppDefinition) => {
   const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
     onOfflineReady: () => console.log("sw is installed for offline use"),
     onRegisterError: (e) => console.log("registration error!", e),
@@ -102,11 +102,27 @@ const ContextCoupler = ({ appSettings, children }: AppDefinition) => {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          {children}
+          <Suspense fallback={
+            <Spinner animation="border" role="status"
+              style={{
+                position: "absolute",
+                marginLeft: "auto",
+                marginRight: "auto",
+                top: "50vh",
+                left: 0,
+                right: 0,
+                textAlign: "center",
+              }}
+            >
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          }>
+            {children}
+          </Suspense>
         </QueryClientProvider>
       </AppContext.Provider>
     </BrowserRouter>
   );
 };
 
-export default ContextCoupler;
+export default Initialization;

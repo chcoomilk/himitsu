@@ -3,7 +3,6 @@ import { Button, Form, FormControlProps, FormTextProps, InputGroup } from "react
 import CopyButton from "../button/CopyButton";
 
 type Props = {
-  customLabel?: string | null,
   hide?: boolean,
   inputGroupClassName?: string,
   errorMessage?: string | null,
@@ -11,7 +10,6 @@ type Props = {
 } & FormControlProps & FormTextProps
 
 const PassphraseInputGroup = forwardRef(({
-  customLabel,
   hide,
   inputGroupClassName,
   errorMessage,
@@ -21,44 +19,34 @@ const PassphraseInputGroup = forwardRef(({
   const togglePasswordVisibility = () => setMask(prev => !prev);
 
   return (
-    <div hidden={hide} className={inputGroupClassName}>
-      {
-        customLabel === null
-          ? null
-          : <Form.Label>
-            {customLabel || "Passphrase"}
-          </Form.Label>
-      }
-
-      <InputGroup hasValidation>
-        <Form.Control
-          type={mask ? "password" : "text"}
-          autoComplete="current-passphrase"
-          placeholder="Enter super secret passphrase"
-          aria-describedby="basic-passphrase-input"
-          ref={ref}
-          {...attr}
-          style={
-            typeof attr.style == "object"
-              ? {
-                ...attr.style,
-                zIndex: 3,
-              }
-              : { zIndex: 3 }
-          }
-        />
-        <Button
-          variant="outline-light border-start-0"
-          onClick={togglePasswordVisibility}
-        >
-          {mask ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}
-        </Button>
-        {
-          attr.readOnly && <CopyButton copy_value={attr.value} />
+    <InputGroup className={inputGroupClassName} hidden={hide} hasValidation>
+      <Form.Control
+        type={mask ? "password" : "text"}
+        autoComplete="current-passphrase"
+        placeholder="Enter super secret passphrase"
+        aria-describedby="basic-passphrase-input"
+        ref={ref}
+        {...attr}
+        style={
+          typeof attr.style == "object"
+            ? {
+              ...attr.style,
+              zIndex: 3,
+            }
+            : { zIndex: 3 }
         }
-        <Form.Control.Feedback type="invalid" tooltip>{errorMessage}</Form.Control.Feedback>
-      </InputGroup>
-    </div>
+      />
+      <Button
+        variant="outline-light border-start-0"
+        onClick={togglePasswordVisibility}
+      >
+        {mask ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}
+      </Button>
+      {
+        attr.readOnly && <CopyButton copy_value={attr.value} />
+      }
+      <Form.Control.Feedback type="invalid" tooltip>{errorMessage}</Form.Control.Feedback>
+    </InputGroup>
   );
 });
 

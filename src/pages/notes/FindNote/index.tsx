@@ -1,5 +1,5 @@
 import { lazy, useEffect, useState } from "react";
-import { Col, Row } from "react-bootstrap"
+import { Container } from "react-bootstrap"
 import { useSearchParams } from "react-router-dom";
 import { useTitle } from "../../../custom-hooks";
 import FindByID from "./ByID";
@@ -37,17 +37,15 @@ const FindNote = () => {
   }, [params, setSearchParams]);
 
   return (
-    <Row>
-      <Col md={{ span: 4, offset: 4 }} xs={{ span: 10, offset: 1 }}>
-        {
-          params.findBy === "title" ? (
-            <FindByTitle params={params} setParams={setParams} />
-          ) : (
-            <FindByID params={params} setParams={setParams} />
-          )
-        }
-      </Col>
-    </Row>
+    <Container className="d-flex flex-fill align-items-center justify-content-center">
+      {
+        params.findBy === "title" ? (
+          <FindByTitle params={params} setParams={setParams} />
+        ) : (
+          <FindByID params={params} setParams={setParams} />
+        )
+      }
+    </Container>
   );
 };
 

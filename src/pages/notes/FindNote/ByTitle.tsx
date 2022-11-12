@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Collapse, Form, Stack } from "react-bootstrap";
+import { Button, Col, Collapse, Form, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../utils/constants";
 import TitleSuggestions from "./TitleSuggestions";
@@ -40,7 +40,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
   }, [title, setParams]);
 
   return (
-    <>
+    <Col xs={5}>
       <Form noValidate onSubmit={form.handleSubmit(submit)}>
         <Form.Group controlId="formBasicTitle" className="position-sticky mb-4">
           <Form.Label>Title</Form.Label>
@@ -99,7 +99,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
           <Button type="submit" variant="primary" size="lg">Find</Button>
         </Stack>
       </Form>
-    </>
+    </Col>
   );
 };
 

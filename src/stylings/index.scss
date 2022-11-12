@@ -1,7 +1,5 @@
-$font-size-base: 1.1rem;
-
 .fs-0 {
-  font-size: $font-size-base * 3.25;
+  font-size: 4rem;
 }
 
 /// render button as link (<a>)
@@ -23,23 +21,6 @@ $font-size-base: 1.1rem;
 
 :root {
   --himitsu-body-bg: black;
-}
-
-.himitsu {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.himitsu-popups {
-  position: absolute;
-  top: 69px !important;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  z-index: 420;
 }
 
 .toast-alert {

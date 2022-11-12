@@ -93,7 +93,7 @@ const Notes = () => {
   );
 
   return (
-    <Container className="overflow-auto">
+    <Container className="overflow-auto mt-5">
       {
         params.source === "global"
           ? <NotesTable className="align-self-center dark"

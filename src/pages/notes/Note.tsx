@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
+import { Alert, Button, Col, Container, Form, Row, Stack } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { Link, Location, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AES, enc as Encoder } from "crypto-js";
@@ -419,7 +419,7 @@ const Note = () => {
   };
 
   return (
-    <Row className="mb-3">
+    <Container className="d-flex flex-fill align-items-center justify-content-center mb-3">
       <PassphraseModal
         show={modalDecrypt.showModal}
         setShow={(show) => setModalDecrypt(prev => {
@@ -457,7 +457,7 @@ const Note = () => {
         centered
         show={modalConfirmDelete}
         onHide={() => setModalConfirmDelete(false)}
-        text={`You are about to delete ${note?.title}`}
+        text={`You are about to delete ${note?.title || note?.id}`}
         doDecide={val => {
           if (val) {
             del_note({ id: state.id, passphrase: null })
@@ -467,46 +467,45 @@ const Note = () => {
         }}
       />
 
-      <Row>
-        <Col xl={{ span: 6, offset: 3 }} xs={{ span: 10, offset: 1 }}>
-          <Form noValidate>
-            <SkeletonTheme duration={1.5} baseColor="#24282e" highlightColor="#a8a8a8">
+      <Container>
+        <Form noValidate>
+          <SkeletonTheme duration={1.5} baseColor="#24282e" highlightColor="#a8a8a8">
+            <Form.Group controlId="formBasicTitle" className="mb-4">
+              <Form.Label>Title</Form.Label>
+              {
+                is_info_loading
+                  ? <Skeleton height={35} />
+                  : <Form.Control
+                    type="text"
+                    name="expires"
+                    value={note ? (note.title || undefined) : DefaultValues.note.title}
+                    readOnly
+                  />
+              }
+            </Form.Group>
 
-              <Form.Group controlId="formBasicTitle" className="mb-4">
-                <Form.Label>Title</Form.Label>
-                {
-                  is_info_loading
-                    ? <Skeleton height={35} />
-                    : <Form.Control
-                      type="text"
-                      name="expires"
-                      value={note ? (note.title || undefined) : DefaultValues.note.title}
-                      readOnly
-                    />
-                }
-              </Form.Group>
+            <Form.Group controlId="formBasicDescription" className="mb-4">
+              <Form.Label>Description</Form.Label>
+              {
+                is_info_loading || isLoading
+                  ? <Skeleton height={100} />
+                  : <Form.Control
+                    as="textarea"
+                    type="text"
+                    name="expires"
+                    value={note && note.content ? note.content : generate_face()}
+                    rows={(() => {
+                      // const len = note?.content.length;
+                      // const max_until_break = 4;
+                      return 4;
+                    })()}
+                    readOnly
+                  />
+              }
+            </Form.Group>
 
-              <Form.Group controlId="formBasicDescription" className="mb-4">
-                <Form.Label>Description</Form.Label>
-                {
-                  is_info_loading || isLoading
-                    ? <Skeleton height={100} />
-                    : <Form.Control
-                      as="textarea"
-                      type="text"
-                      name="expires"
-                      value={note && note.content ? note.content : generate_face()}
-                      rows={(() => {
-                        // const len = note?.content.length;
-                        // const max_until_break = 4;
-                        return 4;
-                      })()}
-                      readOnly
-                    />
-                }
-              </Form.Group>
-
-              <Form.Group controlId="formBasicCreatedAt" className="mb-4">
+            <Row>
+              <Form.Group as={Col} sm={6} controlId="formBasicCreatedAt" className="mb-4">
                 <Form.Label>Created at</Form.Label>
                 {
                   is_info_loading || isLoading
@@ -520,7 +519,7 @@ const Note = () => {
                 }
               </Form.Group>
 
-              <Form.Group controlId="formBasicExpiresAt" className="mb-4">
+              <Form.Group as={Col} sm={6} controlId="formBasicExpiresAt" className="mb-4">
                 <Form.Label>Expires at</Form.Label>
                 {
                   is_info_loading || isLoading
@@ -533,47 +532,47 @@ const Note = () => {
                     />
                 }
               </Form.Group>
-            </SkeletonTheme>
-            <Stack direction="horizontal" gap={3}>
-              <Button
-                size="lg"
-                className="ms-auto"
-                variant="danger"
-                disabled={
-                  (isLoading) ||
-                  (note === null ? true : !note.decrypted) ||
-                  (is_deleting || is_deleted)
-                }
-                onClick={handleDelete}>
-                <i className="bi bi-trash"></i>
-              </Button>
-              <Button
-                size="lg"
-                variant="primary"
-                disabled={
-                  (isLoading) ||
-                  (note === null ? true : !note.decrypted) ||
-                  (is_deleting || is_deleted)
-                }
-                onClick={handleDownload}>
-                <i className="bi bi-download"></i>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline-warning"
-                disabled={
-                  (isLoading) ||
-                  (note === null ? true : note.decrypted)
-                }
-                onClick={handleRetry}
-              >
-                <i className="bi bi-arrow-counterclockwise"></i>
-              </Button>
-            </Stack>
-          </Form>
-        </Col>
-      </Row>
-    </Row>
+            </Row>
+          </SkeletonTheme>
+          <Stack direction="horizontal" gap={3}>
+            <Button
+              size="lg"
+              className="ms-auto"
+              variant="danger"
+              disabled={
+                (isLoading) ||
+                (note === null ? true : !note.decrypted) ||
+                (is_deleting || is_deleted)
+              }
+              onClick={handleDelete}>
+              <i className="bi bi-trash"></i>
+            </Button>
+            <Button
+              size="lg"
+              variant="primary"
+              disabled={
+                (isLoading) ||
+                (note === null ? true : !note.decrypted) ||
+                (is_deleting || is_deleted)
+              }
+              onClick={handleDownload}>
+              <i className="bi bi-download"></i>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline-warning"
+              disabled={
+                (isLoading) ||
+                (note === null ? true : note.decrypted)
+              }
+              onClick={handleRetry}
+            >
+              <i className="bi bi-arrow-counterclockwise"></i>
+            </Button>
+          </Stack>
+        </Form>
+      </Container>
+    </Container >
   );
 };
 

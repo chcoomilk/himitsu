@@ -1,4 +1,4 @@
-import { Col, Row, Form } from "react-bootstrap";
+import { Col, Row, Form, Container } from "react-bootstrap";
 import { AppSetting } from "../../utils/types";
 import React, { useContext, useState } from "react";
 import AppContext from "../../utils/app_state_context";
@@ -50,8 +50,8 @@ const Settings = ({ setAppSettings }: Props) => {
   };
 
   return (
-    <SettingsContext.Provider value={setAppSettings}>
-      <Row>
+    <Container className="d-flex flex-fill align-items-center justify-content-center">
+      <SettingsContext.Provider value={setAppSettings}>
         <SimpleConfirmationModal
           centered
           title="Delete all saved notes?"
@@ -93,92 +93,90 @@ const Settings = ({ setAppSettings }: Props) => {
           }}
         />
 
-        <Col xs={{ span: 6, offset: 3 }}>
-          <Form onSubmit={e => {
-            e.preventDefault();
-            return;
-          }}>
-            <Form.Group as={Row} controlId="general" className="mb-2">
-              <Form.Label column lg="6">
-                General
-              </Form.Label>
-              <Col lg="6">
-                <Form.Check
-                  id="history-switch"
-                  type="switch"
-                  name="history"
-                  className="text-nowrap"
-                  checked={appSettings.history}
-                  label={"New notes will " + (appSettings.history ? "be" : "not be") + " saved"}
-                  onChange={_ => setSaveHistory(!appSettings.history)}
-                />
-                <button onClick={handleDelete} className="btn-anchor link-danger text-decoration-none text-start">
-                  Delete all saved notes!
-                </button>
-                <button onClick={handleReset} className="btn-anchor link-warning text-decoration-none text-start">
-                  Reset all settings to default
-                </button>
-              </Col>
-            </Form.Group>
+        <Form onSubmit={e => {
+          e.preventDefault();
+          return;
+        }}>
+          <Form.Group as={Row} controlId="general" className="mb-2">
+            <Form.Label column lg="6">
+              General
+            </Form.Label>
+            <Col lg="6">
+              <Form.Check
+                id="history-switch"
+                type="switch"
+                name="history"
+                className="text-nowrap"
+                checked={appSettings.history}
+                label={"New notes will " + (appSettings.history ? "be" : "not be") + " saved"}
+                onChange={_ => setSaveHistory(!appSettings.history)}
+              />
+              <button onClick={handleDelete} className="btn-anchor link-danger text-decoration-none text-start">
+                Delete all saved notes!
+              </button>
+              <button onClick={handleReset} className="btn-anchor link-warning text-decoration-none text-start">
+                Reset all settings to default
+              </button>
+            </Col>
+          </Form.Group>
 
-            <Form.Group as={Row} controlId="encryption" className="mb-2">
-              <Form.Label column lg="6">
-                Default Encryption
-              </Form.Label>
-              <Col lg="6">
-                <DefaultEncryptionOptions />
-              </Col>
-            </Form.Group>
+          <Form.Group as={Row} controlId="encryption" className="mb-2">
+            <Form.Label column lg="6">
+              Default Encryption
+            </Form.Label>
+            <Col lg="6">
+              <DefaultEncryptionOptions />
+            </Col>
+          </Form.Group>
 
-            <Form.Group as={Row} controlId="theme" className="mb-2">
-              <Form.Label column lg="6">
-                Theme
-              </Form.Label>
-              <Col lg="6">
-                <ThemeOptions />
-              </Col>
-            </Form.Group>
+          <Form.Group as={Row} controlId="theme" className="mb-2">
+            <Form.Label column lg="6">
+              Theme
+            </Form.Label>
+            <Col lg="6">
+              <ThemeOptions />
+            </Col>
+          </Form.Group>
 
-            <Form.Group as={Row} controlId="token" className="mb-2">
-              <Form.Label column lg="6">
-                Access token
-              </Form.Label>
-              <Col lg="6">
-                <TokenSetting />
-              </Col>
-            </Form.Group>
+          <Form.Group as={Row} controlId="token" className="mb-2">
+            <Form.Label column lg="6">
+              Access token
+            </Form.Label>
+            <Col lg="6">
+              <TokenSetting />
+            </Col>
+          </Form.Group>
 
-            <Form.Group as={Row} controlId="links">
-              <Form.Label column lg="6">
-                Links
-              </Form.Label>
-              <Col lg="6">
-                <div>
-                  <Link to={PATHS.about} className="link-secondary text-start text-decoration-none">
-                    About page
-                  </Link>
-                </div>
-                <div>
-                  <a target="_blank" rel="noreferrer" href="https://github.com/chcoomilk/himitsu-backend" className="link-secondary text-decoration-none">
-                    <i className="bi bi-github" />
-                    {" "}
-                    Project's backend
-                  </a>
-                </div>
+          <Form.Group as={Row} controlId="links">
+            <Form.Label column lg="6">
+              Links
+            </Form.Label>
+            <Col lg="6">
+              <div>
+                <Link to={PATHS.about} className="link-secondary text-start text-decoration-none">
+                  About page
+                </Link>
+              </div>
+              <div>
+                <a target="_blank" rel="noreferrer" href="https://github.com/chcoomilk/himitsu-backend" className="link-secondary text-decoration-none">
+                  <i className="bi bi-github" />
+                  {" "}
+                  Project's backend
+                </a>
+              </div>
 
-                <div>
-                  <a target="_blank" rel="noreferrer" href="https://github.com/chcoomilk/himitsu" className="link-secondary text-decoration-none">
-                    <i className="bi bi-github" />
-                    {" "}
-                    Project's browser app
-                  </a>
-                </div>
-              </Col>
-            </Form.Group>
-          </Form>
-        </Col>
-      </Row>
-    </SettingsContext.Provider>
+              <div>
+                <a target="_blank" rel="noreferrer" href="https://github.com/chcoomilk/himitsu" className="link-secondary text-decoration-none">
+                  <i className="bi bi-github" />
+                  {" "}
+                  Project's browser app
+                </a>
+              </div>
+            </Col>
+          </Form.Group>
+        </Form>
+      </SettingsContext.Provider>
+    </Container>
   );
 };
 
