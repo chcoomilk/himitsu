@@ -40,7 +40,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
   }, [title, setParams]);
 
   return (
-    <Col xs={5}>
+    <Col xxl={4} xl={4} md={6} sm={10} xs={12}>
       <Form noValidate onSubmit={form.handleSubmit(submit)}>
         <Form.Group controlId="formBasicTitle" className="position-sticky mb-4">
           <Form.Label>Title</Form.Label>

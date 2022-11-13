@@ -39,7 +39,7 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
   }, [id, setParams]);
 
   return (
-    <Col xs={5}>
+    <Col xxl={4} xl={4} md={6} sm={10} xs={12}>
       <Form noValidate onSubmit={form.handleSubmit(submit)}>
         <Form.Group controlId="formBasicId" className="position-relative mb-4">
           <Form.Label>ID</Form.Label>
