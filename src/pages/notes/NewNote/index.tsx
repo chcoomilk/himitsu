@@ -136,7 +136,7 @@ const NewNote = () => {
   });
 
   return (
-    <Container className="d-flex flex-fill align-items-center justify-content-center">
+    <>
       {
         noteModal && (
           <NewNoteModal data={{ ...noteModal }} onHide={() => {
@@ -169,26 +169,52 @@ const NewNote = () => {
           Options
         </Modal.Header>
         <Modal.Body>
+          <Form.Group controlId="formBasicBurn" className="mb-2">
+            <InputGroup>
+              <Form.Switch
+                inline
+                id="burn-switch"
+                // {...form.register("extra.discoverable")}
+                label={"Burn after read"}
+                disabled={form.formState.isSubmitting}
+              />
+            </InputGroup>
+          </Form.Group>
+          <Form.Group
+            hidden={watchOut.extra.encryption === EncryptionMethod.NoEncryption}
+            controlId="formBasicBurn"
+            className="mb-2"
+          >
+            <InputGroup>
+              <Form.Switch
+                inline
+                id="delete-w-password-switch"
+                // {...form.register("extra.discoverable")}
+                label={"Allow to delete with passphrase"}
+                disabled={form.formState.isSubmitting}
+              />
+            </InputGroup>
+          </Form.Group>
           {(() => {
             switch (watchOut.extra.encryption) {
               case EncryptionMethod.BackendEncryption:
                 return (
-                  <Form.Group controlId="formBasicExtraDoubleEncrypt" className="mb-4">
-                    <Form.Label>EXTRA POWAH!!</Form.Label>
-                    <InputGroup className="mb-3">
+                  <Form.Group controlId="formBasicExtraDoubleEncrypt" className="mb-2">
+                    <InputGroup className="mb-2">
                       <Form.Switch
                         inline
                         id="fe-switch"
-                        {...form.register("extra.double_encryption.enable")}
+                        {...form.register("extra.double_encryption.enable", {
+                          onChange: (e) => e.target.checked === false ? form.clearErrors("extra.double_encryption.passphrase") : e
+                        })}
                         label={"Frontend Encryption"}
                         disabled={form.formState.isSubmitting}
                       />
                     </InputGroup>
-                    <Form.Label hidden={!watchOut.extra.double_encryption.enable}>Second Passphrase</Form.Label>
                     <PassphraseInputGroup
-                      hide={!watchOut.extra.double_encryption.enable}
+                      disabled={form.formState.isSubmitting || !watchOut.extra.double_encryption.enable}
                       aria-label="Passphrase"
-                      disabled={form.formState.isSubmitting}
+                      // disabled={form.formState.isSubmitting}
                       {...form.register(
                         "extra.double_encryption.passphrase", {
                         required: shouldExtraEncryptionEnable() ? "passphrase is required to encrypt before going to the server" : undefined,
@@ -213,8 +239,7 @@ const NewNote = () => {
 
               case EncryptionMethod.NoEncryption:
                 return (
-                  <Form.Group controlId="formBasicDiscoverable" className="mb-4">
-                    <Form.Label>Discoverability</Form.Label>
+                  <Form.Group controlId="formBasicDiscoverable" className="mb-2">
                     <InputGroup>
                       <Form.Switch
                         inline
@@ -231,11 +256,13 @@ const NewNote = () => {
         </Modal.Body>
       </Modal>
       <FormProvider {...form}>
-        <Container>
-          <NewNoteForm onSubmit={submit} setModal={setEventModal} />
+        <Container className="d-flex flex-fill justify-content-center">
+          <Container fluid className="m-0">
+            <NewNoteForm onSubmit={submit} setModal={setEventModal} />
+          </Container>
         </Container>
       </FormProvider>
-    </Container>
+    </>
   );
 };
 

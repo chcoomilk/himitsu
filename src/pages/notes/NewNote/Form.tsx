@@ -1,5 +1,6 @@
 import { capitalCase } from "change-case";
-import { Form, Col, Row, InputGroup, Stack, Button, Spinner, DropdownButton, Dropdown } from "react-bootstrap";
+import { useState } from "react";
+import { Form, Col, Row, InputGroup, Stack, Button, Spinner, DropdownButton, Dropdown, Collapse } from "react-bootstrap";
 import { Controller, useFormContext } from "react-hook-form";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import { createEncryptionMethodKeys, EncryptionMethod } from "../../../utils/types";
@@ -17,90 +18,145 @@ type Props = {
 const NewNoteForm = ({ onSubmit: submit, setModal }: Props) => {
   const form = useFormContext<Fields>();
   const watch = form.watch();
+  const [openOptionalFields, setOpenOptionalFields] = useState(false);
+
+  const buttons = (orient: "horizontal" | "vertical", size?: "sm" | "lg", className?: string) => {
+    return (
+      <Stack className={className} direction={orient} gap={3}>
+        <Button
+          className="w-100"
+          size={size}
+          variant="outline-secondary"
+          onClick={() => setModal(p => ({ ...p, extra_settings: true }))}
+        >
+          Options
+        </Button>
+        <Button
+          className="w-100"
+          size={size}
+          variant="outline-danger"
+          onClick={() => setModal(p => ({ ...p, delete: true }))} disabled={form.formState.isSubmitting}
+        >
+          Reset
+        </Button>
+        <Button
+          className="w-100"
+          size={size}
+          variant="success"
+          type="submit"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? <Spinner size="sm" animation="border" /> : "Save"}
+        </Button>
+      </Stack>
+    );
+  };
 
   return (
     <Form className="my-3" noValidate onSubmit={form.handleSubmit(submit)}>
       <Row>
-        <Col>
-          <Form.Group controlId="formBasicEncryption" className="mb-4">
-            <InputGroup>
-              <Controller
-                control={form.control}
-                name="extra.encryption"
-                render={({ field }) => (
-                  <DropdownButton
-                    variant="outline-light"
-                    menuVariant="dark"
-                    title={`${EncryptionMethod[watch.extra.encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}`}
-                    id="input-group-dropdown-1"
-                    disabled={form.formState.isSubmitting}
-                  >
-                    {
-                      createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
-                        method => (
-                          <Dropdown.Item
-                            key={method}
-                            onClick={() => field.onChange(EncryptionMethod[method])}
-                          >{capitalCase(method)}</Dropdown.Item>
-                        )
+        <Form.Group as={Col} md={6} controlId="formBasicEncryption" className="mb-4">
+          <InputGroup>
+            <Controller
+              control={form.control}
+              name="extra.encryption"
+              render={({ field }) => (
+                <DropdownButton
+                  variant="outline-light"
+                  menuVariant="dark"
+                  title={`${EncryptionMethod[watch.extra.encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}`}
+                  id="input-group-dropdown-1"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {
+                    createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
+                      method => (
+                        <Dropdown.Item
+                          key={method}
+                          onClick={() => field.onChange(EncryptionMethod[method])}
+                        >{capitalCase(method)}</Dropdown.Item>
                       )
-                    }
-                  </DropdownButton>
-                )}
-              />
-            </InputGroup>
-          </Form.Group>
-          <Form.Group controlId="formBasicDescription" className="position-relative mb-4">
-            <Form.Label>Secret</Form.Label>
-            <Form.Text muted>
-              {` (${!watch.extra.encryption ? "unencrypted" : "encrypted"})`}
-            </Form.Text>
-            <Form.Control
-              disabled={form.formState.isSubmitting}
-              as="textarea"
-              placeholder="Enter note here"
-              rows={6}
-              {...form.register("content", {
-                required: { value: true, message: "a note can't be empty" },
-              })}
-              isInvalid={!!form.formState.errors.content}
-            />
-            <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.content?.message}</Form.Control.Feedback>
-          </Form.Group>
-
-          <Form.Group controlId="formBasicPassphrase" className="position-relative mb-4">
-            <Form.Label>Passphrase</Form.Label>
-            <PassphraseInputGroup
-              aria-label="Passphrase"
-              placeholder="Enter super secret passphrase"
-              {...form.register(
-                "passphrase",
-                {
-                  required: form.getValues("extra.encryption") === EncryptionMethod.NoEncryption
-                    ? undefined
-                    : "passphrase is required to encrypt before going to the server",
-                  minLength: {
-                    value: 4,
-                    message: "passphrase is too short",
-                  },
-                  maxLength: {
-                    value: 1024,
-                    message: "passphrase is too long (max length: 1024 chars)"
-                  },
-                }
+                    )
+                  }
+                </DropdownButton>
               )}
-              errorMessage={form.formState.errors.passphrase?.message}
-              disabled={form.formState.isSubmitting || watch.extra.encryption === EncryptionMethod.NoEncryption}
-              isInvalid={watch.extra.encryption !== EncryptionMethod.NoEncryption
-                ? (!!form.formState.errors.passphrase)
-                : undefined
-              }
             />
-          </Form.Group>
+          </InputGroup>
+        </Form.Group>
+        <Col md={6} className="d-none d-md-inline">
+          {buttons("horizontal")}
         </Col>
       </Row>
-      <Row>
-        <Col xl="9" md="12">
+
+      <Form.Group controlId="formBasicDescription" className="position-relative mb-4">
+        <Form.Label>Secret</Form.Label>
+        <Form.Text muted>
+          {` (${!watch.extra.encryption ? "unencrypted" : "encrypted"})`}
+        </Form.Text>
+        <Form.Control
+          disabled={form.formState.isSubmitting}
+          as="textarea"
+          placeholder="Enter note here"
+          rows={20}
+          {...form.register("content", {
+            required: { value: true, message: "a note can't be empty" },
+          })}
+          isInvalid={!!form.formState.errors.content}
+        />
+        <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.content?.message}</Form.Control.Feedback>
+      </Form.Group>
+
+      <Form.Group controlId="formBasicPassphrase" className="position-relative mb-4">
+        <Form.Label>Passphrase</Form.Label>
+        <PassphraseInputGroup
+          aria-label="Passphrase"
+          placeholder="Enter super secret passphrase"
+          {...form.register(
+            "passphrase",
+            {
+              required: form.getValues("extra.encryption") === EncryptionMethod.NoEncryption
+                ? undefined
+                : "passphrase is required to encrypt before going to the server",
+              minLength: {
+                value: 4,
+                message: "passphrase is too short",
+              },
+              maxLength: {
+                value: 1024,
+                message: "passphrase is too long (max length: 1024 chars)"
+              },
+            }
+          )}
+          errorMessage={form.formState.errors.passphrase?.message}
+          disabled={form.formState.isSubmitting || watch.extra.encryption === EncryptionMethod.NoEncryption}
+          isInvalid={watch.extra.encryption !== EncryptionMethod.NoEncryption
+            ? (!!form.formState.errors.passphrase)
+            : undefined
+          }
+        />
+      </Form.Group>
+
+      <Row className="mb-4">
+        <Col>
+          <hr />
+        </Col>
+        <Col>
+          <Button
+            size="sm"
+            className="w-100"
+            variant={(openOptionalFields ? "" : "outline-") + "secondary"}
+            onClick={() => setOpenOptionalFields(v => !v)}
+          >
+            {openOptionalFields ? "Hide " : "Show "} Optionals
+          </Button>
+        </Col>
+        <Col>
+          <hr />
+        </Col>
+      </Row>
+
+      <Collapse in={openOptionalFields}>
+        <div>
           <Form.Group controlId="formBasicTitle" className="position-relative mb-4">
             <Form.Label>Title</Form.Label>
             <Form.Text muted>
@@ -140,41 +196,11 @@ const NewNoteForm = ({ onSubmit: submit, setModal }: Props) => {
               * Omit this field to set a random ID
             </Form.Text>
           </Form.Group>
-
           <NewNoteDurationGroupForm />
-        </Col>
+        </div>
+      </Collapse>
 
-        <Col xl="3" md="12">
-          <Stack className="mb-2" direction="vertical" gap={3}>
-            <Button
-              className="w-100"
-              size="lg"
-              variant="outline-secondary"
-              onClick={() => setModal(p => ({ ...p, extra_settings: true }))}
-              disabled={form.getValues("extra.encryption") === EncryptionMethod.FrontendEncryption}
-            >
-              Options
-            </Button>
-            <Button
-              className="w-100"
-              size="lg"
-              variant="outline-danger"
-              onClick={() => setModal(p => ({ ...p, delete: true }))} disabled={form.formState.isSubmitting}
-            >
-              Reset
-            </Button>
-            <Button
-              className="w-100"
-              size="lg"
-              variant="success"
-              type="submit"
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? <Spinner size="sm" animation="border" /> : "Save"}
-            </Button>
-          </Stack>
-        </Col>
-      </Row>
+      {buttons("vertical", "lg", "mb-2 d-md-none")}
     </Form>
   );
 };

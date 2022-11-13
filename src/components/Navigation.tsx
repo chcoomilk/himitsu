@@ -33,6 +33,7 @@ const Navigation = () => {
               className="py-0 fs-3 d-flex align-items-center"
               as={NavLink}
               to={PATHS.new_note}
+              tabIndex={-1}
               end
             >
               { /* @ts-ignore */
@@ -53,6 +54,7 @@ const Navigation = () => {
               className="py-0 fs-3 d-flex align-items-center"
               as={NavLink}
               to={PATHS.find_note}
+              tabIndex={-1}
             >
               { /* @ts-ignore */
                 ({ isActive }: NavLinkReturnArgs) => (
