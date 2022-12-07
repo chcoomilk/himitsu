@@ -1,10 +1,11 @@
 import { capitalCase } from "change-case";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Form, Col, Row, InputGroup, Stack, Button, Spinner, DropdownButton, Dropdown, Collapse } from "react-bootstrap";
 import { Controller, useFormContext } from "react-hook-form";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
+import AppContext from "../../../utils/app_state_context";
 import { createEncryptionMethodKeys, EncryptionMethod } from "../../../utils/types";
-import { Fields } from "./form";
+import { Fields } from "./formtypes";
 import NewNoteDurationGroupForm from "./fragments/duration";
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
 };
 
 const NewNoteForm = ({ onSubmit: submit, setModal }: Props) => {
+  const { appSettings } = useContext(AppContext);
   const form = useFormContext<Fields>();
   const watch = form.watch();
   const [openOptionalFields, setOpenOptionalFields] = useState(false);
@@ -102,6 +104,7 @@ const NewNoteForm = ({ onSubmit: submit, setModal }: Props) => {
             required: { value: true, message: "a note can't be empty" },
           })}
           isInvalid={!!form.formState.errors.content}
+          autoFocus={appSettings.autofocus}
         />
         <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.content?.message}</Form.Control.Feedback>
       </Form.Group>

@@ -1,3 +1,5 @@
+import { EncryptionMethod } from "../../../utils/types"
+
 export type Fields = {
     title: string,
     passphrase: string,
@@ -16,5 +18,7 @@ export type Fields = {
             passphrase: string,
         },
         discoverable: boolean,
+        allow_delete_with_passphrase: boolean,
+        delete_after_read: number,
     }
 }

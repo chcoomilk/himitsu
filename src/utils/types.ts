@@ -82,6 +82,7 @@ export type AppSetting = {
   app_theme: AppThemeSetting,
   encryption: EncryptionMethod,
   history: boolean,
+  autofocus: boolean,
 };
 
 /** bootstrap-icon 1.8.3 */

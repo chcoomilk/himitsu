@@ -16,7 +16,6 @@ const DefaultEncryptionOptions = () => {
         encryption: method,
       };
 
-      // localStorage.setItem("settings", JSON.stringify(settings));
       local_storage.set("settings", settings);
       return settings;
     });

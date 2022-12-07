@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import { DefaultValues } from "../constants";
 import { AppSetting, NoteInfo } from "../types";
 import { is_note, is_settings } from "./is";
 
@@ -37,6 +38,15 @@ function get(key: LocalStorageItemKeys): LocalStorageItemKind | null {
             case "settings":
                 if (is_settings(item)) {
                     return item;
+                } else if (Object.isExtensible(item)) {
+                    item = {
+                        ...DefaultValues.settings,
+                        ...item,
+                    }
+
+                    if (is_settings(item)) {
+                        return item;
+                    }
                 }
 
                 throw invalid_error;

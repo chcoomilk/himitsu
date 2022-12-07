@@ -41,11 +41,13 @@ export function is_note(item: unknown): item is NoteInfo {
     );
 }
 
+// maybe it's better for this function to only do typechecks
 export const is_settings = (item: unknown): item is AppSetting => {
     return (
         AppThemeSetting[(item as AppSetting).app_theme] !== undefined &&
         EncryptionMethod[(item as AppSetting).encryption] !== undefined &&
-        typeof (item as AppSetting).history === "boolean"
+        typeof (item as AppSetting).history === "boolean" &&
+        typeof (item as AppSetting).autofocus === "boolean"
     );
 };
 

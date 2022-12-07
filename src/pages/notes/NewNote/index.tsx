@@ -11,7 +11,7 @@ import { useTitle } from "../../../custom-hooks";
 import { local_storage } from "../../../utils/functions";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import SimpleConfirmationModal from "../../../components/modal/SimpleConfirmationModal";
-import { Fields } from "./form";
+import { Fields } from "./formtypes";
 import NewNoteForm from "./Form";
 import unwrap_default from "../../../utils/functions/unwrap";
 
@@ -54,10 +54,12 @@ const NewNote = () => {
       form.setValue("extra", {
         discoverable: prev_values.extra.discoverable,
         double_encryption: {
-          enable: prev_values.extra.double_encryption.enable,
+          enable: false,
           passphrase: form.getValues("extra.double_encryption.passphrase"),
         },
         encryption: prev_values.extra.encryption,
+        allow_delete_with_passphrase: prev_values.extra.allow_delete_with_passphrase,
+        delete_after_read: prev_values.extra.delete_after_read,
       })
     })() : form.reset(undefined, { keepDefaultValues: true });
   };
@@ -92,6 +94,8 @@ const NewNote = () => {
       content: form_data.content,
       lifetime_in_secs: duration_in_secs,
       passphrase: form_data.passphrase,
+      allow_delete_with_passphrase: form_data.extra.allow_delete_with_passphrase,
+      delete_after_read: form_data.extra.delete_after_read,
     })
       .then(result => {
         const { data, error } = result;
@@ -169,20 +173,20 @@ const NewNote = () => {
           Options
         </Modal.Header>
         <Modal.Body>
-          <Form.Group controlId="formBasicBurn" className="mb-2">
+          <Form.Group controlId="formBasicSeeOnce" className="mb-2">
             <InputGroup>
               <Form.Switch
                 inline
-                id="burn-switch"
+                id="seeOnce-switch"
                 // {...form.register("extra.discoverable")}
-                label={"Burn after read"}
+                label={"Delete after read"}
                 disabled={form.formState.isSubmitting}
               />
             </InputGroup>
           </Form.Group>
           <Form.Group
             hidden={watchOut.extra.encryption === EncryptionMethod.NoEncryption}
-            controlId="formBasicBurn"
+            controlId="delete-w-password-switch"
             className="mb-2"
           >
             <InputGroup>

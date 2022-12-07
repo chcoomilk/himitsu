@@ -24,6 +24,7 @@ const settings: AppSetting = {
     app_theme: AppThemeSetting.Normal,
     encryption: EncryptionMethod.BackendEncryption,
     history: false,
+    autofocus: true,
 };
 
 export const DefaultValues = {

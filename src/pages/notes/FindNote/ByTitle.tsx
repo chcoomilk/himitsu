@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Col, Collapse, Form, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../utils/constants";
 import TitleSuggestions from "./TitleSuggestions";
 import { Props } from "./utils";
 import { useForm } from "react-hook-form";
+import AppContext from "../../../utils/app_state_context";
 
 type FormData = {
   title: string,
 }
 
 const FindByTitle = ({ params: { query }, setParams }: Props) => {
+  const { appSettings } = useContext(AppContext);
   const navigate = useNavigate();
+
 
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [afBlurCount, setAfBlurCount] = useState(0);
@@ -58,7 +61,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
               },
             })}
             onFocus={() => setShowSuggestions(true)}
-            autoFocus
+            autoFocus={appSettings.autofocus}
             autoComplete="off"
             isInvalid={(afBlurCount > 1 || !!form.formState.submitCount) && !!form.formState.errors.title}
           />
