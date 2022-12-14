@@ -20,6 +20,6 @@ export type Fields = {
         discoverable: boolean,
         allow_delete_with_passphrase: boolean,
         delete_after_read: number,
-        textarea_rows: number;
+        save_locally: boolean,
     }
 }

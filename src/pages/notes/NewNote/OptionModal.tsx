@@ -1,4 +1,5 @@
-import { InputGroup, Modal, Form } from "react-bootstrap";
+import { useState } from "react";
+import { InputGroup, Modal, Form, Nav } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import InfoCircle from "../../../components/InfoCircle";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
@@ -11,9 +12,15 @@ type Props = {
   onHide: () => void,
 }
 
+enum Tabs {
+  Common = "Common",
+  Defaults = "Defaults"
+}
+
 const OptionModal = ({ show, onHide }: Props) => {
   const form = useFormContext<Fields>();
   const watch = form.watch();
+  const [tabs, setTabs] = useState<Tabs>(Tabs.Common);
 
   const shouldExtraEncryptionEnable = () =>
     form.getValues("encryption") === EncryptionMethod.BackendEncryption &&
@@ -211,6 +218,16 @@ const OptionModal = ({ show, onHide }: Props) => {
           }
         })()}
       </Modal.Body>
+      <Modal.Footer className="p-0">
+        <Nav className="w-100 m-0" fill variant="pills" defaultActiveKey={Tabs.Common} onSelect={(v: any) => setTabs(v)}>
+          <Nav.Item>
+            <Nav.Link eventKey={Tabs.Common}>Common</Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey={Tabs.Defaults}>Defaults</Nav.Link>
+          </Nav.Item>
+        </Nav>
+      </Modal.Footer>
     </Modal>
   );
 };

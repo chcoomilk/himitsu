@@ -80,7 +80,8 @@ const NewNote = ({ setAppSettings }: Props) => {
         },
         allow_delete_with_passphrase: prev_values.extra.allow_delete_with_passphrase,
         delete_after_read: prev_values.extra.delete_after_read,
-      })
+        save_locally: appSettings.history,
+      });
       form.setValue("encryption", prev_values.encryption);
     })() : form.reset(undefined, { keepDefaultValues: true });
   };

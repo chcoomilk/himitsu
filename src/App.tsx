@@ -1,5 +1,5 @@
 import React, { lazy, useEffect, useReducer } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { DefaultValues, PATHS } from "./utils/constants";
 import { AppSetting } from "./utils/types";
@@ -47,7 +47,6 @@ function App() {
       />
       {checkLastModalPopup()}
       <Routes>
-        <Route path={"/404"} element={<NotFound />} />
         <Route path={"/debug"} element={<Debug />} />
         <Route path={PATHS.about} element={<About />} />
         <Route path={PATHS.new_note} element={<NewNote setAppSettings={dispatchAppSetting} />} />
@@ -55,9 +54,7 @@ function App() {
         <Route path={PATHS.find_note} element={<FindNote />} />
         <Route path={PATHS.note_detail + "/:id"} element={<Note />} />
         <Route path={PATHS.settings} element={<AppSettings setAppSettings={dispatchAppSetting} />} />
-        <Route path="*" element={
-          <Navigate to="/404" />
-        } />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Initialization>
   );

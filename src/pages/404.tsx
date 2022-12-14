@@ -36,12 +36,7 @@ const NotFound = () => {
           <p >
             Oh uh welcome, seems like you're lost <a href="/" onClick={(e) => {
               e.preventDefault();
-              // this will not work in development since react renders twice and /404 will got pushed twice and go back
-              // to /404 since whatever path -2 is, it's an invalid path
-              navigate(-2);
-              // this is a trycatch for when trying to go back 2 steps doesn't work, going back once should
-              console.log(window.history.length);
-              timeout = setTimeout(() => window.history.length !== 1 ? navigate(-1) : window.close(), 500);
+              navigate(-1);
             }}>click here</a> to go back
           </p>
         </Col>

@@ -89,7 +89,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
           disabled={form.formState.isSubmitting}
           as="textarea"
           placeholder="Enter note here"
-          rows={20}
+          rows={15}
           {...form.register("content", {
             required: { value: true, message: "a note can't be empty" },
           })}
