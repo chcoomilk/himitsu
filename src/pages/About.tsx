@@ -11,8 +11,9 @@ const About = () => {
         <Col xl={{ offset: 1, span: 10 }} xs={12}>
           <p className="fs-5">
             himitsu is a pastebin service, just like any other services you can find.
-            But, instead of a login system, we have JWT secrets so you can
-            still have power over your data. Beware JWT keys are only for controlling the
+            But, instead of a login system, we have JWT secrets so you still have power over
+            your data without having to register/login.
+            JWT keys are only for controlling the
             items you've created on the server, not the encryption/decryption of the data.
             Currently, it can only and the only way to delete your notes ahead of time before expiration (if it's set to expire).
           </p>
@@ -24,14 +25,13 @@ const About = () => {
               <Accordion.Body className="clearfix text-center">
                 <p className="fs-6 text-start">
                   Passphrase is generally longer by definition. So, I'm expecting your passphrase/password to be more like
-                  "correct horse battery staple" rather than a measly "p4ssw0rd!".
+                  "correct horse battery staple" rather than "p4ssw0rd!". <br /><br />
                   Your passphrase here is used only for encrypting and decrypting, while the usual password based system,
                   like an account login or something is kept inside a server as hash and used for gatekeeping.
-                  While I believe encrypting the actual data instead of hashing the password and keep it in the database is much more
-                  privacy friendly, the downside is it's more process intensive in order to request the data.
-                  <br />
-                  <br />
-                  And maybe less secure if you have the tiny energy, and measly sized "p4ssw0rd!" kind of password..
+                  While I believe encrypting the actual data instead of hashing the password and keeping it in the database is much more
+                  privacy friendly, the downside is it's just more process intensive.
+                  <br /><br />
+                  And maybe less secure if you have the tiny energy, measly sized "p4ssw0rd!" kind of password..
                   I dunno I'm not a security expert, but yeah the longer and more unique
                   your password/passphrase is the better
                   <br />
@@ -49,7 +49,7 @@ const About = () => {
                   ⣼⢨⡓⠃⢻⣿⣇⢿⡸⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠿⢿⣿⣿⣿⠟⣴⣿⣿⣿⣿  <br />
                   ⢃⣾⣿⣆⠀⢿⣿⡌⢇⢿⣿⣿⣿⣿⣿⣿⣿⣿⣇⣾⣿⣿⠿⣣⢸⣿⣿⣿⣸⣿  <br />
                   ⣼⠿⠻⠿⡆⠘⣿⣧⡀⠠⣍⣙⡻⠿⠿⠿⠿⠿⠿⠛⠋⢁⡘⣻⡧⢹⣿⣿⣿⣿  <br />
-                  ⠡⢤⠀⠀⠀⠀⠘⢿⡇⠀⠙⠛⠃⠀⠀⠀⢀⣦⡄⠐⢿⣿⣷⡜⢿⣿⣿⣿⠉⠙    <br />
+                  ⠡⢤⠀⠀⠀⠀⠘⢿⡇⠀⠙⠛⠃⠀⠀⠀⢀⣦⡄⠐⢿⣿⣷⡜⢿⣿⣿⣿⠉⠙   <br />
                 </p>
               </Accordion.Body>
             </Accordion.Item>

@@ -1,18 +1,18 @@
 import { Col, Row, Form, Container } from "react-bootstrap";
-import { AppSetting } from "../../utils/types";
 import React, { useState } from "react";
 import { local_storage } from "../../utils/functions";
 import { Link } from "react-router-dom";
-import { DefaultValues, PATHS } from "../../utils/constants";
+import { PATHS } from "../../utils/constants";
 import SimpleConfirmationModal from "../../components/modal/SimpleConfirmationModal";
 import DefaultEncryptionOptions from "./DefaultEncryptionOptions";
 import ThemeOptions from "./ThemeOptions";
 import TokenSetting from "./TokenSetting";
 import SettingsContext from "./context";
 import GeneralSetting from "./General";
+import { AppAction } from "../../utils/AppSettingContext";
 
 type Props = {
-  setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
+  setAppSettings: React.Dispatch<AppAction>,
 }
 
 const Settings = ({ setAppSettings }: Props) => {
@@ -70,8 +70,7 @@ const Settings = ({ setAppSettings }: Props) => {
           })}
           doDecide={val => {
             if (val) {
-              setAppSettings(DefaultValues.settings);
-              local_storage.set("settings", DefaultValues.settings);
+              setAppSettings({ type: "reset" });
             }
             setModals(prev => {
               prev.confirmResetSettings = false;

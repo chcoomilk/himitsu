@@ -52,15 +52,3 @@ export const is_settings = (item: unknown): item is AppSetting => {
 };
 
 export const is_note_id = (id: unknown): id is note_id => (typeof id === "string" && id.length <= 32);
-
-// export const unsafe_is_note = (item: unknown): item is NoteInfo => {
-//     return (
-//         (item as NoteInfo).id !== undefined
-//     );
-// };
-
-// export const unsafe_is_settings = (item: unknown): item is AppSetting => {
-//     return (
-//         (item as AppSetting).encryption !== undefined
-//     );
-// };

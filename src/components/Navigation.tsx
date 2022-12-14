@@ -30,7 +30,7 @@ const Navigation = () => {
             <Nav.Link
               title="Tell a secret"
               aria-label="Go write a new secret"
-              className="py-0 fs-3 d-flex align-items-center"
+              className="p-0 mx-2 fs-3 d-flex align-items-center"
               as={NavLink}
               to={PATHS.new_note}
               tabIndex={-1}
@@ -51,7 +51,7 @@ const Navigation = () => {
             <Nav.Link
               title="Find some dude's secret"
               aria-label="Go to find page"
-              className="py-0 fs-3 d-flex align-items-center"
+              className="p-0 mx-2 fs-3 d-flex align-items-center"
               as={NavLink}
               to={PATHS.find_note}
               tabIndex={-1}

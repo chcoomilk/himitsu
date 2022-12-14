@@ -5,14 +5,14 @@ import { PATHS } from "../../../utils/constants";
 import TitleSuggestions from "./TitleSuggestions";
 import { Props } from "./utils";
 import { useForm } from "react-hook-form";
-import AppContext from "../../../utils/app_state_context";
+import AppSettingContext from "../../../utils/AppSettingContext";
 
 type FormData = {
   title: string,
 }
 
 const FindByTitle = ({ params: { query }, setParams }: Props) => {
-  const { appSettings } = useContext(AppContext);
+  const appSettings= useContext(AppSettingContext);
   const navigate = useNavigate();
 
 

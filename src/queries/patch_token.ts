@@ -5,8 +5,13 @@ import unwrap_default from "../utils/functions/unwrap";
 
 type Params = {
     token: string,
-};
+}
 
+/**
+ * Refresh token and automatically set it to local storage
+ * @param token JWT token to be updated by the server
+ * @returns Refreshed JWT token without the invalid ids leading to nonexisting notes
+ */
 const patch_token = async ({ token }: Params): Promise<string | undefined> => {
     let ret;
     fetch(BASE_URL + "/token", {

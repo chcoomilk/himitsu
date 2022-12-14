@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { generate_face } from "../utils/functions";
 
-const useTitle = (initialTitle: string) => {
-  const [title, setTitle] = useState(initialTitle);
-  const [defaultTitle] = useState("himitsu");
+type Args = string
+
+let appname = document.title;
+/**
+ * initialize page title when react renders the page
+ * (e.g. "/" to "/somewhere-else") and/or when react-router changes the route or something
+ *  */
+const useTitle = (initialTitleToRender: Args) => {
+  const [title, setTitle] = useState(initialTitleToRender);
+  const [defaultTitle] = useState(appname);
 
   useEffect(() => {
     if (title.trim().replace(" ", () => { return ""; })) {

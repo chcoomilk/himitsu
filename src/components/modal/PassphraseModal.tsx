@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { Form, Modal, Button } from "react-bootstrap";
 import PassphraseInputGroup from "../input/PassphraseInputGroup";
 import { useContext } from "react";
-import AppContext from "../../utils/app_state_context";
+import AppSettingContext from "../../utils/AppSettingContext";
 
 interface Props {
   title?: string,
@@ -16,7 +16,7 @@ type Fields = {
 }
 
 const PassphraseModal = ({ title, show, setShow, newPassphrase: sendPassphraseToParent }: Props) => {
-  const { appSettings } = useContext(AppContext);
+  const appSettings = useContext(AppSettingContext);
   const form = useForm<Fields>();
 
   const submit = (data: Fields) => {

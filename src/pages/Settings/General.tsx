@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Form } from "react-bootstrap";
-import AppContext from "../../utils/app_state_context";
-import { local_storage } from "../../utils/functions";
+import AppSettingContext from "../../utils/AppSettingContext";
 import SettingsContext from "./context";
 
 type Props = {
@@ -10,7 +9,7 @@ type Props = {
 }
 
 const GeneralSetting = ({ resetAllSettingsOnClick, deleteSavedNotesOnClick }: Props) => {
-  const { appSettings } = useContext(AppContext);
+  const appSettings = useContext(AppSettingContext);
   const setAppSettings = useContext(SettingsContext);
 
   return (
@@ -22,15 +21,7 @@ const GeneralSetting = ({ resetAllSettingsOnClick, deleteSavedNotesOnClick }: Pr
         className="text-nowrap"
         checked={appSettings.history}
         label={"New notes will " + (appSettings.history ? "be" : "not be") + " saved"}
-        onChange={_ => setAppSettings(prev => {
-          let settings = {
-            ...prev,
-            history: !appSettings.history,
-          };
-
-          local_storage.set("settings", settings);
-          return settings;
-        })}
+        onChange={_ => setAppSettings({ type: "toggleHistory" })}
       />
       <Form.Check
         id="autofocus-switch"
@@ -39,15 +30,7 @@ const GeneralSetting = ({ resetAllSettingsOnClick, deleteSavedNotesOnClick }: Pr
         className="text-nowrap"
         checked={appSettings.autofocus}
         label={"Input autofocus on page change"}
-        onChange={_ => setAppSettings(prev => {
-          let settings = {
-            ...prev,
-            autofocus: !appSettings.autofocus,
-          };
-
-          local_storage.set("settings", settings);
-          return settings;
-        })}
+        onChange={_ => setAppSettings({ type: "toggleAutofocus" })}
       />
       <button onClick={deleteSavedNotesOnClick} className="btn-anchor link-danger text-decoration-none text-start">
         Delete all saved notes!

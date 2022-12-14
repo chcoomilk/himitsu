@@ -7,12 +7,16 @@ type Props = {
   inputGroupClassName?: string,
   errorMessage?: string | null,
   autoFocus?: boolean,
+  elementsBeforeControl?: React.ReactNode
+  elementsAfterControl?: React.ReactNode
 } & FormControlProps & FormTextProps
 
 const PassphraseInputGroup = forwardRef(({
   hide,
   inputGroupClassName,
   errorMessage,
+  elementsBeforeControl,
+  elementsAfterControl,
   ...attr
 }: Props, ref) => {
   const [mask, setMask] = useState(true);
@@ -20,6 +24,7 @@ const PassphraseInputGroup = forwardRef(({
 
   return (
     <InputGroup className={inputGroupClassName} hidden={hide} hasValidation>
+      {elementsBeforeControl}
       <Form.Control
         type={mask ? "password" : "text"}
         autoComplete="current-passphrase"
@@ -45,6 +50,7 @@ const PassphraseInputGroup = forwardRef(({
       {
         attr.readOnly && <CopyButton copy_value={attr.value} />
       }
+      {elementsAfterControl}
       <Form.Control.Feedback type="invalid" tooltip>{errorMessage}</Form.Control.Feedback>
     </InputGroup>
   );

@@ -39,7 +39,7 @@ const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide
   };
 
   const handleCopyAll = () => {
-    navigator.clipboard.writeText(`${window.location.host + PATHS.note_detail + `/${id.toString()}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
+    navigator.clipboard.writeText(`${window.location.host + PATHS.note_detail + `/${encodeURIComponent(id.toString())}`}\nID ${id.toString()}${passphrase ? `\nPassphrase ${passphrase}` : ""}`);
     setTooltip(true);
   };
 
@@ -47,7 +47,7 @@ const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide
     e.preventDefault();
     if (doUponHide) doUponHide();
     setShow(false);
-    navigate(PATHS.note_detail + `/${id.toString()}`, { state: { passphrase } });
+    navigate(PATHS.note_detail + `/${encodeURIComponent(id.toString())}`, { state: { passphrase } });
   };
 
   return (

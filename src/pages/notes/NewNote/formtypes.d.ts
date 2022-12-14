@@ -1,9 +1,10 @@
 import { EncryptionMethod } from "../../../utils/types"
 
 export type Fields = {
+    encryption: EncryptionMethod,
+    content: string,
     title: string,
     passphrase: string,
-    content: string,
     custom_id: string,
     duration: {
         day: number,
@@ -12,7 +13,6 @@ export type Fields = {
         second: number,
     }
     extra: {
-        encryption: EncryptionMethod,
         double_encryption: {
             enable: boolean,
             passphrase: string,
@@ -20,5 +20,6 @@ export type Fields = {
         discoverable: boolean,
         allow_delete_with_passphrase: boolean,
         delete_after_read: number,
+        textarea_rows: number;
     }
 }

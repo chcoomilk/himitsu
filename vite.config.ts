@@ -29,7 +29,7 @@ export default ({ mode }) => {
             }),
             splitVendorChunkPlugin(),
             eslint({
-                emitError: false,
+                emitError: true,
                 emitWarning: true,
                 failOnWarning: false,
                 cache: true,

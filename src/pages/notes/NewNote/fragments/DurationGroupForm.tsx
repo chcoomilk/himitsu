@@ -1,21 +1,34 @@
-import { Col, Form, InputGroup, Row } from "react-bootstrap";
+import { useEffect } from "react";
+import { Col, Form, FormGroupProps, InputGroup, Row } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import UnitInput from "../../../../components/input/Unit";
 import { Fields } from "../formtypes";
 
-const NewNoteDurationGroupForm = () => {
+const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
   const form = useFormContext<Fields>();
-  const watch = form.watch();
+  const [
+    day, hour, minute, second
+  ] = form.watch([
+    "duration.day",
+    "duration.hour",
+    "duration.minute",
+    "duration.second"
+  ]);
+
+  useEffect(() => {
+    if (form) form.trigger("duration.second");
+  }, [day, hour, minute]); // eslint-disable-line
 
   return (
-    <Form.Group controlId="formBasicDuration" className="mb-4">
-      <Form.Label>
+    <Form.Group {...attr}>
+      <Form.Label htmlFor="duration.day">
         Duration
       </Form.Label>
       <Row className="gx-2 gy-2">
         <Form.Group as={Col} xs={6} xl={3}>
-          <InputGroup hasValidation inputMode="numeric">
+          <InputGroup hasValidation>
             <Form.Control
+              id="duration.day"
               disabled={form.formState.isSubmitting}
               aria-label="Day"
               type="text"
@@ -35,7 +48,7 @@ const NewNoteDurationGroupForm = () => {
             />
             { // not suppose to be like this, but no other choice
               !form.formState.errors.duration?.day
-                ? <UnitInput value={watch.duration?.day?.toString()} unit="day" />
+                ? <UnitInput value={day?.toString()} unit="day" />
                 : <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.duration?.day?.message}</Form.Control.Feedback>
             }
           </InputGroup>
@@ -66,7 +79,7 @@ const NewNoteDurationGroupForm = () => {
             />
             { // not suppose to be like this, but no other choice
               !form.formState.errors.duration?.hour
-                ? <UnitInput value={watch.duration?.hour?.toString()} unit="hour" />
+                ? <UnitInput value={hour?.toString()} unit="hour" />
                 : <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.duration?.hour?.message}</Form.Control.Feedback>
             }
           </InputGroup>
@@ -94,7 +107,7 @@ const NewNoteDurationGroupForm = () => {
             />
             { // not suppose to be like this, but no other choice
               !form.formState.errors.duration?.minute
-                ? <UnitInput value={watch.duration?.minute?.toString()} unit="minute" />
+                ? <UnitInput value={minute?.toString()} unit="minute" />
                 : <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.duration?.minute?.message}</Form.Control.Feedback>
             }
           </InputGroup>
@@ -120,13 +133,14 @@ const NewNoteDurationGroupForm = () => {
                   ) ? 0 : 30,
                   message: "second should be greater or equal 30"
                 },
+                // deps: ["duration.day", "duration"]
               })}
               isInvalid={form.formState.touchedFields.duration?.second && !!form.formState.errors.duration?.second}
               autoComplete="off"
             />
             { // not suppose to be like this, but no other choice
               !form.formState.errors.duration?.second
-                ? <UnitInput value={watch.duration?.second?.toString()} unit="second" />
+                ? <UnitInput value={second?.toString()} unit="second" />
                 : <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.duration?.second?.message}</Form.Control.Feedback>
             }
           </InputGroup>

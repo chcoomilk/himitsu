@@ -157,8 +157,8 @@ input.form-range::-webkit-slider-runnable-track {
 }
 
 span.input-group-text {
-  background-color: $input-bg-color-disabled;
-  border: var(--bs-btn-border-width) solid $input-border-color;
+  background-color: $input-bg-color;
+  border-color: $input-border-color;
   color: $text-color-normal;
 }
 

@@ -2,24 +2,15 @@ import { Form } from "react-bootstrap";
 import { createEncryptionMethodKeys, EncryptionMethod } from "../../utils/types";
 import { capitalCase } from "change-case";
 import { useContext } from "react";
-import AppContext from "../../utils/app_state_context";
-import { local_storage } from "../../utils/functions";
+import AppSettingContext from "../../utils/AppSettingContext";
 import SettingsContext from "./context";
 
 const DefaultEncryptionOptions = () => {
-  const { appSettings } = useContext(AppContext);
+  const appSettings = useContext(AppSettingContext);
   const setAppSettings = useContext(SettingsContext);
-  const setDefaultEncryption = (method: EncryptionMethod) => {
-    setAppSettings(prev => {
-      let settings = {
-        ...prev,
-        encryption: method,
-      };
-
-      local_storage.set("settings", settings);
-      return settings;
-    });
-  };
+  const setDefaultEncryption = (method: EncryptionMethod) => setAppSettings({
+    type: "switchEncryption", payload: method
+  });
 
   return (
     <>
@@ -44,7 +35,6 @@ const DefaultEncryptionOptions = () => {
       }
     </>
   );
-
 };
 
 export default DefaultEncryptionOptions;
