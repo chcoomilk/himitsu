@@ -4,7 +4,6 @@ import { local_storage } from "../../utils/functions";
 import { Link } from "react-router-dom";
 import { PATHS } from "../../utils/constants";
 import SimpleConfirmationModal from "../../components/modal/SimpleConfirmationModal";
-import DefaultEncryptionOptions from "./DefaultEncryptionOptions";
 import ThemeOptions from "./ThemeOptions";
 import TokenSetting from "./TokenSetting";
 import SettingsContext from "./context";
@@ -89,15 +88,6 @@ const Settings = ({ setAppSettings }: Props) => {
             </Form.Label>
             <Col lg="6" xl="4">
               <GeneralSetting deleteSavedNotesOnClick={handleDelete} resetAllSettingsOnClick={handleReset} />
-            </Col>
-          </Form.Group>
-
-          <Form.Group as={Row} controlId="encryption" className="mb-2">
-            <Form.Label column xl={{ span: 3, offset: 3 }} lg="6">
-              Default Encryption
-            </Form.Label>
-            <Col lg="6" xl="4">
-              <DefaultEncryptionOptions />
             </Col>
           </Form.Group>
 

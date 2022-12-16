@@ -49,7 +49,7 @@ function App() {
       <Routes>
         <Route path={"/debug"} element={<Debug />} />
         <Route path={PATHS.about} element={<About />} />
-        <Route path={PATHS.new_note} element={<NewNote setAppSettings={dispatchAppSetting} />} />
+        <Route path={PATHS.new_note} element={<NewNote />} />
         <Route path={PATHS.notes} element={<Notes />} />
         <Route path={PATHS.find_note} element={<FindNote />} />
         <Route path={PATHS.note_detail + "/:id"} element={<Note />} />

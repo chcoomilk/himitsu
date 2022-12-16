@@ -5,7 +5,7 @@ import { useMutation } from "react-query";
 
 import { post_note } from "../../../queries";
 import NewNoteModal from "../../../components/note/NewNoteModal";
-import AppSettingContext, { AppAction } from "../../../utils/AppSettingContext";
+import AppSettingContext from "../../../utils/AppSettingContext";
 import { EncryptionMethod, NoteInfo } from "../../../utils/types";
 import { useTitle } from "../../../custom-hooks";
 import { local_storage } from "../../../utils/functions";
@@ -14,22 +14,18 @@ import { Fields } from "./formtypes";
 import NewNoteForm from "./Form";
 import unwrap_default from "../../../utils/functions/unwrap";
 import NewNoteContext, { NewNoteAction, NewNoteState, reducer } from "./context";
+import { Is } from "../../../utils/functions/is";
 
-// ~5000-8000K memory footprint on chrome
 const OptionModal = React.lazy(() => import("./OptionModal"));
 
 type UNoteInfo = NoteInfo & {
   passphrase?: string,
 }
 
-type Props = {
-  setAppSettings: React.Dispatch<AppAction>
-}
-
-const NewNote = ({ setAppSettings }: Props) => {
+const NewNote = () => {
   useTitle("New Note");
   const appSettings = useContext(AppSettingContext);
-
+  const localStorageEncryptionMethod = Number(localStorage.getItem("encryption"));
   const newNoteReducer = useReducer<React.Reducer<NewNoteState, NewNoteAction>>(
     reducer,
     {
@@ -37,54 +33,37 @@ const NewNote = ({ setAppSettings }: Props) => {
         reset: false,
         extra_settings: false,
       },
-      defaultEncryption: appSettings.encryption,
-      history: appSettings.history,
+      defaultEncryption: Is.existValueInEnum(EncryptionMethod, localStorageEncryptionMethod) ? (localStorageEncryptionMethod as EncryptionMethod) : EncryptionMethod.BackendEncryption,
+      alwaysSaveOnSubmit: appSettings.history ? Boolean(localStorage.getItem("alwaysSaveOnSubmit")) : false,
     }
   );
 
   const [pageState, dispatch] = newNoteReducer;
-
-  useEffect(
-    () => setAppSettings({ type: "toggleHistory" }),
-    [setAppSettings, pageState.history]
-  );
-  useEffect(
-    () => setAppSettings({ type: "switchEncryption", payload: pageState.defaultEncryption }),
-    [setAppSettings, pageState.defaultEncryption]
-  );
-
   const [noteModal, setNoteModal] = useState<UNoteInfo>();
 
   const form = useForm<Fields>({
     mode: "onChange",
     defaultValues: {
-      encryption: appSettings.encryption,
+      encryption: pageState.defaultEncryption,
       extra: {
         discoverable: false,
-        double_encryption: {
-          enable: false,
-        }
+        save_locally: pageState.alwaysSaveOnSubmit,
       }
     },
   });
 
-  const resetForm = (skipExtra?: boolean) => {
-    skipExtra ? (() => {
-      let prev_values = form.getValues();
-      form.reset(undefined, { keepDefaultValues: true });
-      form.setValue("extra", {
-        discoverable: prev_values.extra.discoverable,
-        double_encryption: {
-          enable: false,
-          passphrase: form.getValues("extra.double_encryption.passphrase"),
-        },
-        allow_delete_with_passphrase: prev_values.extra.allow_delete_with_passphrase,
-        delete_after_read: prev_values.extra.delete_after_read,
-        save_locally: appSettings.history,
-      });
-      form.setValue("encryption", prev_values.encryption);
-    })() : form.reset(undefined, { keepDefaultValues: true });
-  };
+  const { setValue: formSetValue } = form;
+
+  useEffect(() => {
+    localStorage.setItem("alwaysSaveOnSubmit", String(pageState.alwaysSaveOnSubmit));
+    // if the input field is touched, or manually changed, not following default anymore
+    if (!form.formState.touchedFields.extra?.save_locally) formSetValue("extra.save_locally", pageState.alwaysSaveOnSubmit);
+  }, [form.formState.touchedFields.extra?.save_locally, formSetValue, pageState.alwaysSaveOnSubmit]);
+
+  useEffect(() => {
+    localStorage.setItem("encryption", String(pageState.defaultEncryption));
+    if (!form.formState.touchedFields.encryption) formSetValue("encryption", pageState.defaultEncryption);
+  }, [form.formState.touchedFields.encryption, formSetValue, pageState.defaultEncryption]);
 
   const { mutateAsync } = useMutation(post_note);
   const submit = async (form_data: Fields) => new Promise<void>((resolve) => {
@@ -108,7 +87,7 @@ const NewNote = ({ setAppSettings }: Props) => {
     mutateAsync({
       discoverable: form_data.extra.discoverable,
       custom_id: form_data.custom_id,
-      double_encrypt: form_data.extra.double_encryption.passphrase,
+      double_encrypt: form_data.extra.double_encryption,
       encryption: form_data.encryption,
       title: form_data.title,
       content: form_data.content,
@@ -146,7 +125,7 @@ const NewNote = ({ setAppSettings }: Props) => {
             }
           }
 
-          resetForm(true);
+          form.reset();
         } else {
           unwrap_default(error);
         }
@@ -176,7 +155,7 @@ const NewNote = ({ setAppSettings }: Props) => {
           show={pageState.modals.reset}
           onHide={() => dispatch({ type: "toggleModalReset" })}
           doDecide={c => {
-            if (c) resetForm();
+            if (c) form.reset();
             dispatch({ type: "toggleModalReset" });
           }}
           centered

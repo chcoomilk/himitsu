@@ -5,16 +5,17 @@ import { EncryptionMethod } from "../../../utils/types";
 export type NewNoteAction =
     | { type: "toggleModalReset" }
     | { type: "toggleModalExtraSettings" }
-    | { type: "toggleHistory" }
+    | { type: "toggleAlwaysSaveOnSubmit" }
     | { type: "setDefaultEncryption", payload: EncryptionMethod }
 
 export type NewNoteState = {
     modals: {
         reset: boolean,
         extra_settings: boolean,
+        // extra_settings_static_height: boolean,
     },
     defaultEncryption: EncryptionMethod,
-    history: boolean,
+    alwaysSaveOnSubmit: boolean,
 }
 
 // starting to question my own sanity
@@ -29,8 +30,8 @@ export const reducer = (state: NewNoteState, action: NewNoteAction): NewNoteStat
             return { ...state, modals: { ...state.modals, extra_settings: !state.modals.extra_settings } };
         case "setDefaultEncryption":
             return { ...state, defaultEncryption: action.payload };
-        case "toggleHistory":
-            return { ...state, history: !state.history };
+        case "toggleAlwaysSaveOnSubmit":
+            return { ...state, alwaysSaveOnSubmit: !state.alwaysSaveOnSubmit };
         default:
             return state;
     }
@@ -41,9 +42,9 @@ export const reducer = (state: NewNoteState, action: NewNoteAction): NewNoteStat
 // like why even bother then
 const NewNoteContext = createContext<[NewNoteState, React.Dispatch<NewNoteAction>]>([
     {
-        modals: { reset: false, extra_settings: false },
+        modals: { reset: false, extra_settings: false, },
         defaultEncryption: DefaultValues.settings.encryption,
-        history: DefaultValues.settings.history
+        alwaysSaveOnSubmit: DefaultValues.settings.history,
     },
     () => { }
 ]);

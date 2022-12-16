@@ -13,10 +13,7 @@ export type Fields = {
         second: number,
     }
     extra: {
-        double_encryption: {
-            enable: boolean,
-            passphrase: string,
-        },
+        double_encryption: string,
         discoverable: boolean,
         allow_delete_with_passphrase: boolean,
         delete_after_read: number,

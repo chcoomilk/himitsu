@@ -1,7 +1,7 @@
 import { capitalCase, noCase } from "change-case";
 import { useContext } from "react";
 import { Form, Col, Row, DropdownButton, Dropdown } from "react-bootstrap";
-import { Controller, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import AppContext from "../../../utils/AppSettingContext";
 import { createEncryptionMethodKeys, EncryptionMethod } from "../../../utils/types";
@@ -10,7 +10,7 @@ import FormButtons from "./fragments/FormButtons";
 
 type Props = {
   onSubmit: (form_data: Fields) => void,
-};
+}
 
 const NewNoteForm = ({ onSubmit: submit }: Props) => {
   const appSettings = useContext(AppContext);
@@ -47,31 +47,32 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
               : undefined
             }
             elementsBeforeControl={
-              <Controller
-                control={form.control}
-                name="encryption"
-                render={({ field }) => (
-                  <DropdownButton
-                    variant="outline-light"
-                    menuVariant="dark"
-                    title=""
-                    id="input-group-dropdown-1"
-                    className="text-truncate"
-                    disabled={form.formState.isSubmitting}
-                  >
-                    {
-                      createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
-                        method => (
-                          <Dropdown.Item
-                            key={method}
-                            onClick={() => field.onChange(EncryptionMethod[method])}
-                          >{capitalCase(method)}</Dropdown.Item>
-                        )
-                      )
-                    }
-                  </DropdownButton>
+              <DropdownButton
+                as="select"
+                variant="outline-light"
+                menuVariant="dark"
+                title=""
+                id="input-group-dropdown-1"
+                className="text-truncate"
+                onSelect={(method) => form.setValue(
+                  "encryption", +(method as string) as EncryptionMethod,
+                  { shouldTouch: true }
                 )}
-              />
+                disabled={form.formState.isSubmitting}
+              >
+                {
+                  createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
+                    method => (
+                      <Dropdown.Item
+                        key={method}
+                        value={method}
+                        active={form.getValues("encryption") === EncryptionMethod[method]}
+                        eventKey={EncryptionMethod[method]}
+                      >{capitalCase(method)}</Dropdown.Item>
+                    )
+                  )
+                }
+              </DropdownButton>
             }
           />
         </Form.Group>
@@ -83,7 +84,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
       <Form.Group controlId="formBasicDescription" className="position-relative mb-4">
         <Form.Label>Secret</Form.Label>
         <Form.Text muted>
-          {` (with ${noCase(EncryptionMethod[watch.encryption])}${watch.extra.double_encryption.enable ? "+" : ""})`}
+          {` (with ${noCase(EncryptionMethod[watch.encryption])}${watch.extra.double_encryption ? "+" : ""})`}
         </Form.Text>
         <Form.Control
           disabled={form.formState.isSubmitting}
@@ -99,7 +100,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
         <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.content?.message}</Form.Control.Feedback>
       </Form.Group>
       <FormButtons gap={3} direction="vertical" buttonSize="lg" className="mb-2 d-md-none" />
-    </Form>
+    </Form >
   );
 };
 
