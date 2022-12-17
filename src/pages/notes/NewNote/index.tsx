@@ -28,6 +28,7 @@ const NewNote = () => {
   const appSettings = useContext(AppSettingContext);
   const [encryption, setEncryption] = useLocalStorage("encryption", EncryptionMethod.BackendEncryption);
   const [contentRow, setContentRow] = useLocalStorage("newNoteRow", 15);
+  const [alwaysSaveOnSubmit, setAlwaysSaveOnSubmit] = useLocalStorage("alwaysSaveOnSubmit", false);
   const newNoteReducer = useReducer<React.Reducer<NewNoteState, NewNoteAction>>(
     reducer,
     {
@@ -39,7 +40,7 @@ const NewNote = () => {
       defaultEncryption: Is.existValueInEnum(EncryptionMethod, encryption)
         ? (encryption as EncryptionMethod)
         : EncryptionMethod.BackendEncryption,
-      alwaysSaveOnSubmit: appSettings.history ? Boolean(localStorage.getItem("alwaysSaveOnSubmit")) : false,
+      alwaysSaveOnSubmit: alwaysSaveOnSubmit,
       textAreaRow: !isNaN(contentRow) ? contentRow : 15,
     }
   );
@@ -61,7 +62,7 @@ const NewNote = () => {
   const { setValue: formSetValue } = form;
 
   useEffect(() => {
-    localStorage.setItem("alwaysSaveOnSubmit", pageState.alwaysSaveOnSubmit.toString());
+    setAlwaysSaveOnSubmit(pageState.alwaysSaveOnSubmit);
     // if the input field is touched, or manually changed, not following default anymore
     if (!form.formState.touchedFields.extra?.save_locally) formSetValue("extra.save_locally", pageState.alwaysSaveOnSubmit);
   }, [form.formState.touchedFields.extra?.save_locally, formSetValue, pageState.alwaysSaveOnSubmit]);

@@ -7,7 +7,7 @@ import AppContext from "../../../utils/AppSettingContext";
 import { createEncryptionMethodKeys, EncryptionMethod } from "../../../utils/types";
 import NewNoteContext from "./context";
 import { Fields } from "./formtypes";
-import FormButtons from "./fragments/FormButtons";
+import FormButtons from "./components/FormButtons";
 
 type Props = {
   onSubmit: (form_data: Fields) => void,

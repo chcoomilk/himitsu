@@ -3,8 +3,8 @@ import { Tab, Modal, Nav } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import NewNoteContext from "./context";
 import { Fields } from "./formtypes";
-import NewNoteDefaultSettingFormGroup from "./fragments/DefaultSettingForm";
-import NewNoteOptionalGroupForm from "./fragments/OptionalGroupForm";
+import NewNoteDefaultSettingFormGroup from "./components/DefaultSettingForm";
+import NewNoteOptionalGroupForm from "./components/OptionalGroupForm";
 
 type Props = {
   show: boolean,
