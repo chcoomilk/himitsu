@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { Form } from "react-bootstrap";
+import InfoCircle from "../../components/InfoCircle";
 import AppSettingContext from "../../utils/AppSettingContext";
 import SettingsContext from "./context";
 
@@ -20,7 +21,15 @@ const GeneralSetting = ({ resetAllSettingsOnClick, deleteSavedNotesOnClick }: Pr
         name="history"
         className="text-nowrap"
         checked={appSettings.history}
-        label={"New notes will " + (appSettings.history ? "be" : "not be") + " saved"}
+        label={
+          <>History <InfoCircle>
+            The ability to save any notes locally.
+            <br />
+            <span className="text-warning">
+              No content or sensitive information will be saved!
+            </span>
+          </InfoCircle></>
+        }
         onChange={_ => setAppSettings({ type: "toggleHistory" })}
       />
       <Form.Check

@@ -80,6 +80,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
                   id="collapse-suggestions"
                   className="overflow-auto"
                   query={title}
+                  style={{maxHeight: "35vh"}}
                 />
               }
             </div>

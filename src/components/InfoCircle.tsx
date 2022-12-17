@@ -13,7 +13,7 @@ const InfoCircle = ({ id, children }: Props) => {
     <OverlayTrigger
       placement="auto"
       overlay={
-        <Tooltip id={"overlay-" + id}>
+        <Tooltip id={"overlay-" + (id || "basic")}>
           {children}
         </Tooltip>
       }

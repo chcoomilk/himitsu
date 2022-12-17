@@ -65,7 +65,7 @@ const NewNote = () => {
     setAlwaysSaveOnSubmit(pageState.alwaysSaveOnSubmit);
     // if the input field is touched, or manually changed, not following default anymore
     if (!form.formState.touchedFields.extra?.save_locally) formSetValue("extra.save_locally", pageState.alwaysSaveOnSubmit);
-  }, [form.formState.touchedFields.extra?.save_locally, formSetValue, pageState.alwaysSaveOnSubmit]);
+  }, [form.formState.touchedFields.extra?.save_locally, formSetValue, pageState.alwaysSaveOnSubmit, setAlwaysSaveOnSubmit]);
 
   useEffect(() => {
     setEncryption(pageState.defaultEncryption);
