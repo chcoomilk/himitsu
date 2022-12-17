@@ -5,6 +5,7 @@ import { useFormContext } from "react-hook-form";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import AppContext from "../../../utils/AppSettingContext";
 import { createEncryptionMethodKeys, EncryptionMethod } from "../../../utils/types";
+import NewNoteContext from "./context";
 import { Fields } from "./formtypes";
 import FormButtons from "./fragments/FormButtons";
 
@@ -14,6 +15,7 @@ type Props = {
 
 const NewNoteForm = ({ onSubmit: submit }: Props) => {
   const appSettings = useContext(AppContext);
+  const [pageState] = useContext(NewNoteContext);
   const form = useFormContext<Fields>();
   const watch = form.watch();
 
@@ -90,7 +92,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
           disabled={form.formState.isSubmitting}
           as="textarea"
           placeholder="Enter note here"
-          rows={15}
+          rows={pageState.textAreaRow}
           {...form.register("content", {
             required: { value: true, message: "a note can't be empty" },
           })}

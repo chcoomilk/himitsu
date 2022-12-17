@@ -15,6 +15,7 @@ import NewNoteForm from "./Form";
 import unwrap_default from "../../../utils/functions/unwrap";
 import NewNoteContext, { NewNoteAction, NewNoteState, reducer } from "./context";
 import { Is } from "../../../utils/functions/is";
+import useLocalStorage from "../../../custom-hooks/useLocalStorage";
 
 const OptionModal = React.lazy(() => import("./OptionModal"));
 
@@ -25,16 +26,21 @@ type UNoteInfo = NoteInfo & {
 const NewNote = () => {
   useTitle("New Note");
   const appSettings = useContext(AppSettingContext);
-  const localStorageEncryptionMethod = Number(localStorage.getItem("encryption"));
+  const [encryption, setEncryption] = useLocalStorage("encryption", EncryptionMethod.BackendEncryption);
+  const [contentRow, setContentRow] = useLocalStorage("newNoteRow", 15);
   const newNoteReducer = useReducer<React.Reducer<NewNoteState, NewNoteAction>>(
     reducer,
     {
       modals: {
         reset: false,
         extra_settings: false,
+        extra_settings_static_height: false,
       },
-      defaultEncryption: Is.existValueInEnum(EncryptionMethod, localStorageEncryptionMethod) ? (localStorageEncryptionMethod as EncryptionMethod) : EncryptionMethod.BackendEncryption,
+      defaultEncryption: Is.existValueInEnum(EncryptionMethod, encryption)
+        ? (encryption as EncryptionMethod)
+        : EncryptionMethod.BackendEncryption,
       alwaysSaveOnSubmit: appSettings.history ? Boolean(localStorage.getItem("alwaysSaveOnSubmit")) : false,
+      textAreaRow: !isNaN(contentRow) ? contentRow : 15,
     }
   );
 
@@ -55,15 +61,17 @@ const NewNote = () => {
   const { setValue: formSetValue } = form;
 
   useEffect(() => {
-    localStorage.setItem("alwaysSaveOnSubmit", String(pageState.alwaysSaveOnSubmit));
+    localStorage.setItem("alwaysSaveOnSubmit", pageState.alwaysSaveOnSubmit.toString());
     // if the input field is touched, or manually changed, not following default anymore
     if (!form.formState.touchedFields.extra?.save_locally) formSetValue("extra.save_locally", pageState.alwaysSaveOnSubmit);
   }, [form.formState.touchedFields.extra?.save_locally, formSetValue, pageState.alwaysSaveOnSubmit]);
 
   useEffect(() => {
-    localStorage.setItem("encryption", String(pageState.defaultEncryption));
+    setEncryption(pageState.defaultEncryption);
     if (!form.formState.touchedFields.encryption) formSetValue("encryption", pageState.defaultEncryption);
-  }, [form.formState.touchedFields.encryption, formSetValue, pageState.defaultEncryption]);
+  }, [form.formState.touchedFields.encryption, formSetValue, pageState.defaultEncryption, setEncryption]);
+
+  useEffect(() => setContentRow(pageState.textAreaRow), [pageState.textAreaRow, setContentRow]);
 
   const { mutateAsync } = useMutation(post_note);
   const submit = async (form_data: Fields) => new Promise<void>((resolve) => {

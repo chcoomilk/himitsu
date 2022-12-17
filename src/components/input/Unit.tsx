@@ -20,7 +20,7 @@ const UnitInput
       }}>
         <span style={{ visibility: "hidden" }}>{value}</span>
         <span style={{ whiteSpace: "pre" }}>
-          {value?.length > 0 && ` ${unit + (!isNaN(+value) && +value > 1 ? "s" : "")}`}
+          {!isNaN(+value) ? (value?.length > 0 && ` ${unit + (+value > 1 ? "s" : "")}`) : ""}
         </span>
       </div>
     );

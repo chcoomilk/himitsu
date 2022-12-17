@@ -15,9 +15,10 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
     "duration.second"
   ]);
 
-  useEffect(() => {
-    if (form) form.trigger("duration.second");
+  useEffect(() => { // deadly dependency "form" will cause infinite loop, do not try!!
+    form.trigger("duration.second");
   }, [day, hour, minute]); // eslint-disable-line
+  // form will always be valid anyway
 
   return (
     <Form.Group {...attr}>
@@ -35,10 +36,17 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
               inputMode="numeric"
               placeholder="2 days"
               {...form.register("duration.day", {
+                // problem assigning this as number is it will trigger the type
+                // validation if the input is empty. I can set the default value
+                // to be 0, but it will hide the placeholder and it just doesn't
+                // look good in my opinion
                 // valueAsNumber: true,
                 validate: {
                   type: v => isNaN(+v) ? "day should represent a number" : undefined,
+                  // >= greater than or equal so when the user leave the input, this don't trigger
                   gte: v => +v >= 0 || "day should be greater than 0",
+                  // the actual equal 0 validation
+                  // all of these because Number<empty string>("") === 0
                   /* @ts-ignore */
                   javascript_funny_moment: v => +v === 0 && v === "0" ? "day cannot be 0" : undefined,
                 }
@@ -46,7 +54,7 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
               isInvalid={form.formState.touchedFields.duration?.day && !!form.formState.errors.duration?.day}
               autoComplete="off"
             />
-            { // not suppose to be like this, but no other choice
+            { // not supposed to be like this, but no other choice
               !form.formState.errors.duration?.day
                 ? <UnitInput value={day?.toString()} unit="day" />
                 : <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.duration?.day?.message}</Form.Control.Feedback>
@@ -66,10 +74,7 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
                 // valueAsNumber: true,
                 validate: {
                   type: v => isNaN(+v) ? "hour should represent a number" : undefined,
-                  // >= greater than or equal so when the user leave the input, this don't trigger
                   gte: v => +v >= 0 || "hour should be greater than 0",
-                  // the actual equal 0 validation
-                  // all of these because Number<empty string>("") === 0
                   /* @ts-ignore */
                   javascript_funny_moment: v => +v === 0 && v === "0" ? "hour cannot be 0" : undefined,
                 }
@@ -77,7 +82,7 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
               isInvalid={form.formState.touchedFields.duration?.hour && !!form.formState.errors.duration?.hour}
               autoComplete="off"
             />
-            { // not suppose to be like this, but no other choice
+            { // not supposed to be like this, but no other choice
               !form.formState.errors.duration?.hour
                 ? <UnitInput value={hour?.toString()} unit="hour" />
                 : <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.duration?.hour?.message}</Form.Control.Feedback>
@@ -105,7 +110,7 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
               isInvalid={form.formState.touchedFields.duration?.minute && !!form.formState.errors.duration?.minute}
               autoComplete="off"
             />
-            { // not suppose to be like this, but no other choice
+            { // not supposed to be like this, but no other choice
               !form.formState.errors.duration?.minute
                 ? <UnitInput value={minute?.toString()} unit="minute" />
                 : <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.duration?.minute?.message}</Form.Control.Feedback>
@@ -133,12 +138,14 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
                   ) ? 0 : 30,
                   message: "second should be greater or equal 30"
                 },
+                // this don't work unfortunately, maybe i did something wrong
+                // don't know, my question didn't get answered
                 // deps: ["duration.day", "duration"]
               })}
               isInvalid={form.formState.touchedFields.duration?.second && !!form.formState.errors.duration?.second}
               autoComplete="off"
             />
-            { // not suppose to be like this, but no other choice
+            { // not supposed to be like this, but no other choice
               !form.formState.errors.duration?.second
                 ? <UnitInput value={second?.toString()} unit="second" />
                 : <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.duration?.second?.message}</Form.Control.Feedback>
@@ -146,9 +153,6 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
           </InputGroup>
         </Form.Group>
       </Row >
-      <Form.Text muted>
-        * Omit these fields to set it permanent
-      </Form.Text>
     </Form.Group >
   );
 };

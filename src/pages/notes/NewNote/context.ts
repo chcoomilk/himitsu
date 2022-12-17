@@ -6,16 +6,21 @@ export type NewNoteAction =
     | { type: "toggleModalReset" }
     | { type: "toggleModalExtraSettings" }
     | { type: "toggleAlwaysSaveOnSubmit" }
+    | { type: "toggleExtraSettingsStaticHeight" }
+    | { type: "incrementTextAreaRow" }
+    | { type: "decrementTextAreaRow" }
     | { type: "setDefaultEncryption", payload: EncryptionMethod }
+    | { type: "setTextAreaRow", payload: number }
 
 export type NewNoteState = {
     modals: {
         reset: boolean,
         extra_settings: boolean,
-        // extra_settings_static_height: boolean,
+        extra_settings_static_height: boolean,
     },
     defaultEncryption: EncryptionMethod,
     alwaysSaveOnSubmit: boolean,
+    textAreaRow: number,
 }
 
 // starting to question my own sanity
@@ -32,6 +37,19 @@ export const reducer = (state: NewNoteState, action: NewNoteAction): NewNoteStat
             return { ...state, defaultEncryption: action.payload };
         case "toggleAlwaysSaveOnSubmit":
             return { ...state, alwaysSaveOnSubmit: !state.alwaysSaveOnSubmit };
+        case "decrementTextAreaRow":
+            return { ...state, textAreaRow: state.textAreaRow - 1 };
+        case "incrementTextAreaRow":
+            return { ...state, textAreaRow: state.textAreaRow + 1 };
+        case "setTextAreaRow":
+            return { ...state, textAreaRow: action.payload };
+        case "toggleExtraSettingsStaticHeight":
+            return {
+                ...state, modals: {
+                    ...state.modals,
+                    extra_settings_static_height: !state.modals.extra_settings_static_height
+                }
+            };
         default:
             return state;
     }
@@ -42,9 +60,10 @@ export const reducer = (state: NewNoteState, action: NewNoteAction): NewNoteStat
 // like why even bother then
 const NewNoteContext = createContext<[NewNoteState, React.Dispatch<NewNoteAction>]>([
     {
-        modals: { reset: false, extra_settings: false, },
+        modals: { reset: false, extra_settings: false, extra_settings_static_height: false, },
         defaultEncryption: DefaultValues.settings.encryption,
         alwaysSaveOnSubmit: DefaultValues.settings.history,
+        textAreaRow: 15,
     },
     () => { }
 ]);

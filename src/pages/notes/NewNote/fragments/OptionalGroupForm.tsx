@@ -2,10 +2,10 @@ import { useContext } from "react";
 import { Form, InputGroup } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import InfoCircle from "../../../../components/InfoCircle";
-import PassphraseInputGroup from "../../../../components/input/PassphraseInputGroup";
 import AppSettingContext from "../../../../utils/AppSettingContext";
 import { EncryptionMethod } from "../../../../utils/types";
 import { Fields } from "../formtypes";
+import ConditionalGroupForm from "./ConditionalGroupForm";
 import NewNoteDurationGroupForm from "./DurationGroupForm";
 
 
@@ -18,7 +18,7 @@ const NewNoteOptionalGroupForm = () => {
     <>
       <Form.Group controlId="formBasicTitle" className="position-relative mb-2">
         <Form.Label>Title <InfoCircle>
-          Title is unencrypted at request. It may help you to sorts your saved notes
+          Title is unencrypted at request. It may help you to sort your saved notes
           {watch.encryption === EncryptionMethod.NoEncryption && ". It can also make your note searchable, if you have discoverability enabled"}
         </InfoCircle></Form.Label>
         <Form.Control
@@ -51,9 +51,6 @@ const NewNoteOptionalGroupForm = () => {
           />
           <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.custom_id?.message}</Form.Control.Feedback>
         </InputGroup>
-        <Form.Text muted>
-          * Omit this field to set a random ID
-        </Form.Text>
       </Form.Group>
       <NewNoteDurationGroupForm className="mb-2" />
       <Form.Group controlId="formBasicDeleteAfterRead" className="mb-2">
@@ -92,68 +89,10 @@ const NewNoteOptionalGroupForm = () => {
           </InputGroup.Text>
           <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.extra?.delete_after_read?.message}</Form.Control.Feedback>
         </InputGroup>
-        <Form.Text>
-          * Omit this field to set no limit
-        </Form.Text>
       </Form.Group>
-      {
-        (() => {
-          switch (watch.encryption) {
-            case EncryptionMethod.BackendEncryption:
-              return (
-                <Form.Group controlId="formBasicExtraDoubleEncrypt" className="mb-2">
-                  <Form.Label>
-                    Secondary Passphrase <InfoCircle>
-                      Mixes the encryption, the first layer is obviously the frontend encryption, then the encrypted
-                      data will proceed as it would.
-                    </InfoCircle>
-                  </Form.Label>
-                  <PassphraseInputGroup
-                    disabled={form.formState.isSubmitting}
-                    aria-label="Passphrase"
-                    {...form.register(
-                      "extra.double_encryption", {
-                      minLength: {
-                        value: 4,
-                        message: "passphrase is too short (length >= 4)",
-                      },
-                      maxLength: {
-                        value: 1024,
-                        message: "passphrase is too long (length <= 1024)"
-                      },
-                    })}
-                    errorMessage={form.formState.errors.extra?.double_encryption?.message}
-                    isInvalid={!!form.formState.errors.extra?.double_encryption}
-                  />
-                  <Form.Text>* Omit this field if not needed</Form.Text>
-                </Form.Group>
-              );
 
-            case EncryptionMethod.FrontendEncryption:
-              break;
+      <ConditionalGroupForm />
 
-            case EncryptionMethod.NoEncryption:
-              return (
-                <Form.Group controlId="formBasicDiscoverable" className="mb-2">
-                  <Form.Switch
-                    inline
-                    id="public-switch"
-                    {...form.register("extra.discoverable")}
-                    label={
-                      <>
-                        Discoverability <InfoCircle>
-                          Your note can{(watch.extra.discoverable ? "" : "'t")} be found publicly
-                          through the title search or any other methods
-                        </InfoCircle>
-                      </>
-                    }
-                    disabled={form.formState.isSubmitting}
-                  />
-                </Form.Group>
-              );
-          }
-        })()
-      }
       <Form.Group
         hidden={watch.encryption === EncryptionMethod.NoEncryption}
         controlId="deleteWithPassphraseSwitch"

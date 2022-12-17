@@ -46,6 +46,26 @@ const NewNoteDefaultSettingFormGroup = () => {
           label="Always save note after submit"
         />
       </Form.Group>
+      <Form.Group controlId="staticHeight" className="mb-2">
+        <Form.Switch
+          inline
+          name="staticHeight"
+          checked={pageState.modals.extra_settings_static_height}
+          onChange={() => dispatch({ type: "toggleExtraSettingsStaticHeight" })}
+          label="Static window height"
+        />
+
+      </Form.Group>
+      <Form.Group controlId="contentRow" className="mb-2">
+        <Form.Label>Content text area row</Form.Label>
+        <Form.Range
+          aria-label="context text area row"
+          name="contentRow"
+          min={1}
+          value={pageState.textAreaRow}
+          onChange={(e) => dispatch({ type: "setTextAreaRow", payload: e.target.valueAsNumber })}
+        />
+      </Form.Group>
     </>
   );
 };

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Tab, Modal, Nav } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
+import NewNoteContext from "./context";
 import { Fields } from "./formtypes";
 import NewNoteDefaultSettingFormGroup from "./fragments/DefaultSettingForm";
 import NewNoteOptionalGroupForm from "./fragments/OptionalGroupForm";
@@ -18,6 +19,7 @@ enum Tabs {
 const OptionModal = ({ show, onHide }: Props) => {
   const form = useFormContext<Fields>();
   const [tabs, setTabs] = useState<Tabs>(Tabs.Common);
+  const [pageState] = useContext(NewNoteContext);
 
   return (
     <Tab.Container defaultActiveKey={tabs}>
@@ -41,8 +43,8 @@ const OptionModal = ({ show, onHide }: Props) => {
         <Modal.Header closeButton closeVariant="white">
           Options
         </Modal.Header>
-        <Modal.Body>
-          <Tab.Content >
+        <Modal.Body style={pageState.modals.extra_settings_static_height ? { height: "512px" } : undefined}>
+          <Tab.Content>
             <Tab.Pane eventKey={Tabs.Common}>
               <NewNoteOptionalGroupForm />
             </Tab.Pane>
