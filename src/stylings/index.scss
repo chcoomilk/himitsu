@@ -175,3 +175,11 @@ table.dark {
   background-color: $input-bg-color;
   border-color: $input-border-color;
 }
+
+// the outline variant will stay active once focused
+// which is bad for mobile view because when clicked
+// it will stay focused
+.btn-secondary.inactive { // hence this .inactive
+  background-color: transparent;
+  color: var(--bs-btn-bg);
+}

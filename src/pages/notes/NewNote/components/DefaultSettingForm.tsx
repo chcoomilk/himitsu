@@ -57,9 +57,9 @@ const NewNoteDefaultSettingFormGroup = () => {
 
       </Form.Group>
       <Form.Group controlId="contentRow" className="mb-2">
-        <Form.Label>Content text area row</Form.Label>
+        <Form.Label>Secret text area height</Form.Label>
         <Form.Range
-          aria-label="context text area row"
+          aria-label="content/secret textarea row"
           name="contentRow"
           min={1}
           value={pageState.textAreaRow}

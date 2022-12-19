@@ -1,6 +1,6 @@
 const UnitInput
   = <T extends React.ReactNode & { length: number }>(
-    { value, unit }: { value: T, unit: string }) => {
+    { value, unit }: { value?: T | null, unit: string }) => {
     return (
       <div style={{
         position: "absolute",
@@ -20,7 +20,7 @@ const UnitInput
       }}>
         <span style={{ visibility: "hidden" }}>{value}</span>
         <span style={{ whiteSpace: "pre" }}>
-          {!isNaN(+value) ? (value?.length > 0 && ` ${unit + (+value > 1 ? "s" : "")}`) : ""}
+          {value && !isNaN(Number(value)) ? (value?.length > 0 && ` ${unit + (+value > 1 ? "s" : "")}`) : ""}
         </span>
       </div>
     );

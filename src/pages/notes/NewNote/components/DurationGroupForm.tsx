@@ -42,12 +42,14 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
                 // look good in my opinion
                 // valueAsNumber: true,
                 validate: {
+                  // @ts-expect-error
                   type: v => isNaN(+v) ? "day should represent a number" : undefined,
                   // >= greater than or equal so when the user leave the input, this don't trigger
+                  // @ts-expect-error
                   gte: v => +v >= 0 || "day should be greater than 0",
                   // the actual equal 0 validation
                   // all of these because Number<empty string>("") === 0
-                  /* @ts-ignore */
+                  // @ts-expect-error
                   javascript_funny_moment: v => +v === 0 && v === "0" ? "day cannot be 0" : undefined,
                 }
               })}
@@ -73,9 +75,11 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
               {...form.register("duration.hour", {
                 // valueAsNumber: true,
                 validate: {
+                  // @ts-expect-error
                   type: v => isNaN(+v) ? "hour should represent a number" : undefined,
+                  // @ts-expect-error
                   gte: v => +v >= 0 || "hour should be greater than 0",
-                  /* @ts-ignore */
+                  // @ts-expect-error
                   javascript_funny_moment: v => +v === 0 && v === "0" ? "hour cannot be 0" : undefined,
                 }
               })}
@@ -101,9 +105,11 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
               {...form.register("duration.minute", {
                 // valueAsNumber: true,
                 validate: {
+                  // @ts-expect-error
                   type: v => isNaN(+v) ? "minute should represent a number" : undefined,
+                  // @ts-expect-error
                   gte: v => +v >= 0 || "minute should be greater than 0",
-                  /* @ts-ignore */
+                  // @ts-expect-error
                   javascript_funny_moment: v => +v === 0 && v === "0" ? "minute cannot be 0" : undefined,
                 },
               })}
@@ -129,11 +135,13 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
               {...form.register("duration.second", {
                 // valueAsNumber: true,
                 validate: {
+                  // @ts-expect-error
                   type: v => isNaN(+v) ? "second should represent a number" : undefined,
                 },
                 min: {
-                  value: !!(form.getValues("duration.day")
-                    + form.getValues("duration.hour")
+                  // @ts-expect-error
+                  value: !!(form.getValues("duration.day")// @ts-expect-error
+                    + form.getValues("duration.hour")// @ts-expect-error
                     + form.getValues("duration.minute")
                   ) ? 0 : 30,
                   message: "second should be greater or equal 30"

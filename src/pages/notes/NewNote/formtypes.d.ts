@@ -7,10 +7,10 @@ export type Fields = {
     passphrase: string,
     custom_id: string,
     duration: {
-        day: number,
-        hour: number,
-        minute: number,
-        second: number,
+        day?: number,
+        hour?: number,
+        minute?: number,
+        second?: number,
     }
     extra: {
         double_encryption: string,

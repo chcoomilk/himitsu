@@ -77,13 +77,13 @@ const NewNote = () => {
   const { mutateAsync } = useMutation(post_note);
   const submit = async (form_data: Fields) => new Promise<void>((resolve) => {
     let duration_in_secs: number | undefined = form_data.duration.second;
-    if (form_data.duration.day) {
+    if (form_data.duration.day) {// @ts-expect-error
       duration_in_secs += form_data.duration.day * 86400;
     }
-    if (form_data.duration.hour) {
+    if (form_data.duration.hour) {// @ts-expect-error
       duration_in_secs += form_data.duration.hour * 3600;
     }
-    if (form_data.duration.minute) {
+    if (form_data.duration.minute) {// @ts-expect-error
       duration_in_secs += form_data.duration.minute * 60;
     }
 
