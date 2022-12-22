@@ -2,8 +2,7 @@ import { Form } from "react-bootstrap";
 import { AppThemeSetting } from "../../utils/types";
 import * as changeCase from "change-case";
 import { useContext } from "react";
-import AppContext from "../../utils/app_state_context";
-import { local_storage } from "../../utils/functions";
+import AppSettingContext from "../../utils/AppSettingContext";
 import SettingsContext from "./context";
 
 type AppThemeKey = keyof typeof AppThemeSetting;
@@ -12,20 +11,11 @@ const createAppThemeKeys = <T extends AppThemeKey[]>(
 ) => array;
 
 const ThemeOptions = () => {
-  const { appSettings } = useContext(AppContext);
+  const appSettings = useContext(AppSettingContext);
   const setAppSettings = useContext(SettingsContext);
-  const setDefaultTheme = (theme: AppThemeSetting) => {
-    setAppSettings(prev => {
-      let settings = {
-        ...prev,
-        app_theme: theme,
-      };
-
-      // localStorage.setItem("settings", JSON.stringify(settings));
-      local_storage.set("settings", settings);
-      return settings;
-    });
-  };
+  const setDefaultTheme = (theme: AppThemeSetting) => setAppSettings({
+    type: "switchAppTheme", payload: theme
+  });
 
   return (
     <>

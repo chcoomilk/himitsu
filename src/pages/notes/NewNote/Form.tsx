@@ -1,134 +1,179 @@
-import { Form, Col, Row, InputGroup, Stack, Button, Spinner } from "react-bootstrap";
+import { capitalCase, noCase } from "change-case";
+import { useContext, useEffect, useState } from "react";
+import { Form, Col, Row, DropdownButton, Dropdown, Button, Stack } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
-import { EncryptionMethod } from "../../../utils/types";
-import { Fields } from "./form";
-import NewNoteDurationGroupForm from "./groups/duration";
+import AppContext from "../../../utils/AppSettingContext";
+import { createEncryptionMethodKeys, EncryptionMethod } from "../../../utils/types";
+import NewNoteContext from "./context";
+import { Fields } from "./formtypes";
+import FormButtons from "./components/FormButtons";
+import useLongPress from "../../../custom-hooks/useLongPress";
+import { toast } from "react-hot-toast";
 
 type Props = {
   onSubmit: (form_data: Fields) => void,
-  setModal: React.Dispatch<React.SetStateAction<{
-    delete: boolean;
-    extra_settings: boolean;
-  }>>,
-  extra_settings_group: JSX.Element,
-};
+}
 
-const NewNoteForm = ({ onSubmit: submit, setModal, extra_settings_group }: Props) => {
+const NewNoteForm = ({ onSubmit: submit }: Props) => {
+  const appSettings = useContext(AppContext);
+  const [pageState] = useContext(NewNoteContext);
   const form = useFormContext<Fields>();
+  const { watch: subscribe } = form;
   const watch = form.watch();
+  const [totalDuration, setTotalDuration] = useState(0);
+
+  useEffect(() => {
+    const subscribtion = subscribe(({ duration }) => duration && setTotalDuration((
+      (+(duration.day || 0) * 86400) +
+      (+(duration.hour || 0) * 3600) +
+      (+(duration.minute || 0) * 60) +
+      (+(duration.second || 0))
+    )));
+
+    return () => subscribtion.unsubscribe();
+  }, [subscribe]);
+
+  const longPressEventHandler = useLongPress(
+    (e) => toast("Note will set to expire in " + e.currentTarget.textContent),
+    () => {}, // onclick
+    { shouldPreventDefault: false, delay: 500 }
+  );
 
   return (
-    <Form className="mb-3 mt-3" noValidate onSubmit={form.handleSubmit(submit)}>
+    <Form className="my-3" noValidate onSubmit={form.handleSubmit(submit)}>
       <Row>
-        <Col md="8" xs="12">
-          <Form.Group controlId="formBasicTitle" className="position-relative mb-4">
-            <Form.Label>Title</Form.Label>
-            <Form.Text muted>
-              {" "}(unencrypted)
-            </Form.Text>
-            <Form.Control
-              disabled={form.formState.isSubmitting}
-              type="text"
-              placeholder="Enter note's title here"
-              {...form.register("title", {
-                minLength: { value: 4, message: "title is too short" },
-              })}
-              isInvalid={form.formState.touchedFields.title && !!form.formState.errors.title}
-              autoComplete="off"
-              autoFocus
-            />
-            <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.title?.message}</Form.Control.Feedback>
-          </Form.Group>
-
-          <Form.Group controlId="formBasicDescription" className="position-relative mb-4">
-            <Form.Label>Secret</Form.Label>
-            <Form.Text muted>
-              {` (${!watch.extra.encryption ? "unencrypted" : "encrypted"})`}
-            </Form.Text>
-            <Form.Control
-              disabled={form.formState.isSubmitting}
-              as="textarea"
-              placeholder="Enter note here"
-              rows={3}
-              {...form.register("content", {
-                required: { value: true, message: "a note can't be empty" },
-              })}
-              isInvalid={form.formState.touchedFields.content && !!form.formState.errors.content}
-            />
-            <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.content?.message}</Form.Control.Feedback>
-          </Form.Group>
-
-          <Form.Group controlId="formBasicPassphrase" className="position-relative mb-4">
-            <PassphraseInputGroup
-              aria-label="Passphrase"
-              placeholder="Enter super secret passphrase"
-              {...form.register(
-                "passphrase",
-                {
-                  required: form.getValues("extra.encryption") === EncryptionMethod.NoEncryption
-                    ? undefined
-                    : "passphrase is required to encrypt before going to the server",
-                  minLength: {
-                    value: 4,
-                    message: "passphrase is too short",
-                  },
-                  maxLength: {
-                    value: 1024,
-                    message: "passphrase is too long (max length: 1024 chars)"
-                  },
-                }
-              )}
-              errorMessage={form.formState.errors.passphrase?.message}
-              disabled={form.formState.isSubmitting || watch.extra.encryption === EncryptionMethod.NoEncryption}
-              isInvalid={watch.extra.encryption !== EncryptionMethod.NoEncryption
-                ? (form.formState.touchedFields.passphrase && !!form.formState.errors.passphrase)
-                : undefined
+        <Form.Group as={Col} md={6} controlId="formBasicEncryption" className="mb-3">
+          <PassphraseInputGroup
+            aria-label="Passphrase"
+            placeholder="Enter super secret passphrase"
+            {...form.register(
+              "passphrase",
+              {
+                required: form.getValues("encryption") === EncryptionMethod.NoEncryption
+                  ? undefined
+                  : "passphrase is required to encrypt your secret",
+                minLength: {
+                  value: 4,
+                  message: "passphrase is too short (length >= 4)",
+                },
+                maxLength: {
+                  value: 1024,
+                  message: "passphrase is too long (length <= 1024)"
+                },
               }
-            />
-          </Form.Group>
-
-          <Form.Group controlId="formBasicId" className="position-relative mb-4">
-            <Form.Label>Custom ID</Form.Label>
-            <InputGroup hasValidation>
-              <Form.Control
+            )}
+            errorMessage={form.formState.errors.passphrase?.message}
+            disabled={form.formState.isSubmitting || watch.encryption === EncryptionMethod.NoEncryption}
+            isInvalid={watch.encryption !== EncryptionMethod.NoEncryption
+              ? (!!form.formState.errors.passphrase)
+              : undefined
+            }
+            elementsBeforeControl={
+              <DropdownButton
+                as="select"
+                variant="outline-light"
+                menuVariant="dark"
+                title=""
+                id="input-group-dropdown-1"
+                className="text-truncate"
+                onSelect={(method) => form.setValue(
+                  "encryption", +(method as string) as EncryptionMethod,
+                  { shouldTouch: true }
+                )}
                 disabled={form.formState.isSubmitting}
-                aria-label="Custom ID"
-                type="text"
-                placeholder="Enter note's custom ID here"
-                {...form.register("custom_id", {
-                  maxLength: { value: 32, message: "custom id is too long" },
-                  minLength: { value: 1, message: "custom id is invalid" },
-                })}
-                isInvalid={form.formState.touchedFields.custom_id && !!form.formState.errors.custom_id}
-                autoComplete="off"
-              />
-              <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.custom_id?.message}</Form.Control.Feedback>
-            </InputGroup>
-            <Form.Text muted>
-              * Omit this field to set a random ID
-            </Form.Text>
-          </Form.Group>
-
-          <NewNoteDurationGroupForm />
-        </Col>
-
-        <Col md="4" xs="12">
-          <div className="d-none d-md-block">
-            {extra_settings_group}
-          </div>
-          <Row>
-            <Col>
-              <Stack className="mb-2" direction="vertical" gap={3}>
-                <Button className="w-100 d-block d-md-none" size="lg" variant="outline-secondary" onClick={() => setModal(p => ({ ...p, extra_settings: true }))}>Options</Button>
-                <Button className="w-100" size="lg" variant="outline-danger" onClick={() => setModal(p => ({ ...p, delete: true }))} disabled={form.formState.isSubmitting}>Reset</Button>
-                <Button className="w-100" size="lg" variant="success" type="submit" disabled={form.formState.isSubmitting}>{form.formState.isSubmitting ? <Spinner size="sm" animation="border" /> : "Save"}</Button>
-              </Stack>
-            </Col>
-          </Row>
+              >
+                {
+                  createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
+                    method => (
+                      <Dropdown.Item
+                        key={method}
+                        value={method}
+                        active={form.getValues("encryption") === EncryptionMethod[method]}
+                        eventKey={EncryptionMethod[method]}
+                      >{capitalCase(method)}</Dropdown.Item>
+                    )
+                  )
+                }
+              </DropdownButton>
+            }
+          />
+        </Form.Group>
+        <Col md={6} className="d-none d-md-inline">
+          <FormButtons direction="horizontal" gap={2} />
         </Col>
       </Row>
-    </Form>
+
+      <Form.Group controlId="groupSuggestDuration" className="mb-2">
+        <Stack direction="horizontal" className="overflow-auto w-100" gap={2}>
+          {(() => {
+            let duration_options = [
+              [1800, "30 mins"],
+              [3600, "1 hour"],
+              [3600 * 6, "6 hours"],
+              [86400, "1 day"],
+              [86400 * 30, "1 month"],
+            ];
+
+            return duration_options.map((opt) => (
+              <Button
+                id={opt[1].toString()}
+                variant="secondary"
+                onClick={() => {
+                  // so the other field if filled got reset
+                  form.resetField("duration");
+                  if (opt[0] === totalDuration) {
+                    form.setValue("duration.second", undefined)
+                  } else {
+                    form.setValue("duration.second", +opt[0]);
+                  }
+                }}
+                {...longPressEventHandler}
+                style={{ width: "100px" }}
+                className={"text-nowrap" + (opt[0] === totalDuration ? "" : " inactive")}
+                title={"Note will set to expire in " + opt[1]}
+                aria-label={"Note will set to expire in " + opt[1]}
+              >
+                {opt[1]}
+              </Button>
+            ));
+          })()}
+          {/* <div className="vr mx-1"></div>
+          <Button className="me-auto"
+            variant="outline-secondary"
+            onClick={() => {
+              dispatch({ type: "toggleModalExtraSettings" });
+              // damn
+              form.setFocus("duration.day");
+              // no, i'm not going to make this possible
+              // no thank you
+            }}
+          >
+            <i className="bi bi-pencil-square" /> Custom
+          </Button> */}
+        </Stack>
+      </Form.Group>
+
+      <Form.Group controlId="formBasicDescription" className="position-relative mb-4">
+        <Form.Label>Secret</Form.Label>
+        <Form.Text muted>
+          {` (with ${noCase(EncryptionMethod[watch.encryption])}${watch.extra.double_encryption ? "+" : ""})`}
+        </Form.Text>
+        <Form.Control
+          disabled={form.formState.isSubmitting}
+          as="textarea"
+          placeholder="Enter note here"
+          rows={pageState.textAreaRow}
+          {...form.register("content", {
+            required: { value: true, message: "a note can't be empty" },
+          })}
+          isInvalid={!!form.formState.errors.content}
+          autoFocus={appSettings.autofocus}
+        />
+        <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.content?.message}</Form.Control.Feedback>
+      </Form.Group>
+      <FormButtons gap={3} direction="vertical" buttonSize="lg" className="mb-2 d-md-none" />
+    </Form >
   );
 };
 

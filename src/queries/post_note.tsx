@@ -15,6 +15,8 @@ interface NewNote {
     content: string,
     passphrase: string,
     lifetime_in_secs?: number,
+    allow_delete_with_passphrase: boolean,
+    delete_after_read: number,
 }
 
 interface RequestBody {
@@ -25,6 +27,8 @@ interface RequestBody {
     content: string,
     passphrase?: string,
     lifetime_in_secs?: number,
+    allow_delete_with_passphrase?: boolean,
+    delete_after_read?: number,
 }
 
 type ResponseData = {
@@ -39,7 +43,9 @@ export default async function post_note({
     passphrase,
     encryption,
     content,
-    lifetime_in_secs
+    lifetime_in_secs,
+    allow_delete_with_passphrase,
+    delete_after_read,
 }: NewNote): Promise<Result<NoteInfo>> {
     let url = BASE_URL + "/notes";
     let request: RequestBody;
@@ -65,10 +71,11 @@ export default async function post_note({
         case EncryptionMethod.NoEncryption:
             request = {
                 discoverable: discoverable || undefined,
-                id: custom_id,
+                id: custom_id || undefined,
                 title: title || undefined,
                 content,
                 lifetime_in_secs: lifetime_in_secs || undefined,
+                delete_after_read: delete_after_read || undefined,
             };
             break;
         case EncryptionMethod.BackendEncryption:
@@ -82,12 +89,14 @@ export default async function post_note({
                 }
             }
             request = {
-                id: custom_id,
+                id: custom_id || undefined,
                 title: title || undefined,
                 content,
                 passphrase: passphrase || undefined,
                 is_currently_encrypted: fe || undefined,
                 lifetime_in_secs: lifetime_in_secs || undefined,
+                allow_delete_with_passphrase,
+                delete_after_read: delete_after_read || undefined,
             };
             break;
         case EncryptionMethod.FrontendEncryption:
@@ -98,6 +107,8 @@ export default async function post_note({
                     content: AES.encrypt(JSON.stringify(content), passphrase).toString(),
                     is_currently_encrypted: true,
                     lifetime_in_secs: lifetime_in_secs || undefined,
+                    allow_delete_with_passphrase,
+                    delete_after_read: delete_after_read || undefined,
                 };
             } catch (error) {
                 throw error;

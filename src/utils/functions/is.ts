@@ -41,24 +41,26 @@ export function is_note(item: unknown): item is NoteInfo {
     );
 }
 
+// maybe it's better for this function to only do typechecks
 export const is_settings = (item: unknown): item is AppSetting => {
     return (
         AppThemeSetting[(item as AppSetting).app_theme] !== undefined &&
         EncryptionMethod[(item as AppSetting).encryption] !== undefined &&
-        typeof (item as AppSetting).history === "boolean"
+        typeof (item as AppSetting).history === "boolean" &&
+        typeof (item as AppSetting).autofocus === "boolean"
     );
+};
+
+export const is_an_encryption_method = (item: unknown): item is EncryptionMethod => {
+    return (
+        EncryptionMethod[(item as number)] !== undefined
+    )
 };
 
 export const is_note_id = (id: unknown): id is note_id => (typeof id === "string" && id.length <= 32);
 
-// export const unsafe_is_note = (item: unknown): item is NoteInfo => {
-//     return (
-//         (item as NoteInfo).id !== undefined
-//     );
-// };
-
-// export const unsafe_is_settings = (item: unknown): item is AppSetting => {
-//     return (
-//         (item as AppSetting).encryption !== undefined
-//     );
-// };
+export class Is {
+    static existValueInEnum(type: any, value: any): boolean {
+      return Object.keys(type).filter(k => isNaN(Number(k))).filter(k => type[k] === value).length > 0;
+    }
+  }

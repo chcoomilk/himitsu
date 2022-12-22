@@ -1,78 +1,89 @@
-import { Controller, FormProvider, useForm } from "react-hook-form";
-import { useContext, useEffect, useState } from "react";
-import { Form, DropdownButton, Dropdown, InputGroup, Modal } from "react-bootstrap";
+import { FormProvider, useForm } from "react-hook-form";
+import React, { useContext, useEffect, useReducer, useState } from "react";
+import { Container } from "react-bootstrap";
 import { useMutation } from "react-query";
-import { capitalCase } from "change-case"
 
-import NewNoteModal from "../../../components/note/NewNoteModal";
-import AppContext from "../../../utils/app_state_context";
-import { createEncryptionMethodKeys, EncryptionMethod, NoteInfo } from "../../../utils/types";
 import { post_note } from "../../../queries";
+import NewNoteModal from "../../../components/note/NewNoteModal";
+import AppSettingContext from "../../../utils/AppSettingContext";
+import { EncryptionMethod, NoteInfo } from "../../../utils/types";
 import { useTitle } from "../../../custom-hooks";
 import { local_storage } from "../../../utils/functions";
-import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import SimpleConfirmationModal from "../../../components/modal/SimpleConfirmationModal";
-import unwrap_default from "../../../utils/functions/unwrap";
-import { Fields } from "./form";
+import { Fields } from "./formtypes";
 import NewNoteForm from "./Form";
+import unwrap_default from "../../../utils/functions/unwrap";
+import NewNoteContext, { NewNoteAction, NewNoteState, reducer } from "./context";
+import { Is } from "../../../utils/functions/is";
+import useLocalStorage from "../../../custom-hooks/useLocalStorage";
+
+const OptionModal = React.lazy(() => import("./OptionModal"));
 
 type UNoteInfo = NoteInfo & {
   passphrase?: string,
 }
 
 const NewNote = () => {
-  const { appSettings } = useContext(AppContext);
-  const [noteResult, setNoteResult] = useState<UNoteInfo>();
-  const [modal, setModal] = useState({
-    delete: false,
-    extra_settings: false,
-  });
   useTitle("New Note");
-  const { mutateAsync } = useMutation(post_note);
+  const appSettings = useContext(AppSettingContext);
+  const [encryption, setEncryption] = useLocalStorage("encryption", EncryptionMethod.BackendEncryption);
+  const [contentRow, setContentRow] = useLocalStorage("newNoteRow", 15);
+  const [alwaysSaveOnSubmit, setAlwaysSaveOnSubmit] = useLocalStorage("alwaysSaveOnSubmit", false);
+  const newNoteReducer = useReducer<React.Reducer<NewNoteState, NewNoteAction>>(
+    reducer,
+    {
+      modals: {
+        reset: false,
+        extra_settings: false,
+        extra_settings_static_height: false,
+      },
+      defaultEncryption: Is.existValueInEnum(EncryptionMethod, encryption)
+        ? (encryption as EncryptionMethod)
+        : EncryptionMethod.BackendEncryption,
+      alwaysSaveOnSubmit: alwaysSaveOnSubmit,
+      textAreaRow: !isNaN(contentRow) ? contentRow : 15,
+    }
+  );
+
+  const [pageState, dispatch] = newNoteReducer;
+  const [noteModal, setNoteModal] = useState<UNoteInfo>();
 
   const form = useForm<Fields>({
-    mode: "all",
+    mode: "onChange",
     defaultValues: {
+      encryption: pageState.defaultEncryption,
       extra: {
-        encryption: appSettings.encryption,
         discoverable: false,
-        double_encryption: {
-          enable: false,
-        }
+        save_locally: pageState.alwaysSaveOnSubmit,
       }
     },
   });
 
-  const watchOut = form.watch();
+  const { setValue: formSetValue } = form;
 
   useEffect(() => {
-    form.trigger("duration.second");
-  }, [form, watchOut.duration?.day, watchOut.duration?.hour, watchOut.duration?.minute]);
+    setAlwaysSaveOnSubmit(pageState.alwaysSaveOnSubmit);
+    // if the input field is touched, or manually changed, not following default anymore
+    if (!form.formState.touchedFields.extra?.save_locally) formSetValue("extra.save_locally", pageState.alwaysSaveOnSubmit);
+  }, [form.formState.touchedFields.extra?.save_locally, formSetValue, pageState.alwaysSaveOnSubmit, setAlwaysSaveOnSubmit]);
 
-  const resetForm = (skipExtra?: boolean) => {
-    skipExtra ? (() => {
-      let prev_values = form.getValues();
-      form.reset(undefined, { keepDefaultValues: true });
-      form.setValue("extra", {
-        discoverable: prev_values.extra.discoverable,
-        double_encryption: {
-          enable: prev_values.extra.double_encryption.enable,
-          passphrase: form.getValues("extra.double_encryption.passphrase"),
-        },
-        encryption: prev_values.extra.encryption,
-      })
-    })() : form.reset(undefined, { keepDefaultValues: true });
-  };
+  useEffect(() => {
+    setEncryption(pageState.defaultEncryption);
+    if (!form.formState.touchedFields.encryption) formSetValue("encryption", pageState.defaultEncryption);
+  }, [form.formState.touchedFields.encryption, formSetValue, pageState.defaultEncryption, setEncryption]);
 
+  useEffect(() => setContentRow(pageState.textAreaRow), [pageState.textAreaRow, setContentRow]);
+
+  const { mutateAsync } = useMutation(post_note);
   const submit = async (form_data: Fields) => new Promise<void>((resolve) => {
     let duration_in_secs: number | undefined = form_data.duration.second;
-    if (form_data.duration.day) {
+    if (form_data.duration.day) {// @ts-expect-error
       duration_in_secs += form_data.duration.day * 86400;
     }
-    if (form_data.duration.hour) {
+    if (form_data.duration.hour) {// @ts-expect-error
       duration_in_secs += form_data.duration.hour * 3600;
     }
-    if (form_data.duration.minute) {
+    if (form_data.duration.minute) {// @ts-expect-error
       duration_in_secs += form_data.duration.minute * 60;
     }
 
@@ -85,19 +96,21 @@ const NewNote = () => {
     mutateAsync({
       discoverable: form_data.extra.discoverable,
       custom_id: form_data.custom_id,
-      double_encrypt: form_data.extra.double_encryption.passphrase,
-      encryption: form_data.extra.encryption,
+      double_encrypt: form_data.extra.double_encryption,
+      encryption: form_data.encryption,
       title: form_data.title,
       content: form_data.content,
       lifetime_in_secs: duration_in_secs,
       passphrase: form_data.passphrase,
+      allow_delete_with_passphrase: form_data.extra.allow_delete_with_passphrase,
+      delete_after_read: form_data.extra.delete_after_read,
     })
       .then(result => {
         const { data, error } = result;
         if (!error) {
-          setNoteResult({
+          setNoteModal({
             ...data,
-            passphrase: form_data.extra.encryption !== EncryptionMethod.NoEncryption ? form_data.passphrase : undefined,
+            passphrase: form_data.encryption !== EncryptionMethod.NoEncryption ? form_data.passphrase : undefined,
           });
           local_storage.set("last_saved_note", data);
           if (appSettings.history) {
@@ -121,7 +134,7 @@ const NewNote = () => {
             }
           }
 
-          resetForm(true);
+          form.reset();
         } else {
           unwrap_default(error);
         }
@@ -134,159 +147,36 @@ const NewNote = () => {
       });
   });
 
-  let extra_settings_group = (
-    <>
-      <Form.Group controlId="formBasicEncryption" className="mb-4">
-        <Form.Label>Encryption</Form.Label>
-        <InputGroup>
-          <Controller
-            control={form.control}
-            name="extra.encryption"
-            render={({ field }) => (
-              <DropdownButton
-                variant="outline-light"
-                menuVariant="dark"
-                title={`${EncryptionMethod[watchOut.extra.encryption].replace(/([a-z0-9])([A-Z])/g, '$1 $2')}`}
-                id="input-group-dropdown-1"
-                disabled={form.formState.isSubmitting}
-              >
-                {
-                  createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
-                    method => (
-                      <Dropdown.Item
-                        key={method}
-                        onClick={() => field.onChange(EncryptionMethod[method])}
-                      >{capitalCase(method)}</Dropdown.Item>
-                    )
-                  )
-                }
-              </DropdownButton>
-            )}
-          />
-        </InputGroup>
-      </Form.Group>
-      {
-        (() => {
-          switch (watchOut.extra.encryption) {
-            case EncryptionMethod.BackendEncryption:
-              return (
-                <>
-                  <Form.Group controlId="formBasicExtraDoubleEncrypt" className="mb-4">
-                    <Form.Label>EXTRA POWAH!!</Form.Label>
-                    <InputGroup>
-                      <Form.Switch
-                        inline
-                        id="fe-switch"
-                        {...form.register("extra.double_encryption.enable", {
-                          onChange: () => {
-                            // onChange={e => { formik.setTouched({ ...formik.touched, double_encrypt: { passphrase: false } }); formik.handleChange(e); }}
-                          }
-                        })}
-                        label={"Frontend Encryption"}
-                        disabled={form.formState.isSubmitting}
-                      />
-                      <PassphraseInputGroup
-                        hide={!watchOut.extra.double_encryption.enable}
-                        inputGroupClassName="mt-2"
-                        aria-label="Passphrase"
-                        disabled={form.formState.isSubmitting}
-                        {...form.register(
-                          "extra.double_encryption.passphrase", {
-                          required: form.getValues("extra.encryption") === EncryptionMethod.BackendEncryption && form.getValues("extra.double_encryption.enable")
-                            ? "passphrase is required to encrypt before going to the server"
-                            : undefined,
-                          minLength: {
-                            value: 4,
-                            message: "passphrase is too short",
-                          },
-                          maxLength: {
-                            value: 1024,
-                            message: "passphrase is too long (max length: 1024 chars)"
-                          },
-                        })}
-                        placeholder="Secondary passphrase"
-                        errorMessage={form.formState.errors.extra?.double_encryption?.passphrase?.message}
-                        isInvalid={
-                          form.formState.touchedFields.extra?.double_encryption?.passphrase &&
-                          !!form.formState.errors.extra?.double_encryption?.passphrase
-                        }
-                      />
-                    </InputGroup>
-                  </Form.Group>
-                </>
-              );
-
-            case EncryptionMethod.FrontendEncryption:
-              break;
-
-            case EncryptionMethod.NoEncryption:
-              return (
-                <Form.Group controlId="formBasicDiscoverable" className="mb-4">
-                  <Form.Label>Discoverability</Form.Label>
-                  <InputGroup>
-                    <Form.Switch
-                      inline
-                      id="public-switch"
-                      {...form.register("extra.discoverable")}
-                      label={"Note can" + (watchOut.extra.discoverable ? "" : "'t") + " be found publicly"}
-                      disabled={form.formState.isSubmitting}
-                    />
-                  </InputGroup>
-                </Form.Group>
-              );
-          }
-        })()
-      }
-      <Form.Group>
-        <Form.Text muted>
-          <ul style={{ paddingLeft: "1rem" }}>
-            <li>
-              Title can always be seen upon request
-            </li>
-            <li>
-              Passphrase for data encryption is not stored in database, as text nor hash
-            </li>
-            <li>
-              Disabling discoverability will prevent any means of finding through its metadata such as title, creation time, etc.
-            </li>
-          </ul>
-        </Form.Text>
-      </Form.Group>
-    </>
-  );
   return (
-    <>
-      {
-        noteResult && (
-          <NewNoteModal data={{ ...noteResult }} onHide={() => {
-            setNoteResult(undefined);
-            local_storage.remove("last_saved_note");
-          }} />
-        )
-      }
-      <SimpleConfirmationModal
-        title="Reset form"
-        text="This will reset the form, continue?"
-        show={modal.delete}
-        onHide={() => setModal(p => ({ ...p, delete: false }))}
-        doDecide={c => {
-          if (c) resetForm();
-          setModal(p => ({ ...p, delete: false }))
-        }}
-        centered
-      />
-      <Modal centered show={modal.extra_settings} onHide={() => setModal(p => ({ ...p, extra_settings: false }))}>
-        <Modal.Header closeButton closeVariant="white">
-          Options
-        </Modal.Header>
-        <Modal.Body>
-          {extra_settings_group}
-        </Modal.Body>
-      </Modal>
-      <FormProvider {...form}>
-        <NewNoteForm extra_settings_group={extra_settings_group} onSubmit={submit} setModal={setModal} />
-      </FormProvider>
-    </>
+    <FormProvider {...form}>
+      <NewNoteContext.Provider value={newNoteReducer}>
+        {
+          noteModal && (
+            <NewNoteModal data={{ ...noteModal }} onHide={() => {
+              setNoteModal(undefined);
+              local_storage.remove("last_saved_note");
+            }} />
+          )
+        }
+        <SimpleConfirmationModal
+          title="Reset form"
+          text="This will reset the form, continue?"
+          show={pageState.modals.reset}
+          onHide={() => dispatch({ type: "toggleModalReset" })}
+          doDecide={c => {
+            if (c) form.reset();
+            dispatch({ type: "toggleModalReset" });
+          }}
+          centered
+        />
+        <OptionModal show={pageState.modals.extra_settings} onHide={() => dispatch({ type: "toggleModalExtraSettings" })} />
+        <Container className="d-flex flex-fill justify-content-center">
+          <Container fluid className="m-0">
+            <NewNoteForm onSubmit={submit} />
+          </Container>
+        </Container>
+      </NewNoteContext.Provider>
+    </FormProvider>
   );
 };
 

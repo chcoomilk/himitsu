@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { Form, Modal, Button } from "react-bootstrap";
 import PassphraseInputGroup from "../input/PassphraseInputGroup";
+import { useContext } from "react";
+import AppSettingContext from "../../utils/AppSettingContext";
 
 interface Props {
   title?: string,
@@ -14,6 +16,7 @@ type Fields = {
 }
 
 const PassphraseModal = ({ title, show, setShow, newPassphrase: sendPassphraseToParent }: Props) => {
+  const appSettings = useContext(AppSettingContext);
   const form = useForm<Fields>();
 
   const submit = (data: Fields) => {
@@ -40,7 +43,7 @@ const PassphraseModal = ({ title, show, setShow, newPassphrase: sendPassphraseTo
                 maxLength: { value: 1024, message: "passphrase is too long" },
                 required: "passphrase is required",
               })}
-              autoFocus
+              autoFocus={appSettings.autofocus}
               errorMessage={form.formState.errors.passphrase?.message}
               isInvalid={form.formState.touchedFields.passphrase && !!form.formState.errors.passphrase}
             />

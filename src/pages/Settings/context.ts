@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { AppSetting } from "../../utils/types";
+import { AppAction } from "../../utils/AppSettingContext";
 
-const SettingsContext = createContext<React.Dispatch<React.SetStateAction<AppSetting>>>(() => { });
-export default SettingsContext
+const SettingsContext = createContext<React.Dispatch<AppAction>>(() => { });
+export default SettingsContext;

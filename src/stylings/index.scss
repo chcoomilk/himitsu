@@ -1,7 +1,5 @@
-$font-size-base: 1.1rem;
-
 .fs-0 {
-  font-size: $font-size-base * 3.25;
+  font-size: 4rem;
 }
 
 /// render button as link (<a>)
@@ -23,23 +21,6 @@ $font-size-base: 1.1rem;
 
 :root {
   --himitsu-body-bg: black;
-}
-
-.himitsu {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.himitsu-popups {
-  position: absolute;
-  top: 69px !important;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  z-index: 420;
 }
 
 .toast-alert {
@@ -129,7 +110,7 @@ a,
     &:hover {
       z-index: 2;
     }
-    
+
     button:not(:disabled),
     [type="button"]:not(:disabled),
     [type="reset"]:not(:disabled),
@@ -176,8 +157,8 @@ input.form-range::-webkit-slider-runnable-track {
 }
 
 span.input-group-text {
-  background-color: $input-bg-color-disabled;
-  border: var(--bs-btn-border-width) solid $input-border-color;
+  background-color: $input-bg-color;
+  border-color: $input-border-color;
   color: $text-color-normal;
 }
 
@@ -193,4 +174,12 @@ ul.dark {
 table.dark {
   background-color: $input-bg-color;
   border-color: $input-border-color;
+}
+
+// the outline variant will stay active once focused
+// which is bad for mobile view because when clicked
+// it will stay focused
+.btn-secondary.inactive { // hence this .inactive
+  background-color: transparent;
+  color: var(--bs-btn-bg);
 }

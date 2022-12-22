@@ -1,17 +1,20 @@
-import { useEffect, useState } from "react";
-import { Button, Collapse, Form, Stack } from "react-bootstrap";
+import { useContext, useEffect, useState } from "react";
+import { Button, Col, Collapse, Form, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../utils/constants";
 import TitleSuggestions from "./TitleSuggestions";
 import { Props } from "./utils";
 import { useForm } from "react-hook-form";
+import AppSettingContext from "../../../utils/AppSettingContext";
 
 type FormData = {
   title: string,
 }
 
 const FindByTitle = ({ params: { query }, setParams }: Props) => {
+  const appSettings= useContext(AppSettingContext);
   const navigate = useNavigate();
+
 
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [afBlurCount, setAfBlurCount] = useState(0);
@@ -40,7 +43,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
   }, [title, setParams]);
 
   return (
-    <>
+    <Col xxl={4} xl={4} md={6} sm={10} xs={12}>
       <Form noValidate onSubmit={form.handleSubmit(submit)}>
         <Form.Group controlId="formBasicTitle" className="position-sticky mb-4">
           <Form.Label>Title</Form.Label>
@@ -58,7 +61,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
               },
             })}
             onFocus={() => setShowSuggestions(true)}
-            autoFocus
+            autoFocus={appSettings.autofocus}
             autoComplete="off"
             isInvalid={(afBlurCount > 1 || !!form.formState.submitCount) && !!form.formState.errors.title}
           />
@@ -77,6 +80,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
                   id="collapse-suggestions"
                   className="overflow-auto"
                   query={title}
+                  style={{maxHeight: "35vh"}}
                 />
               }
             </div>
@@ -99,7 +103,7 @@ const FindByTitle = ({ params: { query }, setParams }: Props) => {
           <Button type="submit" variant="primary" size="lg">Find</Button>
         </Stack>
       </Form>
-    </>
+    </Col>
   );
 };
 

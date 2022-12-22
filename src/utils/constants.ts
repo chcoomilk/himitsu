@@ -24,6 +24,7 @@ const settings: AppSetting = {
     app_theme: AppThemeSetting.Normal,
     encryption: EncryptionMethod.BackendEncryption,
     history: false,
+    autofocus: true,
 };
 
 export const DefaultValues = {
@@ -32,9 +33,8 @@ export const DefaultValues = {
 };
 
 export const PATHS = {
-    home: "/",
+    new_note: "/",
     about: "/about",
-    new_note: "/new",
     find_note: "/find",
     notes: "/notes",
     note_detail: "/n",

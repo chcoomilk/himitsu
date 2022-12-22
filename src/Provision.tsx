@@ -1,13 +1,13 @@
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 // import { persistQueryClient } from "react-query/persistQueryClient-experimental";
 import { BrowserRouter } from "react-router-dom";
 import { applyTheme } from "./stylings/theme";
-import AppContext from "./utils/app_state_context";
+import AppSettingContext from "./utils/AppSettingContext";
 import { AppSetting } from "./utils/types";
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import toast from "react-hot-toast";
-import { Alert } from "react-bootstrap";
+import { Alert, Spinner } from "react-bootstrap";
 import { toast_alert_opts } from "./utils/functions/unwrap";
 import { local_storage } from "./utils/functions";
 import { patch_token } from "./queries";
@@ -36,7 +36,7 @@ const queryClient = new QueryClient({
   }
 });
 
-const ContextCoupler = ({ appSettings, children }: AppDefinition) => {
+const Initialization = ({ appSettings, children }: AppDefinition) => {
   const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
     onOfflineReady: () => console.log("sw is installed for offline use"),
     onRegisterError: (e) => console.log("registration error!", e),
@@ -73,13 +73,13 @@ const ContextCoupler = ({ appSettings, children }: AppDefinition) => {
     let refresh_token_interval = setInterval(() => {
       const token = local_storage.get("token");
       if (token) {
-        const sch_ls = localStorage.getItem("refresh_token_timestamp");
+        const last_refresh_str = localStorage.getItem("refresh_token_timestamp");
 
         let schedule: Date = new Date();
-        if (sch_ls) {
-          let _sch_ls = new Date(sch_ls);
-          if (_sch_ls instanceof Date && !isNaN(_sch_ls.valueOf())) {
-            schedule = _sch_ls;
+        if (last_refresh_str) {
+          let last_refresh_datetype = new Date(last_refresh_str);
+          if (last_refresh_datetype instanceof Date && !isNaN(last_refresh_datetype.valueOf())) {
+            schedule = last_refresh_datetype;
           }
         }
 
@@ -96,17 +96,31 @@ const ContextCoupler = ({ appSettings, children }: AppDefinition) => {
 
   return (
     <BrowserRouter>
-      <AppContext.Provider
-        value={{
-          appSettings,
-        }}
+      <AppSettingContext.Provider
+        value={appSettings}
       >
         <QueryClientProvider client={queryClient}>
-          {children}
+          <Suspense fallback={
+            <Spinner animation="border" role="status"
+              style={{
+                position: "absolute",
+                marginLeft: "auto",
+                marginRight: "auto",
+                top: "50vh",
+                left: 0,
+                right: 0,
+                textAlign: "center",
+              }}
+            >
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          }>
+            {children}
+          </Suspense>
         </QueryClientProvider>
-      </AppContext.Provider>
+      </AppSettingContext.Provider>
     </BrowserRouter>
   );
 };
 
-export default ContextCoupler;
+export default Initialization;
