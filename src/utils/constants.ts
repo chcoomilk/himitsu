@@ -9,11 +9,13 @@ type EnforceNote = Note & {
     passphrase: string,
 };
 
+// this is completely fukked and needs to be snuffed
 const note: EnforceNote = {
     id: "",
     title: "",
     content: "",
-    decrypted: false,
+    frontend_decrypted: false,
+    backend_decrypted: false,
     encryption: EncryptionMethod.NoEncryption,
     creationTime: "",
     expiryTime: "",

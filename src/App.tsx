@@ -8,7 +8,6 @@ import Initialization from "./Provision";
 import { AppAction, reducer as appReducer } from "./utils/AppSettingContext";
 
 import "./stylings/index.scss";
-import "react-loading-skeleton/dist/skeleton.css";
 
 import Navbar from "./components/Navigation";
 import FindNote from "./pages/notes/FindNote";

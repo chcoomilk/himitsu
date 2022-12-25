@@ -5,7 +5,7 @@ import React, { useCallback, useRef, useState } from "react";
 
 const useLongPress = (
     onLongPress: (event: React.MouseEvent) => void,
-    onClick,
+    onClick: () => void,
     { shouldPreventDefault = true, delay = 300 } = {}
 ) => {
     const [longPressTriggered, setLongPressTriggered] = useState(false);
