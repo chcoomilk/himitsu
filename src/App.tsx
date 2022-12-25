@@ -8,12 +8,11 @@ import Initialization from "./Provision";
 import { AppAction, reducer as appReducer } from "./utils/AppSettingContext";
 
 import "./stylings/index.scss";
-import "react-loading-skeleton/dist/skeleton.css";
 
 import Navbar from "./components/Navigation";
 import FindNote from "./pages/notes/FindNote";
-import NewNote from "./pages/notes/NewNote";
 import Note from "./pages/notes/Note";
+const NewNote = lazy(() => import("./pages/notes/NewNote"));
 const NotFound = lazy(() => import("./pages/404"));
 const About = lazy(() => import("./pages/About"));
 const AppSettings = lazy(() => import("./pages/Settings"));
@@ -28,7 +27,7 @@ function App() {
   // const [mqIsDark] = useState(window.matchMedia("(prefers-color-scheme: dark)"));
   const checkLastModalPopup = () => {
     let data = local_storage.get("last_saved_note");
-    return data ? <NewNoteModal data={data} onHide={() => local_storage.remove("last_saved_note")} /> : null;
+    return data && <NewNoteModal data={data} onHide={() => local_storage.remove("last_saved_note")} />;
   };
 
   useEffect(() => local_storage.set("settings", appSettings), [appSettings]);

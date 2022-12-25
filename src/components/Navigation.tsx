@@ -12,7 +12,7 @@ type NavLinkReturnArgs = {
 const Navigation = () => {
   const longPressEventHandler = useLongPress(
     (e) => toast("Click to navigate to " + e.currentTarget.id + " page"),
-    undefined,
+    () => { },
     { shouldPreventDefault: false, delay: 500 }
   );
 

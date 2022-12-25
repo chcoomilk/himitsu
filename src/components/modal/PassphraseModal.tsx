@@ -32,7 +32,7 @@ const PassphraseModal = ({ title, show, setShow, newPassphrase: sendPassphraseTo
           <Modal.Title>
             <i className="bi bi-exclamation-diamond" />
             {" "}
-            {title ? title : "Note is encrypted"}
+            {title ?? "Note is encrypted"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

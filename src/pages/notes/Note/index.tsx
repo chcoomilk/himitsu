@@ -1,40 +1,44 @@
-import { useCallback, useEffect, useState } from "react";
-import { Alert, Button, Col, Container, Form, Row, Stack } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Alert, Button, Col, Container, Placeholder, Row } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { Link, Location, useLocation, useNavigate, useParams } from "react-router-dom";
-import { AES, enc as Encoder } from "crypto-js";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import toast from "react-hot-toast";
+import hljs from "highlight.js";
+import "highlight.js/styles/gml.css";
 
-import PassphraseModal from "../../components/modal/PassphraseModal";
-import { DefaultValues, PATHS } from "../../utils/constants";
-import { NoteInfo, EncryptionMethod, Note as NoteT, note_id } from "../../utils/types";
-import { get_note, get_note_info, delete_note } from "../../queries";
-import { generate_face, into_readable_datetime, local_storage, truncate_string, unwrap } from "../../utils/functions";
-import { useTitle } from "../../custom-hooks";
-import SimpleConfirmationModal from "../../components/modal/SimpleConfirmationModal";
-import { is_note_id } from "../../utils/functions/is";
+
+import PassphraseModal from "../../../components/modal/PassphraseModal";
+import { DefaultValues, PATHS } from "../../../utils/constants";
+import { NoteInfo, EncryptionMethod, Note as NoteT, note_id } from "../../../utils/types";
+import { get_note, get_note_info, delete_note } from "../../../queries";
+import { generate_face, into_readable_datetime, local_storage, truncate_string, unwrap } from "../../../utils/functions";
+import { useTitle } from "../../../custom-hooks";
+import SimpleConfirmationModal from "../../../components/modal/SimpleConfirmationModal";
+import { is_note_id } from "../../../utils/functions/is";
+import useDecrypt from "./custom-hooks/useDecrypt";
+import useAlert from "../../../custom-hooks/useAlertBootstrapHotToast";
+import ContentTextarea from "./ContentField";
 
 interface PasswordModalState {
   showModal: boolean,
   passphrase: string | null,
 }
 
-type URLParamState = {
+type State = {
   readonly id: note_id,
   readonly passphrase: string | null,
 }
 
-interface State {
+interface LocationState {
   passphrase: string | null
 }
 
 interface ModifiedLocation extends Location {
-  state: State | unknown
+  state: LocationState | unknown
 }
 
-const is_state_valid = (state: State | unknown): state is State => {
-  return (state !== null && (state as State).passphrase !== undefined);
+const is_state_valid = (state: LocationState | unknown): state is LocationState => {
+  return (state !== null && (state as LocationState).passphrase !== undefined);
 }
 
 // lo' and behold! spaghetti codes, o' spaghetti codes
@@ -42,6 +46,7 @@ const Note = () => {
   const { id: unchecked_id } = useParams();
   const { state: unchecked_state }: ModifiedLocation = useLocation();
   const navigate = useNavigate();
+  const launch = useAlert();
 
   useEffect(() => {
     if (!is_note_id(unchecked_id)) {
@@ -54,7 +59,7 @@ const Note = () => {
     }
   }, [unchecked_id, navigate]);
 
-  const [state] = useState<URLParamState>({
+  const [state] = useState<State>({
     id: (() => {
       let _id = "";
       if (is_note_id(unchecked_id)) {
@@ -72,7 +77,7 @@ const Note = () => {
       return _passphrase;
     })(),
   });
-  const [note, setNote] = useState<NoteT | null>(null);
+  const [note, setNote] = useState<NoteT>();
   const [modalDecrypt, setModalDecrypt] = useState<PasswordModalState>({
     showModal: false,
     passphrase: null,
@@ -137,7 +142,8 @@ const Note = () => {
           id: data.id,
           title: data.title,
           content: data.content,
-          decrypted: !data.frontend_encryption,
+          frontend_decrypted: !data.frontend_encryption,
+          backend_decrypted: true,
           encryption,
           passphrase,
           expiryTime: readableExpiryTime,
@@ -163,6 +169,32 @@ const Note = () => {
     onError: () => {
       setTitle(generate_face());
       unwrap.default("serverError");
+    },
+  });
+
+  const decrypt = useDecrypt({
+    onFail() {
+      launch({
+        title: "Decryption failed",
+        content: "This is because the decryption function used with your passphrase returned an empty string",
+        icon: "x",
+        variant: "danger",
+      });
+      setModalDecrypt({
+        passphrase: null,
+        showModal: true,
+      });
+    },
+    onSuccess(content) {
+      setModalDecrypt({
+        passphrase: null,
+        showModal: false,
+      });
+      setNote(p => ({
+        ...p,
+        frontend_decrypted: true,
+        content
+      } as NoteT));
     },
   });
 
@@ -215,101 +247,48 @@ const Note = () => {
       } else {
         if (note_info.error === "notFound") {
           setTitle(generate_face());
-          toast.custom(t => (
-            <Alert show={t.visible} variant="warning" dismissible onClose={() => toast.dismiss(t.id)}>
-              <Alert.Heading>
-                <i className="bi bi-question-circle"></i> {" "}
-                Note #{((): JSX.Element => {
-                  let id_str = state.id.toString();
-                  if (id_str.length > 12) id_str = truncate_string(state.id.toString(), 12);
-                  return <span title={state.id.toString()} onClick={() => toast(state.id.toString())}>{id_str}</span>;
-                })()} was not found
-              </Alert.Heading>
-              <p>
-                Note doesn't exist, or perhaps it's past its expiration date, {" "}
-                <Link className="alert-link" to="/find" onClick={() => toast.dismiss(t.id)}>
-                  Try Again
-                </Link>?
-              </p>
-            </Alert>
-          ), { ...unwrap.toast_alert_opts, id: "notFound", duration: Infinity });
+          launch({
+            title: <>Note #
+              <span
+                className="d-inline-block align-bottom text-truncate"
+                style={{ maxWidth: "15vw" }}
+                onClick={() => toast(state.id.toString())}
+              >
+                {state.id}
+              </span> was not found</>,
+            content: (t) => <>Note doesn't exist, or perhaps it's past its expiration date, {" "}
+              <Link className="alert-link" to="/find" onClick={() => toast.dismiss(t.id)}>
+                Try Again
+              </Link>?</>,
+            duration: Infinity,
+            variant: "warning"
+          });
         } else {
           unwrap.default(note_info.error);
         }
       }
     }
-  }, [state.id, note_info, is_info_called, is_info_error, state.passphrase, mutate_get_note, setTitle]);
-
-  // function to decrypt the note if frontend encryption is true
-  const try_decrypt = useCallback((note: NoteT, passphrase: string): void => {
-    if (note.content) {
-      try {
-        let content: string = AES.decrypt(note.content, passphrase).toString(Encoder.Utf8);
-        if (content) {
-          content = JSON.parse(content);
-          setModalDecrypt({
-            passphrase: null,
-            showModal: false,
-          });
-          setNote({
-            ...note,
-            passphrase,
-            decrypted: true,
-            content
-          });
-        } else {
-          toast.custom(t => (
-            <Alert show={t.visible} variant="danger" dismissible onClose={() => toast.dismiss(t.id)}>
-              <Alert.Heading>
-                <i className="bi bi-x"></i> {" "}
-                Decryption failed
-              </Alert.Heading>
-              <p>
-                This is because the decryption function used with your passphrase returned an empty string
-              </p>
-            </Alert>
-          ), { duration: 6000, ...unwrap.toast_alert_opts });
-          setModalDecrypt({
-            passphrase: null,
-            showModal: true,
-          });
-        }
-      } catch (error) {
-        toast.custom(t => (
-          <Alert show={t.visible} variant="secondary" dismissible onClose={() => toast.dismiss(t.id)}>
-            <Alert.Heading>
-              <i className="bi bi-x"></i> {" "}
-              Decryption failed
-            </Alert.Heading>
-            <p>
-              This was not supposed to happen, check log for details
-            </p>
-          </Alert>
-        ), { duration: Infinity, ...unwrap.toast_alert_opts });
-        console.error("decryption_error: ", error);
-      }
-    }
-  }, [setNote, setModalDecrypt]);
+  }, [state.id, note_info, is_info_called, is_info_error, state.passphrase, mutate_get_note, setTitle, launch]);
 
   // try to decrypt note on backend from modal
   useEffect(() => {
-    if (modalMutate.passphrase !== null) {
+    if (modalMutate.passphrase) {
       mutate_get_note({ id: state.id, passphrase: modalMutate.passphrase });
     }
   }, [state.id, modalMutate.passphrase, mutate_get_note]);
 
   // try to decrypt note on frontend from modal
   useEffect(() => {
-    if (modalDecrypt.passphrase !== null && note && note.content && !note.decrypted) {
-      try_decrypt(note, modalDecrypt.passphrase);
+    if (modalDecrypt.passphrase !== null && note && note.content && !note.frontend_decrypted) {
+      decrypt(note.content, modalDecrypt.passphrase);
     }
-  }, [note, modalDecrypt.passphrase, try_decrypt]);
+  }, [note, modalDecrypt.passphrase, decrypt]);
 
   // try to decrypt note on frontend
   useEffect(() => {
-    if (isSuccess && note && note.content && !note.decrypted) {
+    if (isSuccess && note && note.content && !note.frontend_decrypted) {
       if (state.passphrase) {
-        try_decrypt(note, state.passphrase);
+        decrypt(note.content, state.passphrase);
       } else {
         setModalDecrypt(prev => {
           return {
@@ -319,7 +298,7 @@ const Note = () => {
         });
       }
     }
-  }, [isSuccess, note, note?.decrypted, state.passphrase, try_decrypt, setModalDecrypt]);
+  }, [isSuccess, note, note?.frontend_decrypted, state.passphrase, decrypt, setModalDecrypt]);
 
   // delete confirmation 
   useEffect(() => {
@@ -419,7 +398,7 @@ const Note = () => {
   };
 
   return (
-    <Container className="d-flex flex-fill align-items-center justify-content-center mb-3">
+    <>
       <PassphraseModal
         show={modalDecrypt.showModal}
         setShow={(show) => setModalDecrypt(prev => {
@@ -467,112 +446,86 @@ const Note = () => {
         }}
       />
 
-      <Container>
-        <Form noValidate>
-          <SkeletonTheme duration={1.5} baseColor="#24282e" highlightColor="#a8a8a8">
-            <Form.Group controlId="formBasicTitle" className="mb-4">
-              <Form.Label>Title</Form.Label>
-              {
-                is_info_loading
-                  ? <Skeleton height={35} />
-                  : <Form.Control
-                    type="text"
-                    name="expires"
-                    value={note ? (note.title || undefined) : DefaultValues.note.title}
-                    readOnly
-                  />
-              }
-            </Form.Group>
-
-            <Form.Group controlId="formBasicDescription" className="mb-4">
-              <Form.Label>Description</Form.Label>
-              {
-                is_info_loading || isLoading
-                  ? <Skeleton height={100} />
-                  : <Form.Control
-                    as="textarea"
-                    type="text"
-                    name="expires"
-                    value={note && note.content ? note.content : generate_face()}
-                    rows={(() => {
-                      // const len = note?.content.length;
-                      // const max_until_break = 4;
-                      return 4;
-                    })()}
-                    readOnly
-                  />
-              }
-            </Form.Group>
-
-            <Row>
-              <Form.Group as={Col} sm={6} controlId="formBasicCreatedAt" className="mb-4">
-                <Form.Label>Created at</Form.Label>
-                {
-                  is_info_loading || isLoading
-                    ? <Skeleton height={35} />
-                    : <Form.Control
-                      type="text"
-                      name="expires"
-                      value={note ? note.creationTime : DefaultValues.note.creationTime}
-                      readOnly
-                    />
-                }
-              </Form.Group>
-
-              <Form.Group as={Col} sm={6} controlId="formBasicExpiresAt" className="mb-4">
-                <Form.Label>Expires at</Form.Label>
-                {
-                  is_info_loading || isLoading
-                    ? <Skeleton height={35} />
-                    : <Form.Control
-                      type="text"
-                      name="expires"
-                      value={note ? note.expiryTime : DefaultValues.note.expiryTime}
-                      readOnly
-                    />
-                }
-              </Form.Group>
-            </Row>
-          </SkeletonTheme>
-          <Stack direction="horizontal" gap={3}>
+      <Container fluid className="my-3">
+        <Row>
+          <Col xxl="2">
+            {
+              is_info_loading
+                ? (
+                  <Placeholder animation="wave" children={<Placeholder xs="12" />} />
+                )
+                : (
+                  (!!note_info || !!note) &&
+                  <pre className="hljs">
+                    <code className="hljs" dangerouslySetInnerHTML={{
+                      __html: (
+                        isSuccess
+                          ? hljs.highlight(JSON.stringify(note, (_, item: NoteT) => {
+                            let t = JSON.parse(JSON.stringify(item));
+                            // @ts-ignore
+                            delete t?.passphrase; delete t?.raw?.passphrase;
+                            // @ts-ignore
+                            delete t?.content; delete t?.raw?.content;
+                            return t;
+                          }, "  "), { language: "json" }).value
+                          : hljs.highlight(JSON.stringify(note_info, undefined, "  "), { language: "json" }).value
+                      ),
+                    }}>
+                    </code>
+                  </pre>
+                )
+            }
+          </Col>
+          <Col xxl="8" className="p-0">
+            <Container fluid>
+              <ContentTextarea
+                content={note?.content}
+                encrypted={note ? !(note.backend_decrypted || note.frontend_decrypted) : false}
+                isLoading={isLoading || is_info_loading}
+              />
+            </Container>
+          </Col>
+          <Col>
             <Button
               size="lg"
-              className="ms-auto"
+              className="w-100"
               variant="danger"
               disabled={
                 (isLoading) ||
-                (note === null ? true : !note.decrypted) ||
+                (note ? !note.frontend_decrypted : true) ||
                 (is_deleting || is_deleted)
               }
               onClick={handleDelete}>
-              <i className="bi bi-trash"></i>
+              <i className="bi bi-trash"></i> Delete
             </Button>
             <Button
               size="lg"
+              className="w-100 mt-2"
               variant="primary"
               disabled={
                 (isLoading) ||
-                (note === null ? true : !note.decrypted) ||
+                !(note && note.backend_decrypted && note.frontend_decrypted) ||
                 (is_deleting || is_deleted)
               }
               onClick={handleDownload}>
-              <i className="bi bi-download"></i>
+              <i className="bi bi-download"></i> Save
             </Button>
             <Button
               size="lg"
               variant="outline-warning"
+              className="w-100 mt-2"
               disabled={
-                (isLoading) ||
-                (note === null ? true : note.decrypted)
+                (!isLoading) &&
+                (!note || note.frontend_decrypted)
               }
               onClick={handleRetry}
             >
-              <i className="bi bi-arrow-counterclockwise"></i>
+              <i className="bi bi-arrow-counterclockwise" /> Retry
             </Button>
-          </Stack>
-        </Form>
+          </Col>
+        </Row>
       </Container>
-    </Container >
+    </>
   );
 };
 

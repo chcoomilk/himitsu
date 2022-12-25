@@ -36,7 +36,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
 
   const longPressEventHandler = useLongPress(
     (e) => toast("Note will set to expire in " + e.currentTarget.textContent),
-    () => {}, // onclick
+    () => { }, // onclick
     { shouldPreventDefault: false, delay: 500 }
   );
 
@@ -117,6 +117,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
 
             return duration_options.map((opt) => (
               <Button
+                key={opt[1]}
                 id={opt[1].toString()}
                 variant="secondary"
                 onClick={() => {

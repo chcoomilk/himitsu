@@ -3,21 +3,21 @@ import React, { useContext, useEffect, useReducer, useState } from "react";
 import { Container } from "react-bootstrap";
 import { useMutation } from "react-query";
 
+import { Fields } from "./formtypes";
+import NewNoteForm from "./Form";
+import NewNoteContext, { NewNoteAction, NewNoteState, reducer } from "./context";
+import OptionModal from "./OptionModal";
 import { post_note } from "../../../queries";
-import NewNoteModal from "../../../components/note/NewNoteModal";
 import AppSettingContext from "../../../utils/AppSettingContext";
 import { EncryptionMethod, NoteInfo } from "../../../utils/types";
 import { useTitle } from "../../../custom-hooks";
 import { local_storage } from "../../../utils/functions";
 import SimpleConfirmationModal from "../../../components/modal/SimpleConfirmationModal";
-import { Fields } from "./formtypes";
-import NewNoteForm from "./Form";
 import unwrap_default from "../../../utils/functions/unwrap";
-import NewNoteContext, { NewNoteAction, NewNoteState, reducer } from "./context";
 import { Is } from "../../../utils/functions/is";
 import useLocalStorage from "../../../custom-hooks/useLocalStorage";
 
-const OptionModal = React.lazy(() => import("./OptionModal"));
+const NewNoteModal = React.lazy(() => import("../../../components/note/NewNoteModal"));
 
 type UNoteInfo = NoteInfo & {
   passphrase?: string,
@@ -76,15 +76,15 @@ const NewNote = () => {
 
   const { mutateAsync } = useMutation(post_note);
   const submit = async (form_data: Fields) => new Promise<void>((resolve) => {
-    let duration_in_secs: number | undefined = form_data.duration.second;
-    if (form_data.duration.day) {// @ts-expect-error
-      duration_in_secs += form_data.duration.day * 86400;
+    let duration_in_secs: number | undefined = form_data.duration?.second;
+    if (form_data.duration?.day) {// @ts-expect-error
+      duration_in_secs += form_data.duration?.day * 86400;
     }
-    if (form_data.duration.hour) {// @ts-expect-error
-      duration_in_secs += form_data.duration.hour * 3600;
+    if (form_data.duration?.hour) {// @ts-expect-error
+      duration_in_secs += form_data.duration?.hour * 3600;
     }
-    if (form_data.duration.minute) {// @ts-expect-error
-      duration_in_secs += form_data.duration.minute * 60;
+    if (form_data.duration?.minute) {// @ts-expect-error
+      duration_in_secs += form_data.duration?.minute * 60;
     }
 
     duration_in_secs = Number(duration_in_secs);
