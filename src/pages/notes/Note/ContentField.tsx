@@ -1,6 +1,8 @@
-import { Placeholder, Row } from "react-bootstrap";
+import { useEffect } from "react";
+import { Placeholder, Container, Col, Spinner } from "react-bootstrap";
+import { useMutation } from "react-query";
+import { highlighter } from "../../../queries";
 import { generate_face } from "../../../utils/functions";
-import HighlightJSAuto from "./HighlightJSAuto";
 
 type Props = {
   content?: string,
@@ -8,33 +10,92 @@ type Props = {
   encrypted: boolean,
 }
 
-const BGCOLOR = "#2b2b2b";
-
 const ContentTextarea = ({ content, encrypted, isLoading }: Props): JSX.Element => {
+  const { mutate, data, isLoading: isHighlighting, isError } = useMutation(highlighter, {
+    onError: (e, v, c) => {
+      console.warn("content could not be highlighted");
+      console.log(e);
+      // console.error(e, v, c);
+    }
+  });
+
+  useEffect(() => {
+    content && mutate(content);
+  }, [mutate, content]);
+
   if (content && !encrypted && !isLoading) {
     return (
-      <HighlightJSAuto content={content} />
+      <pre className="hljs">
+        {
+          !isError && data
+            ? <code
+              className="hljs user-select-all overflow-hidden"
+              dangerouslySetInnerHTML={{ __html: data }}
+            />
+            : (
+              <code
+                className="hljs user-select-all position-relative"
+              >
+                <Spinner
+                  variant="primary"
+                  animation="grow"
+                  className="position-absolute end-0 translate-middle-x"
+                  hidden={!isHighlighting}
+                />
+                {content}
+              </code>
+            )
+        }
+
+      </pre>
     );
   }
 
   return (
-    <Row style={{ backgroundColor: BGCOLOR, padding: "1em" }}>
+    <pre className="hljs">
       {
-        isLoading
+        (isLoading)
           ? (
-            <Placeholder animation="wave">
-              <Placeholder xs="1" /> <Placeholder xs="1" /> <Placeholder xs="1" />
-              <div className="col-12" style={{ height: "14px" }} />
-              <Placeholder xs="2" /> <Placeholder xs="3" />
-              <Placeholder xs="11" />
-              <Placeholder xs="8" /> <Placeholder xs="2" />
-              <Placeholder xs="2" /> <Placeholder xs="8" />
-            </Placeholder>
+            <Container fluid className="hljs" style={{ padding: "1em" }}>
+              <Placeholder animation="wave">
+                <Placeholder xs="1" /> <Placeholder xs="1" /> <Placeholder xs="1" />
+                <Col style={{ height: "14px" }} />
+                <Placeholder xs="2" /> <Placeholder xs="3" />
+                <Col />
+                <Placeholder xs="11" />
+                <Col />
+                <Placeholder xs="8" /> <Placeholder xs="2" />
+                <Col />
+                <Placeholder xs="2" /> <Placeholder xs="8" />
+                <Col />
+                <Placeholder xs="5" /> <Placeholder xs="4" />
+                <Col />
+                <Placeholder xs="3" /> <Placeholder xs="2" />
+                <Col />
+                <Placeholder xs="4" /> <Placeholder xs="6" />
+                <Col style={{ height: "14px" }} />
+                <Placeholder xs="11" />
+                <Col />
+                <Placeholder xs="8" /> <Placeholder xs="2" />
+                <Col />
+                <Placeholder xs="2" /> <Placeholder xs="8" />
+                <Col />
+                <Placeholder xs="5" /> <Placeholder xs="4" />
+                <Col />
+                <Placeholder xs="3" /> <Placeholder xs="2" />
+              </Placeholder>
+            </Container>
           )
-          : <code className="text-center">{generate_face()}</code>
-      }
+          : <code className="hljs text-center">
+            {
+              encrypted
+                ? "Note needs to be decrypted first"
+                : "Error!! Connection timed out or note does not exist in the database " + generate_face()
+            }
 
-    </Row>
+          </code>
+      }
+    </pre>
   );
 };
 

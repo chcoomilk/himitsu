@@ -1,8 +1,10 @@
 import { EncryptionMethod, Note, AppSetting, AppThemeSetting } from "./types";
 
 if (typeof import.meta.env.VITE_BACKEND_URL === "undefined") console.error("No server URL was set in .env: ", import.meta.env.VITE_BACKEND_URL);
+if (typeof import.meta.env.VITE_HIGHLIGHTER_URL === "undefined") console.error("No highlighter URL was set in .env: ", import.meta.env.VITE_HIGHLIGHTER_URL);
 
 export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL || "";
+export const HIGHLIGHT_URL: string = import.meta.env.VITE_HIGHLIGHTER_URL || "";
 
 type EnforceNote = Note & {
     title: string,

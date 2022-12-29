@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Col, Container, Placeholder, Row } from "react-bootstrap";
+import { Alert, Button, Col, Container, Row, Stack } from "react-bootstrap";
 import { useMutation, useQuery } from "react-query";
 import { Link, Location, useLocation, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import hljs from "highlight.js";
-import "highlight.js/styles/gml.css";
-
+import "highlight.js/styles/tokyo-night-dark.css";
 
 import PassphraseModal from "../../../components/modal/PassphraseModal";
 import { DefaultValues, PATHS } from "../../../utils/constants";
@@ -18,6 +16,7 @@ import { is_note_id } from "../../../utils/functions/is";
 import useDecrypt from "./custom-hooks/useDecrypt";
 import useAlert from "../../../custom-hooks/useAlertBootstrapHotToast";
 import ContentTextarea from "./ContentField";
+import NoteInfoField from "./InfoField";
 
 interface PasswordModalState {
   showModal: boolean,
@@ -446,82 +445,65 @@ const Note = () => {
         }}
       />
 
-      <Container fluid className="my-3">
+      <Container fluid className="py-3">
         <Row>
           <Col xxl="2">
-            {
-              is_info_loading
-                ? (
-                  <Placeholder animation="wave" children={<Placeholder xs="12" />} />
-                )
-                : (
-                  (!!note_info || !!note) &&
-                  <pre className="hljs">
-                    <code className="hljs" dangerouslySetInnerHTML={{
-                      __html: (
-                        isSuccess
-                          ? hljs.highlight(JSON.stringify(note, (_, item: NoteT) => {
-                            let t = JSON.parse(JSON.stringify(item));
-                            // @ts-ignore
-                            delete t?.passphrase; delete t?.raw?.passphrase;
-                            // @ts-ignore
-                            delete t?.content; delete t?.raw?.content;
-                            return t;
-                          }, "  "), { language: "json" }).value
-                          : hljs.highlight(JSON.stringify(note_info, undefined, "  "), { language: "json" }).value
-                      ),
-                    }}>
-                    </code>
-                  </pre>
-                )
-            }
+            <NoteInfoField note={note ?? note_info?.data} isLoading={is_info_loading} />
           </Col>
-          <Col xxl="8" className="p-0">
-            <Container fluid>
+          <Col xxl="8" className="pb-3">
+            <Container fluid className="p-0">
               <ContentTextarea
                 content={note?.content}
-                encrypted={note ? !(note.backend_decrypted || note.frontend_decrypted) : false}
+                encrypted={
+                  note
+                    ? !(
+                      note.backend_decrypted && note.frontend_decrypted
+                    )
+                    : false
+                }
                 isLoading={isLoading || is_info_loading}
               />
             </Container>
           </Col>
           <Col>
-            <Button
-              size="lg"
-              className="w-100"
-              variant="danger"
-              disabled={
-                (isLoading) ||
-                (note ? !note.frontend_decrypted : true) ||
-                (is_deleting || is_deleted)
-              }
-              onClick={handleDelete}>
-              <i className="bi bi-trash"></i> Delete
-            </Button>
-            <Button
-              size="lg"
-              className="w-100 mt-2"
-              variant="primary"
-              disabled={
-                (isLoading) ||
-                !(note && note.backend_decrypted && note.frontend_decrypted) ||
-                (is_deleting || is_deleted)
-              }
-              onClick={handleDownload}>
-              <i className="bi bi-download"></i> Save
-            </Button>
-            <Button
-              size="lg"
-              variant="outline-warning"
-              className="w-100 mt-2"
-              disabled={
-                (!isLoading) &&
-                (!note || note.frontend_decrypted)
-              }
-              onClick={handleRetry}
-            >
-              <i className="bi bi-arrow-counterclockwise" /> Retry
-            </Button>
+            <Stack gap={3}>
+              <Button
+                size="lg"
+                className="w-100"
+                variant="danger"
+                disabled={
+                  (isLoading) ||
+                  (note ? !note.frontend_decrypted : true) ||
+                  (is_deleting || is_deleted)
+                }
+                onClick={handleDelete}>
+                <i className="bi bi-trash"></i> Delete
+              </Button>
+              <Button
+                size="lg"
+                className="w-100"
+                variant="primary"
+                disabled={
+                  (isLoading) ||
+                  !(note && note.backend_decrypted && note.frontend_decrypted) ||
+                  (is_deleting || is_deleted)
+                }
+                onClick={handleDownload}>
+                <i className="bi bi-download"></i> Save
+              </Button>
+              <Button
+                size="lg"
+                variant="outline-warning"
+                className="w-100"
+                disabled={
+                  (!isLoading) &&
+                  (!note || note.frontend_decrypted)
+                }
+                onClick={handleRetry}
+              >
+                <i className="bi bi-arrow-counterclockwise" /> Retry
+              </Button>
+            </Stack>
           </Col>
         </Row>
       </Container>

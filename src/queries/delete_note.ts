@@ -46,7 +46,10 @@ export default async function delete_note({ id, passphrase }: Params): Promise<R
             case 404:
                 error = "notFound";
                 break;
-            case 403 | 401:
+            case 403:
+                error = "accessDenied";
+                break;
+            case 401:
                 error = "accessDenied";
                 break;
             default:
