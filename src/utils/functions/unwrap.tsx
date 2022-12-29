@@ -34,8 +34,7 @@ const unwrap_default = (key: keyof AlertT): void => {
             Access Denied
           </Alert.Heading>
           <p>
-            Oi, you got a license for that, mate? <br />
-            Clearly, you are not the owner of this property arent'cha?
+            Oi, have you got a loicense for that?
           </p>
         </Alert>
       ), { duration: 6000, ...toast_alert_opts });

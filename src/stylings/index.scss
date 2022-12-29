@@ -20,7 +20,11 @@
 }
 
 :root {
-  --himitsu-body-bg: black;
+  --himitsu-body-bg: #282c34;
+}
+
+html {
+  background-color: var(--himitsu-body-bg) !important;
 }
 
 .toast-alert {
@@ -179,7 +183,8 @@ table.dark {
 // the outline variant will stay active once focused
 // which is bad for mobile view because when clicked
 // it will stay focused
-.btn-secondary.inactive { // hence this .inactive
+.btn-secondary.inactive {
+  // hence this .inactive
   background-color: transparent;
   color: var(--bs-btn-bg);
 }

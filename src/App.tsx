@@ -11,8 +11,8 @@ import "./stylings/index.scss";
 
 import Navbar from "./components/Navigation";
 import FindNote from "./pages/notes/FindNote";
-import Note from "./pages/notes/Note";
-const NewNote = lazy(() => import("./pages/notes/NewNote"));
+import NewNote from "./pages/notes/NewNote";
+const Note = lazy(() => import("./pages/notes/Note"));
 const NotFound = lazy(() => import("./pages/404"));
 const About = lazy(() => import("./pages/About"));
 const AppSettings = lazy(() => import("./pages/Settings"));
