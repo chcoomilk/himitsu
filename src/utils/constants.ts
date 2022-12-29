@@ -4,7 +4,7 @@ if (typeof import.meta.env.VITE_BACKEND_URL === "undefined") console.error("No s
 if (typeof import.meta.env.VITE_HIGHLIGHTER_URL === "undefined") console.error("No highlighter URL was set in .env: ", import.meta.env.VITE_HIGHLIGHTER_URL);
 
 export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL || "";
-export const HIGHLIGHT_URL: string = import.meta.env.VITE_HIGHLIGHTER_URL || "";
+export const HIGHLIGHT_URL: string = import.meta.env.VITE_HIGHLIGHTER_URL || ".netlify/functions/highlight";
 
 type EnforceNote = Note & {
     title: string,
