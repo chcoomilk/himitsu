@@ -10,11 +10,10 @@ import { DefaultValues, PATHS } from "../../../utils/constants";
 import { NoteInfo, EncryptionMethod, Note as NoteT, note_id } from "../../../utils/types";
 import { get_note, get_note_info, delete_note } from "../../../queries";
 import { generate_face, into_readable_datetime, local_storage, truncate_string, unwrap } from "../../../utils/functions";
-import { useDescribe, useTitle } from "../../../custom-hooks";
+import { useAlert, useDescribe, useTitle } from "../../../custom-hooks";
 import SimpleConfirmationModal from "../../../components/modal/SimpleConfirmationModal";
 import { is_note_id } from "../../../utils/functions/is";
 import useDecrypt from "./custom-hooks/useDecrypt";
-import useAlert from "../../../custom-hooks/useAlertBootstrapHotToast";
 import ContentTextarea from "./ContentField";
 import NoteInfoField from "./InfoField";
 

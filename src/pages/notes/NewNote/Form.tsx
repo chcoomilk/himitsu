@@ -10,6 +10,7 @@ import { Fields } from "./formtypes";
 import FormButtons from "./components/FormButtons";
 import useLongPress from "../../../custom-hooks/useLongPress";
 import { toast } from "react-hot-toast";
+import { Is } from "../../../utils/functions/is";
 
 type Props = {
   onSubmit: (form_data: Fields) => void,
@@ -72,10 +73,16 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
             elementsBeforeControl={
               <Dropdown
                 id="encryption-dropdown"
-                onSelect={(method) => form.setValue(
-                  "encryption", +(method as string) as EncryptionMethod,
-                  { shouldTouch: true }
-                )}
+                onSelect={(method) => {
+                  if (Is.existValueInEnum(EncryptionMethod, method)) {
+                    form.setValue(
+                      "encryption", +(method as string) as EncryptionMethod,
+                      { shouldTouch: true }
+                    );
+                  } else {
+                    toast("Invalid encryption key!");
+                  }
+                }}
               >
                 <Dropdown.Toggle
                   disabled={form.formState.isSubmitting}

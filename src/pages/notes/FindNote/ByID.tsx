@@ -2,7 +2,7 @@ import { Button, Col, Form, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import { Props } from "./utils";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { PATHS } from "../../../utils/constants";
 import AppSettingContext from "../../../utils/AppSettingContext";
@@ -13,11 +13,10 @@ type FormData = {
 }
 
 const FindByID = ({ params: { query }, setParams }: Props) => {
-  const appSettings= useContext(AppSettingContext);
+  const appSettings = useContext(AppSettingContext);
   const navigate = useNavigate();
-  const [afBlurCount, setAfBlurCount] = useState(0);
   const form = useForm<FormData>({
-    mode: "all",
+    mode: "onSubmit",
     defaultValues: {
       id: query,
     }
@@ -51,12 +50,9 @@ const FindByID = ({ params: { query }, setParams }: Props) => {
             {...form.register("id", {
               maxLength: { value: 32, message: "id is too long" },
               required: { value: true, message: "id is required" },
-              onBlur: () => {
-                setAfBlurCount(p => p + 1);
-              },
             })}
             autoComplete="off"
-            isInvalid={(afBlurCount > 1 || !!form.formState.submitCount) && !!form.formState.errors.id}
+            isInvalid={!!form.formState.errors.id}
             autoFocus={appSettings.autofocus}
           />
           <Form.Control.Feedback type="invalid" tooltip>{form.formState.errors.id?.message}</Form.Control.Feedback>

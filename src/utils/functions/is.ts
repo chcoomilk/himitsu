@@ -51,16 +51,10 @@ export const is_settings = (item: unknown): item is AppSetting => {
     );
 };
 
-export const is_an_encryption_method = (item: unknown): item is EncryptionMethod => {
-    return (
-        EncryptionMethod[(item as number)] !== undefined
-    )
-};
-
 export const is_note_id = (id: unknown): id is note_id => (typeof id === "string" && id.length <= 32);
 
 export class Is {
     static existValueInEnum(type: any, value: any): boolean {
-      return Object.keys(type).filter(k => isNaN(Number(k))).filter(k => type[k] === value).length > 0;
+        return Object.keys(type).filter(k => isNaN(Number(k))).filter(k => type[k] === value).length > 0;
     }
-  }
+}
