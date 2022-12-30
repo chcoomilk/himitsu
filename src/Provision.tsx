@@ -11,7 +11,7 @@ import { Alert, Spinner } from "react-bootstrap";
 import { toast_alert_opts } from "./utils/functions/unwrap";
 import { local_storage } from "./utils/functions";
 import { patch_token } from "./queries";
-import Navbar from "./components/Navigation";
+import Navbar from "./components/Navbar";
 
 type AppDefinition = {
   children: React.ReactNode,
