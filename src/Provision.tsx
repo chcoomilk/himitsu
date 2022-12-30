@@ -11,6 +11,7 @@ import { Alert, Spinner } from "react-bootstrap";
 import { toast_alert_opts } from "./utils/functions/unwrap";
 import { local_storage } from "./utils/functions";
 import { patch_token } from "./queries";
+import Navbar from "./components/Navigation";
 
 type AppDefinition = {
   children: React.ReactNode,
@@ -100,6 +101,7 @@ const Initialization = ({ appSettings, children }: AppDefinition) => {
         value={appSettings}
       >
         <QueryClientProvider client={queryClient}>
+          <Navbar />
           <Suspense fallback={
             <Spinner animation="border" role="status"
               style={{
@@ -109,7 +111,6 @@ const Initialization = ({ appSettings, children }: AppDefinition) => {
                 top: "50vh",
                 left: 0,
                 right: 0,
-                textAlign: "center",
               }}
             >
               <span className="visually-hidden">Loading...</span>
