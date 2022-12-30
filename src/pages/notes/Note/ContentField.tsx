@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Placeholder, Container, Col, Spinner } from "react-bootstrap";
+import { toast } from "react-hot-toast";
 import { useMutation } from "react-query";
 import { highlighter } from "../../../queries";
 import { generate_face } from "../../../utils/functions";
@@ -13,9 +14,9 @@ type Props = {
 const ContentTextarea = ({ content, encrypted, isLoading }: Props): JSX.Element => {
   const { mutate, data, isLoading: isHighlighting, isError } = useMutation(highlighter, {
     onError: (e, v, c) => {
+      toast("Content could not be highlighted");
       console.warn("content could not be highlighted");
-      console.log(e);
-      // console.error(e, v, c);
+      console.error(e, v, c);
     }
   });
 
@@ -35,6 +36,7 @@ const ContentTextarea = ({ content, encrypted, isLoading }: Props): JSX.Element 
             : (
               <code
                 className="hljs user-select-all position-relative"
+                style={{ minHeight: isHighlighting ? "64px" : undefined }}
               >
                 <Spinner
                   variant="primary"
