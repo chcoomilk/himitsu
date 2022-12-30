@@ -3,6 +3,7 @@ import Container from "react-bootstrap/Container";
 import { QueryFunctionContext, QueryKey, useInfiniteQuery, } from "react-query";
 import { useSearchParams } from "react-router-dom";
 import NotesTable from "../../components/note/NotesTable";
+import { useDescribe } from "../../custom-hooks";
 import useDebounce from "../../custom-hooks/useDebounce";
 import { get_notes } from "../../queries/get_notes";
 import { local_storage } from "../../utils/functions";
@@ -19,6 +20,7 @@ const is_source = (x: unknown): x is ValidSource => {
 };
 
 const Notes = () => {
+  useDescribe(`Keeping your notes safe here`);
   const notesRef = useRef<NoteInfo[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [params] = useState({

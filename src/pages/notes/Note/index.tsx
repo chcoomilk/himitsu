@@ -10,7 +10,7 @@ import { DefaultValues, PATHS } from "../../../utils/constants";
 import { NoteInfo, EncryptionMethod, Note as NoteT, note_id } from "../../../utils/types";
 import { get_note, get_note_info, delete_note } from "../../../queries";
 import { generate_face, into_readable_datetime, local_storage, truncate_string, unwrap } from "../../../utils/functions";
-import { useTitle } from "../../../custom-hooks";
+import { useDescribe, useTitle } from "../../../custom-hooks";
 import SimpleConfirmationModal from "../../../components/modal/SimpleConfirmationModal";
 import { is_note_id } from "../../../utils/functions/is";
 import useDecrypt from "./custom-hooks/useDecrypt";
@@ -76,6 +76,12 @@ const Note = () => {
       return _passphrase;
     })(),
   });
+  const describe = useDescribe(`
+    Showing note #${state.id}. Woah lookie here, you've found us in your favorite search engine!
+    Content might be encrypted and has to be decrypted in
+    order to see what's inside.
+  `);
+
   const [note, setNote] = useState<NoteT>();
   const [modalDecrypt, setModalDecrypt] = useState<PasswordModalState>({
     showModal: false,
@@ -105,6 +111,16 @@ const Note = () => {
     () => get_note_info({ id: state.id }),
     {
       enabled: is_note_id(unchecked_id),
+      onSuccess: (res) => {
+        let text = "Showing \"" + res.data.title + "\" ";
+        if (res.data.title) {
+          if (res.data.backend_encryption || res.data.frontend_encryption) {
+            describe(text + "Note is encrypted, click here to try and decrypt it!");
+          } else {
+            describe(text + "Click here to see the rest of it");
+          }
+        }
+      }
     }
   );
 

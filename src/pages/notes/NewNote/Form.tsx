@@ -1,6 +1,6 @@
 import { capitalCase, noCase } from "change-case";
 import { useContext, useEffect, useState } from "react";
-import { Form, Col, Row, DropdownButton, Dropdown, Button, Stack } from "react-bootstrap";
+import { Form, Col, Row, Dropdown, Button, Stack } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import AppContext from "../../../utils/AppSettingContext";
@@ -70,32 +70,33 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
               : undefined
             }
             elementsBeforeControl={
-              <DropdownButton
-                as="select"
-                variant="outline-light"
-                menuVariant="dark"
-                title=""
-                id="input-group-dropdown-1"
-                className="text-truncate"
+              <Dropdown
+                id="encryption-dropdown"
                 onSelect={(method) => form.setValue(
                   "encryption", +(method as string) as EncryptionMethod,
                   { shouldTouch: true }
                 )}
-                disabled={form.formState.isSubmitting}
               >
-                {
-                  createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
-                    method => (
-                      <Dropdown.Item
-                        key={method}
-                        value={method}
-                        active={form.getValues("encryption") === EncryptionMethod[method]}
-                        eventKey={EncryptionMethod[method]}
-                      >{capitalCase(method)}</Dropdown.Item>
+                <Dropdown.Toggle
+                  disabled={form.formState.isSubmitting}
+                  variant="outline-light"
+                  title="Select an encryption method"
+                />
+                <Dropdown.Menu variant="dark">
+                  {
+                    createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
+                      method => (
+                        <Dropdown.Item
+                          key={method}
+                          value={method}
+                          active={form.getValues("encryption") === EncryptionMethod[method]}
+                          eventKey={EncryptionMethod[method]}
+                        >{capitalCase(method)}</Dropdown.Item>
+                      )
                     )
-                  )
-                }
-              </DropdownButton>
+                  }
+                </Dropdown.Menu>
+              </Dropdown>
             }
           />
         </Form.Group>

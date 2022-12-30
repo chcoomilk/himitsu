@@ -9,12 +9,14 @@ import TokenSetting from "./TokenSetting";
 import SettingsContext from "./context";
 import GeneralSetting from "./General";
 import { AppAction } from "../../utils/AppSettingContext";
+import { useDescribe } from "../../custom-hooks";
 
 type Props = {
   setAppSettings: React.Dispatch<AppAction>,
 }
 
 const Settings = ({ setAppSettings }: Props) => {
+  useDescribe("The setting page where you can set, things?");
   const [modals, setModals] = useState({
     confirmDeleteNotes: false,
     confirmResetSettings: false,

@@ -4,12 +4,15 @@ import { useNavigate } from "react-router-dom";
 import aqua from "../assets/404/aqua.gif";
 import heal from "../assets/404/cursed.gif";
 import deku from "../assets/404/deku.gif";
+import { useDescribe, useTitle } from "../custom-hooks";
 
 let timeout: NodeJS.Timeout;
 
 const NotFound = () => {
   const navigate = useNavigate();
   useEffect(() => (() => clearTimeout(timeout)), []);
+  useTitle("404 Not Found");
+  useDescribe("Well there's nothing really here");
 
   return (
     <Container fluid>
