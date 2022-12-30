@@ -11,6 +11,7 @@ import FormButtons from "./components/FormButtons";
 import useLongPress from "../../../custom-hooks/useLongPress";
 import { toast } from "react-hot-toast";
 import { Is } from "../../../utils/functions/is";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   onSubmit: (form_data: Fields) => void,
@@ -23,6 +24,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
   const { watch: subscribe } = form;
   const watch = form.watch();
   const [totalDuration, setTotalDuration] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const subscribtion = subscribe(({ duration }) => duration && setTotalDuration((
@@ -36,7 +38,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
   }, [subscribe]);
 
   const longPressEventHandler = useLongPress(
-    (e) => toast("Note will set to expire in " + e.currentTarget.textContent),
+    (e) => toast("Note will be set to expire in " + e.currentTarget.textContent),
     () => { }, // onclick
     { shouldPreventDefault: false, delay: 500 }
   );
@@ -130,6 +132,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
                 variant="secondary"
                 onClick={() => {
                   // so the other field if filled got reset
+                  toast("Note is set to expire in " + opt[1], { id: "setToExpire", duration: 1500 });
                   form.resetField("duration");
                   if (opt[0] === totalDuration) {
                     form.setValue("duration.second", undefined)
@@ -140,26 +143,26 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
                 {...longPressEventHandler}
                 style={{ width: "100px" }}
                 className={"text-nowrap" + (opt[0] === totalDuration ? "" : " inactive")}
-                title={"Note will set to expire in " + opt[1]}
-                aria-label={"Note will set to expire in " + opt[1]}
+                title={"Note will be set to expire in " + opt[1]}
+                aria-label={"Note will be set to expire in " + opt[1]}
               >
                 {opt[1]}
               </Button>
             ));
           })()}
-          {/* <div className="vr mx-1"></div>
+          <div className="vr mx-1"></div>
           <Button className="me-auto"
             variant="outline-secondary"
             onClick={() => {
-              dispatch({ type: "toggleModalExtraSettings" });
-              // damn
-              form.setFocus("duration.day");
-              // no, i'm not going to make this possible
-              // no thank you
+              navigate("#options", {
+                relative: "path", state: JSON.stringify({
+                  focusOnDuration: true,
+                })
+              });
             }}
           >
             <i className="bi bi-pencil-square" /> Custom
-          </Button> */}
+          </Button>
         </Stack>
       </Form.Group>
 

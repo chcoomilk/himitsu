@@ -3,6 +3,7 @@ import { Button, Spinner, Stack, StackProps } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import { Fields } from "../formtypes";
 import NewNoteContext from "../context";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   buttonSize?: "sm" | "lg",
@@ -11,6 +12,7 @@ type Props = {
 const FormButtons = ({ buttonSize, ...attr }: Props) => {
   const form = useFormContext<Fields>();
   const [, dispatch] = useContext(NewNoteContext);
+  const navigate = useNavigate();
 
   return (
     <Stack {...attr}>
@@ -18,7 +20,7 @@ const FormButtons = ({ buttonSize, ...attr }: Props) => {
         className="w-100"
         size={buttonSize}
         variant="outline-secondary"
-        onClick={() => dispatch({ type: "toggleModalExtraSettings" })}
+        onClick={() => navigate("#options", { relative: "path" })}
       >
         Options
       </Button>

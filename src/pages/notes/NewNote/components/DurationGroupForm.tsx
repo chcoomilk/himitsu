@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Col, Form, FormGroupProps, InputGroup, Row } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
+import { useLocation } from "react-router-dom";
 import UnitInput from "../../../../components/input/Unit";
 import { Fields } from "../formtypes";
 
@@ -14,6 +15,12 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
     "duration.minute",
     "duration.second"
   ]);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    location.state && JSON.parse(location.state)["focusOnDuration"] && form.setFocus("duration.second");
+  }, [form, location.state]);
 
   useEffect(() => { // deadly dependency "form" will cause infinite loop, do not try!!
     form.trigger("duration.second");
