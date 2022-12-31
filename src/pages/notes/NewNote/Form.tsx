@@ -10,7 +10,6 @@ import { Fields } from "./formtypes";
 import FormButtons from "./components/FormButtons";
 import useLongPress from "../../../custom-hooks/useLongPress";
 import { toast } from "react-hot-toast";
-import { Is } from "../../../utils/functions/is";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -75,16 +74,10 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
             elementsBeforeControl={
               <Dropdown
                 id="encryption-dropdown"
-                onSelect={(method) => {
-                  if (Is.existValueInEnum(EncryptionMethod, method)) {
-                    form.setValue(
-                      "encryption", +(method as string) as EncryptionMethod,
-                      { shouldTouch: true }
-                    );
-                  } else {
-                    toast("Invalid encryption key!");
-                  }
-                }}
+                onSelect={(method) => form.setValue(
+                  "encryption", +(method as string) as EncryptionMethod,
+                  { shouldTouch: true }
+                )}
               >
                 <Dropdown.Toggle
                   disabled={form.formState.isSubmitting}
@@ -132,11 +125,11 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
                 variant="secondary"
                 onClick={() => {
                   // so the other field if filled got reset
-                  toast("Note is set to expire in " + opt[1], { id: "setToExpire", duration: 1500 });
                   form.resetField("duration");
                   if (opt[0] === totalDuration) {
                     form.setValue("duration.second", undefined)
                   } else {
+                    toast("Note is set to expire in " + opt[1], { id: "setToExpire", duration: 1500 });
                     form.setValue("duration.second", +opt[0]);
                   }
                 }}
@@ -150,9 +143,10 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
               </Button>
             ));
           })()}
-          <div className="vr mx-1"></div>
-          <Button className="me-auto"
-            variant="outline-secondary"
+          <Button
+            name="Custom"
+            title="Custom length of time"
+            variant="outline-secondary text-nowrap"
             onClick={() => {
               navigate("#options", {
                 relative: "path", state: JSON.stringify({

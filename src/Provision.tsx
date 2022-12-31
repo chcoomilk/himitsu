@@ -5,10 +5,8 @@ import { BrowserRouter } from "react-router-dom";
 import { applyTheme } from "./stylings/theme";
 import AppSettingContext from "./utils/AppSettingContext";
 import { AppSetting } from "./utils/types";
-import { useRegisterSW } from 'virtual:pwa-register/react';
-import toast from "react-hot-toast";
-import { Alert, Spinner } from "react-bootstrap";
-import { toast_alert_opts } from "./utils/functions/unwrap";
+import { Toaster } from "react-hot-toast";
+import { Spinner } from "react-bootstrap";
 import { local_storage } from "./utils/functions";
 import { patch_token } from "./queries";
 import Navbar from "./components/Navbar";
@@ -38,38 +36,6 @@ const queryClient = new QueryClient({
 });
 
 const Initialization = ({ appSettings, children }: AppDefinition) => {
-  const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW({
-    onOfflineReady: () => console.log("sw is installed for offline use"),
-    onRegisterError: (e) => console.log("registration error!", e),
-  });
-
-  useEffect(() => applyTheme(appSettings.app_theme), [appSettings.app_theme]);
-
-  useEffect(() => {
-    if (needRefresh) {
-      toast.custom((t) => (
-        <Alert show={t.visible} variant="primary" dismissible onClose={() => {
-          toast.dismiss(t.id);
-        }}>
-          <Alert.Heading>
-            <i className="bi bi-exclamation-triangle-fill"></i> {" "}
-            An update is available
-          </Alert.Heading>
-          <p>
-            The update will be applied whenever you go back to this site. <br />
-            If you have the app installed, {" "}
-            <button className="btn-anchor alert-link" onClick={() => updateServiceWorker(true)}>click here</button> {" "}
-            to reload the app!
-          </p>
-        </Alert>
-      ), {
-        ...toast_alert_opts,
-        id: "himitsu-app-update",
-        duration: Infinity,
-      });
-    }
-  }, [needRefresh, updateServiceWorker]);
-
   useEffect(() => {
     let refresh_token_interval = setInterval(() => {
       const token = local_storage.get("token");
@@ -95,12 +61,23 @@ const Initialization = ({ appSettings, children }: AppDefinition) => {
     };
   }, []);
 
+  useEffect(() => applyTheme(appSettings.app_theme), [appSettings.app_theme]);
+
   return (
     <BrowserRouter>
       <AppSettingContext.Provider
         value={appSettings}
       >
         <QueryClientProvider client={queryClient}>
+          <Toaster
+            position="bottom-center"
+            toastOptions={{
+              style: {
+                background: '#333',
+                color: '#fff',
+              },
+            }}
+          />
           <Navbar />
           <Suspense fallback={
             <Spinner animation="border" role="status"
