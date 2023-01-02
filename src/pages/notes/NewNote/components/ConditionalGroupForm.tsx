@@ -16,7 +16,7 @@ const ConditionalGroupForm = (): JSX.Element => {
           <Form.Label>
             Secondary Passphrase <InfoCircle>
               Mixes the encryption, the first layer is obviously the frontend encryption, then the encrypted
-              data will proceed as it would.
+              data will proceed as it should
             </InfoCircle>
           </Form.Label>
           <PassphraseInputGroup

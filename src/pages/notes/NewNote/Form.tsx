@@ -1,6 +1,6 @@
 import { capitalCase, noCase } from "change-case";
 import { useContext, useEffect, useState } from "react";
-import { Form, Col, Row, DropdownButton, Dropdown, Button, Stack } from "react-bootstrap";
+import { Form, Col, Row, Dropdown, Button, Stack } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import AppContext from "../../../utils/AppSettingContext";
@@ -10,6 +10,7 @@ import { Fields } from "./formtypes";
 import FormButtons from "./components/FormButtons";
 import useLongPress from "../../../custom-hooks/useLongPress";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   onSubmit: (form_data: Fields) => void,
@@ -22,6 +23,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
   const { watch: subscribe } = form;
   const watch = form.watch();
   const [totalDuration, setTotalDuration] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const subscribtion = subscribe(({ duration }) => duration && setTotalDuration((
@@ -35,7 +37,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
   }, [subscribe]);
 
   const longPressEventHandler = useLongPress(
-    (e) => toast("Note will set to expire in " + e.currentTarget.textContent),
+    (e) => toast("Note will be set to expire in " + e.currentTarget.textContent),
     () => { }, // onclick
     { shouldPreventDefault: false, delay: 500 }
   );
@@ -70,32 +72,33 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
               : undefined
             }
             elementsBeforeControl={
-              <DropdownButton
-                as="select"
-                variant="outline-light"
-                menuVariant="dark"
-                title=""
-                id="input-group-dropdown-1"
-                className="text-truncate"
+              <Dropdown
+                id="encryption-dropdown"
                 onSelect={(method) => form.setValue(
                   "encryption", +(method as string) as EncryptionMethod,
                   { shouldTouch: true }
                 )}
-                disabled={form.formState.isSubmitting}
               >
-                {
-                  createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
-                    method => (
-                      <Dropdown.Item
-                        key={method}
-                        value={method}
-                        active={form.getValues("encryption") === EncryptionMethod[method]}
-                        eventKey={EncryptionMethod[method]}
-                      >{capitalCase(method)}</Dropdown.Item>
+                <Dropdown.Toggle
+                  disabled={form.formState.isSubmitting}
+                  variant="outline-light"
+                  title="Select an encryption method"
+                />
+                <Dropdown.Menu variant="dark">
+                  {
+                    createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
+                      method => (
+                        <Dropdown.Item
+                          key={method}
+                          value={method}
+                          active={form.getValues("encryption") === EncryptionMethod[method]}
+                          eventKey={EncryptionMethod[method]}
+                        >{capitalCase(method)}</Dropdown.Item>
+                      )
                     )
-                  )
-                }
-              </DropdownButton>
+                  }
+                </Dropdown.Menu>
+              </Dropdown>
             }
           />
         </Form.Group>
@@ -126,32 +129,34 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
                   if (opt[0] === totalDuration) {
                     form.setValue("duration.second", undefined)
                   } else {
+                    toast("Note is set to expire in " + opt[1], { id: "setToExpire", duration: 1500 });
                     form.setValue("duration.second", +opt[0]);
                   }
                 }}
                 {...longPressEventHandler}
                 style={{ width: "100px" }}
                 className={"text-nowrap" + (opt[0] === totalDuration ? "" : " inactive")}
-                title={"Note will set to expire in " + opt[1]}
-                aria-label={"Note will set to expire in " + opt[1]}
+                title={"Note will be set to expire in " + opt[1]}
+                aria-label={"Note will be set to expire in " + opt[1]}
               >
                 {opt[1]}
               </Button>
             ));
           })()}
-          {/* <div className="vr mx-1"></div>
-          <Button className="me-auto"
-            variant="outline-secondary"
+          <Button
+            name="Custom"
+            title="Custom length of time"
+            variant="outline-secondary text-nowrap"
             onClick={() => {
-              dispatch({ type: "toggleModalExtraSettings" });
-              // damn
-              form.setFocus("duration.day");
-              // no, i'm not going to make this possible
-              // no thank you
+              navigate("#options", {
+                relative: "path", state: JSON.stringify({
+                  focusOnDuration: true,
+                })
+              });
             }}
           >
             <i className="bi bi-pencil-square" /> Custom
-          </Button> */}
+          </Button>
         </Stack>
       </Form.Group>
 

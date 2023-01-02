@@ -2,6 +2,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import { Container } from "react-bootstrap";
 import { useMutation } from "react-query";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { Fields } from "./formtypes";
 import NewNoteForm from "./Form";
@@ -60,6 +61,9 @@ const NewNote = () => {
   });
 
   const { setValue: formSetValue } = form;
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     setAlwaysSaveOnSubmit(pageState.alwaysSaveOnSubmit);
@@ -169,7 +173,7 @@ const NewNote = () => {
           }}
           centered
         />
-        <OptionModal show={pageState.modals.extra_settings} onHide={() => dispatch({ type: "toggleModalExtraSettings" })} />
+        <OptionModal show={location.hash === "#options"} onHide={() => navigate(-1)} />
         <Container className="d-flex flex-fill justify-content-center">
           <Container fluid className="m-0">
             <NewNoteForm onSubmit={submit} />

@@ -9,7 +9,7 @@ type NavLinkReturnArgs = {
   isPending: boolean,
 }
 
-const Navigation = () => {
+const NavigationBar = () => {
   const longPressEventHandler = useLongPress(
     (e) => toast("Click to navigate to " + e.currentTarget.id + " page"),
     () => { },
@@ -115,4 +115,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default NavigationBar;

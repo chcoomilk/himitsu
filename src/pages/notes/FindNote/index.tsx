@@ -1,7 +1,7 @@
 import { lazy, useEffect, useState } from "react";
 import { Container } from "react-bootstrap"
 import { useSearchParams } from "react-router-dom";
-import { useTitle } from "../../../custom-hooks";
+import { useTitle, useDescribe } from "../../../custom-hooks";
 import FindByID from "./ByID";
 // import FindByTitle from "./ByTitle";
 import { is_opts, UrlParams } from "./utils";
@@ -9,6 +9,10 @@ const FindByTitle = lazy(() => import("./ByTitle"));
 
 const FindNote = () => {
   useTitle("Find");
+  useDescribe(
+    `Find any notes by its ID or find it through 
+    title search on public notes posted by other users or yourself`
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const [params, setParams] = useState<UrlParams>({
     query: searchParams.get("q") || undefined,

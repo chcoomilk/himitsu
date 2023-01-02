@@ -1,12 +1,12 @@
 import { ListGroup, ListGroupProps, Spinner } from "react-bootstrap";
 import { useQuery } from "react-query";
-import useDebounce from "../../../custom-hooks/useDebounce";
 import { NoteInfo } from "../../../utils/types";
 import Countdown from "react-countdown";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../utils/constants";
 import { into_readable_datetime, truncate_string } from "../../../utils/functions";
 import { get_notes } from "../../../queries/get_notes";
+import { useDebounce } from "../../../custom-hooks";
 
 interface Props extends ListGroupProps {
   query: string,

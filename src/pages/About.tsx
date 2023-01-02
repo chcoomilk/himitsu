@@ -3,8 +3,15 @@ import kanna from "../assets/kanna.gif";
 import ts_gif from "../assets/ts.gif";
 import rust_gif from "../assets/rust.gif";
 import disgusted from "../assets/ramsay.jpg";
+import { useDescribe } from "../custom-hooks";
 
 const About = () => {
+  useDescribe(`
+  himitsu is a pastebin service, just like any other services you can find.
+  But, instead of a login system, we have JWT secrets so you still have power over
+  your data without having to register/login.
+  `);
+
   return (
     <Container fluid>
       <Row className="my-3">
