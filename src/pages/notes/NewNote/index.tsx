@@ -175,7 +175,7 @@ const NewNote = () => {
         />
         <OptionModal show={location.hash === "#options"} onHide={() => navigate(-1)} />
         <Container className="d-flex flex-fill justify-content-center">
-          <Container fluid className="m-0">
+          <Container fluid className="p-0">
             <NewNoteForm onSubmit={submit} />
           </Container>
         </Container>

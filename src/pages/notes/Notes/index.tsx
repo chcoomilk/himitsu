@@ -20,7 +20,7 @@ const Notes = () => {
   useDescribe(`Keeping your notes safe here`);
   const [limit] = useState(5);
 
-  const { data, refetch, } = useInfiniteQuery<NoteInfo[]>(
+  const { data, refetch } = useInfiniteQuery<NoteInfo[]>(
     ["local_notes", limit],
     () => local_storage.get("notes") || [],
   );
@@ -29,19 +29,7 @@ const Notes = () => {
     <Container className="overflow-auto my-5">
       {data && <NoteTable
         notes={data.pages[0]}
-        onDelete={notes => {
-          const ok = window.confirm("Delete notes?");
-          if (ok) {
-            const ns = local_storage.get("notes");
-            if (ns) {
-              notes.rows.forEach((r, i) => {
-                ns.splice(r.index - i, 1);
-              });
-              local_storage.set("notes", ns);
-              refetch();
-            }
-          }
-        }}
+        onDelete={refetch}
       />}
     </Container>
   );

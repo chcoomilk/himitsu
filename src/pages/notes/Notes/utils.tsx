@@ -1,12 +1,7 @@
-import { ColumnDef, RowModel } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { FormCheck } from "react-bootstrap";
 import { into_readable_datetime } from "../../../utils/functions";
 import { NoteInfo } from "../../../utils/types";
-
-export type Props = {
-    notes: NoteInfo[],
-    onDelete?: (notes: RowModel<NoteInfo>) => void
-}
 
 export const columns: ColumnDef<NoteInfo>[] = [
     {
