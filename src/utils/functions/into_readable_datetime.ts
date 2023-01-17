@@ -1,7 +1,14 @@
 // const TIME_CONFIG: Intl.DateTimeFormatOptions | undefined;
 
 export default function into_readable_datetime(unix_epoch_in_secs: number): string {
-    return new Date(unix_epoch_in_secs * 1000)
+    const result = new Date(unix_epoch_in_secs * 1000);
+
+
+    if (isNaN(result.valueOf())) {
+        return "Never";
+    }
+
+    return result
         .toLocaleString(undefined, {
             weekday: "short",
             day: "2-digit",
