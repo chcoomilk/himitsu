@@ -56,7 +56,7 @@ const NoteTable = ({
         }}
         centered
       />
-      <Button className="ms-auto mb-3" variant="danger" onClick={() => setModal(true)}>
+      <Button className="ms-auto mb-3" variant="danger" disabled={!table.getSelectedRowModel().rows.length} onClick={() => setModal(true)}>
         Delete
       </Button>
       <Table
