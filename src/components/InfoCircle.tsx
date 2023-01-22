@@ -6,14 +6,14 @@ type Props = {
   children: React.ReactNode,
 }
 
-const InfoCircle = ({ id, children }: Props) => {
+const InfoCircle = ({ id = "basic", children }: Props) => {
   const [active, setActive] = useState(false);
 
   return (
     <OverlayTrigger
       placement="auto"
       overlay={
-        <Tooltip id={"overlay-" + (id || "basic")}>
+        <Tooltip id={"overlay-" + id}>
           {children}
         </Tooltip>
       }

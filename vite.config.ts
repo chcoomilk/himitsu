@@ -1,10 +1,10 @@
-import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
+import { defineConfig, loadEnv, splitVendorChunkPlugin, ConfigEnv } from 'vite';
 import { VitePWA } from "vite-plugin-pwa";
 import react from '@vitejs/plugin-react';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 import eslint from "vite-plugin-eslint";
 
-export default ({ mode }) => {
+export default ({ mode }: ConfigEnv) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
     return defineConfig({

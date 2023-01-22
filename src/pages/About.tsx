@@ -77,6 +77,10 @@ const About = () => {
                   <br />
                   This means I can add some codes to take a little peek at your buttho-, I mean secrets.
                   But fret not gamers, because here is a kanna gif to make you feel better
+                  <br />
+                  <br />
+                  If you are still feeling wary, you can always encrypt the data firsthand by using
+                  frontend encryption mode on the app. Or you know, maybe use morse codes or wingdings font or something.
                 </p>
               </Accordion.Body>
             </Accordion.Item>

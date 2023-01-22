@@ -26,18 +26,18 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const subscribtion = subscribe(({ duration }) => duration && setTotalDuration((
+    const subscription = subscribe(({ duration }) => duration && setTotalDuration((
       (+(duration.day || 0) * 86400) +
       (+(duration.hour || 0) * 3600) +
       (+(duration.minute || 0) * 60) +
       (+(duration.second || 0))
     )));
 
-    return () => subscribtion.unsubscribe();
+    return () => subscription.unsubscribe();
   }, [subscribe]);
 
   const longPressEventHandler = useLongPress(
-    (e) => toast("Note will be set to expire in " + e.currentTarget.textContent),
+    (e) => toast("Note expires in " + e.currentTarget.textContent),
     () => { }, // onclick
     { shouldPreventDefault: false, delay: 500 }
   );
@@ -52,26 +52,26 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
             {...form.register(
               "passphrase",
               {
+                onBlur: () => form.trigger("passphrase"),
                 required: form.getValues("encryption") === EncryptionMethod.NoEncryption
                   ? undefined
-                  : "passphrase is required to encrypt your secret",
+                  : !pageState.simpleMode && "passphrase is required to encrypt your secret",
                 minLength: {
-                  value: 4,
+                  value: form.getValues("encryption") === EncryptionMethod.NoEncryption ? 0 : 4,
                   message: "passphrase is too short (length >= 4)",
                 },
                 maxLength: {
-                  value: 1024,
+                  value: form.getValues("encryption") === EncryptionMethod.NoEncryption ? Infinity : 1024,
                   message: "passphrase is too long (length <= 1024)"
                 },
               }
             )}
             errorMessage={form.formState.errors.passphrase?.message}
-            disabled={form.formState.isSubmitting || watch.encryption === EncryptionMethod.NoEncryption}
-            isInvalid={watch.encryption !== EncryptionMethod.NoEncryption
-              ? (!!form.formState.errors.passphrase)
-              : undefined
-            }
-            elementsBeforeControl={
+            disabled={form.formState.isSubmitting || (
+              !pageState.simpleMode && watch.encryption === EncryptionMethod.NoEncryption
+            )}
+            isInvalid={!!form.formState.errors.passphrase}
+            elementsBeforeControl={!pageState.simpleMode && (
               <Dropdown
                 id="encryption-dropdown"
                 onSelect={(method) => form.setValue(
@@ -99,7 +99,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
                   }
                 </Dropdown.Menu>
               </Dropdown>
-            }
+            )}
           />
         </Form.Group>
         <Col md={6} className="d-none d-md-inline">
@@ -125,19 +125,18 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
                 variant="secondary"
                 onClick={() => {
                   // so the other field if filled got reset
-                  form.resetField("duration");
-                  if (opt[0] === totalDuration) {
-                    form.setValue("duration.second", undefined)
+                  !pageState.mustExpire && form.resetField("duration");
+                  if (!pageState.mustExpire && opt[0] === totalDuration) {
+                    form.setValue("duration.second", undefined);
                   } else {
-                    toast("Note is set to expire in " + opt[1], { id: "setToExpire", duration: 1500 });
                     form.setValue("duration.second", +opt[0]);
                   }
                 }}
                 {...longPressEventHandler}
                 style={{ width: "100px" }}
                 className={"text-nowrap" + (opt[0] === totalDuration ? "" : " inactive")}
-                title={"Note will be set to expire in " + opt[1]}
-                aria-label={"Note will be set to expire in " + opt[1]}
+                title={"Note expires in " + opt[1]}
+                aria-label={"Note expires in " + opt[1]}
               >
                 {opt[1]}
               </Button>
@@ -155,7 +154,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
               });
             }}
           >
-            <i className="bi bi-pencil-square" /> Custom
+            <i className="bi bi-pencil-square" /> Custom Duration
           </Button>
         </Stack>
       </Form.Group>

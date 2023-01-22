@@ -36,6 +36,7 @@ const OptionModal = ({ show, onHide }: Props) => {
           ], {
             shouldFocus: true
           });
+          is_okay = !form.formState.errors.duration?.message;
 
           is_okay && onHide();
         }
@@ -43,7 +44,7 @@ const OptionModal = ({ show, onHide }: Props) => {
         <Modal.Header closeButton closeVariant="white">
           Options
         </Modal.Header>
-        <Modal.Body style={pageState.modals.extra_settings_static_height ? { height: "512px" } : undefined}>
+        <Modal.Body style={pageState.modals.extra_settings_static_height ? { height: "396px" } : undefined}>
           <Tab.Content>
             <Tab.Pane eventKey={Tabs.Common}>
               <NewNoteOptionalGroupForm />

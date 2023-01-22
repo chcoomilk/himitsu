@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { Fields } from "./formtypes";
 import NewNoteForm from "./Form";
-import NewNoteContext, { NewNoteAction, NewNoteState, reducer } from "./context";
+import NewNoteContext, { reducer } from "./context";
 import OptionModal from "./OptionModal";
 import { post_note } from "../../../queries";
 import AppSettingContext from "../../../utils/AppSettingContext";
@@ -16,7 +16,7 @@ import { local_storage } from "../../../utils/functions";
 import SimpleConfirmationModal from "../../../components/modal/SimpleConfirmationModal";
 import unwrap_default from "../../../utils/functions/unwrap";
 import { Is } from "../../../utils/functions/is";
-import useLocalStorage from "../../../custom-hooks/useLocalStorage";
+import { useLocalStorage } from "usehooks-ts";
 
 const NewNoteModal = React.lazy(() => import("../../../components/note/NewNoteModal"));
 
@@ -30,7 +30,11 @@ const NewNote = () => {
   const [encryption, setEncryption] = useLocalStorage("encryption", EncryptionMethod.BackendEncryption);
   const [contentRow, setContentRow] = useLocalStorage("newNoteRow", 15);
   const [alwaysSaveOnSubmit, setAlwaysSaveOnSubmit] = useLocalStorage("alwaysSaveOnSubmit", false);
-  const newNoteReducer = useReducer<React.Reducer<NewNoteState, NewNoteAction>>(
+  const [simpleMode, setSimpleMode] = useLocalStorage("simpleForm", true);
+  const [mustExpire, setMustExpire] = useLocalStorage("noteMustHaveExpiration", true);
+  // const [formSession, setFormSession] = useSessionStorage<Fields | undefined>("noteForm", undefined);
+
+  const newNoteReducer = useReducer(
     reducer,
     {
       modals: {
@@ -43,6 +47,8 @@ const NewNote = () => {
         : EncryptionMethod.BackendEncryption,
       alwaysSaveOnSubmit: alwaysSaveOnSubmit,
       textAreaRow: !isNaN(contentRow) ? contentRow : 15,
+      mustExpire,
+      simpleMode,
     }
   );
 
@@ -52,6 +58,9 @@ const NewNote = () => {
   const form = useForm<Fields>({
     mode: "onChange",
     defaultValues: {
+      duration: {
+        second: pageState.mustExpire ? 30 * 60 : undefined,
+      },
       encryption: pageState.defaultEncryption,
       extra: {
         discoverable: false,
@@ -60,10 +69,37 @@ const NewNote = () => {
     },
   });
 
-  const { setValue: formSetValue } = form;
+  const {
+    setValue: formSetValue,
+    trigger: formTrigger,
+    formState: { touchedFields },
+    getValues: formGetValues,
+  } = form;
+  const [
+    passphraseValue,
+    encryptionValue,
+    extraFrontendPassphrase,
+  ] = form.watch([
+    "passphrase",
+    "encryption",
+    "extra.double_encryption",
+  ]);
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    touchedFields.passphrase && formTrigger("passphrase");
+  }, [encryptionValue, formTrigger, touchedFields.passphrase])
+
+  useEffect(() => {
+    if (pageState.simpleMode) {
+      if (passphraseValue) formSetValue("encryption", EncryptionMethod.BackendEncryption);
+      else formSetValue("encryption", EncryptionMethod.NoEncryption);
+    } else {
+      formSetValue("encryption", pageState.defaultEncryption);
+    }
+  }, [pageState.defaultEncryption, pageState.simpleMode, passphraseValue, formSetValue]);
 
   useEffect(() => {
     setAlwaysSaveOnSubmit(pageState.alwaysSaveOnSubmit);
@@ -77,6 +113,28 @@ const NewNote = () => {
   }, [form.formState.touchedFields.encryption, formSetValue, pageState.defaultEncryption, setEncryption]);
 
   useEffect(() => setContentRow(pageState.textAreaRow), [pageState.textAreaRow, setContentRow]);
+  useEffect(() => setSimpleMode(pageState.simpleMode), [pageState.simpleMode, setSimpleMode]);
+  useEffect(() => {
+    setMustExpire(pageState.mustExpire);
+    if (
+      pageState.mustExpire &&
+      !(
+        formGetValues("duration.day") ||
+        formGetValues("duration.hour") ||
+        formGetValues("duration.minute") ||
+        formGetValues("duration.second")
+      )
+    ) {
+      formSetValue("duration.second", 30 * 60);
+    }
+  }, [pageState.mustExpire, setMustExpire, formGetValues, formSetValue]);
+  useEffect(() => {
+    if (encryptionValue !== EncryptionMethod.BackendEncryption) {
+      if (extraFrontendPassphrase) {
+        formSetValue("extra.double_encryption", "");
+      }
+    }
+  }, [encryptionValue, extraFrontendPassphrase, formSetValue]);
 
   const { mutateAsync } = useMutation(post_note);
   const submit = async (form_data: Fields) => new Promise<void>((resolve) => {
@@ -114,7 +172,7 @@ const NewNote = () => {
         if (!error) {
           setNoteModal({
             ...data,
-            passphrase: form_data.encryption !== EncryptionMethod.NoEncryption ? form_data.passphrase : undefined,
+            passphrase: form_data.passphrase,
           });
           local_storage.set("last_saved_note", data);
           if (appSettings.history) {

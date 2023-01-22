@@ -1,12 +1,14 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Col, Form, FormGroupProps, InputGroup, Row } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import UnitInput from "../../../../components/input/Unit";
+import NewNoteContext from "../context";
 import { Fields } from "../formtypes";
 
 const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
   const form = useFormContext<Fields>();
+  const [pageState] = useContext(NewNoteContext);
   const [
     day, hour, minute, second
   ] = form.watch([
@@ -27,12 +29,20 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
   }, [day, hour, minute]); // eslint-disable-line
   // form will always be valid anyway
 
+  useEffect(() => {
+    if (pageState.mustExpire && !(day || hour || minute || second)) {
+      form.setError("duration", { message: "duration is required!!!", type: "required" });
+    } else {
+      form.clearErrors("duration");
+    }
+  }, [pageState.mustExpire, day, hour, minute, second]); // eslint-disable-line
+
   return (
     <Form.Group {...attr}>
       <Form.Label htmlFor="duration.day">
         Duration
       </Form.Label>
-      <Row className="gx-2 gy-2">
+      <Row className="gx-2">
         <Form.Group as={Col} xs={6} xl={3}>
           <InputGroup hasValidation>
             <Form.Control
@@ -167,8 +177,11 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
             }
           </InputGroup>
         </Form.Group>
-      </Row >
-    </Form.Group >
+      </Row>
+      <p className="text-danger">
+        {form.formState.errors.duration?.message}
+      </p>
+    </Form.Group>
   );
 };
 

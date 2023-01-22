@@ -2,17 +2,19 @@ import React, { createContext } from "react";
 import { DefaultValues } from "../../../utils/constants";
 import { EncryptionMethod } from "../../../utils/types";
 
-export type NewNoteAction =
+type NewNoteAction =
     | { type: "toggleModalReset" }
     | { type: "toggleModalExtraSettings" }
     | { type: "toggleAlwaysSaveOnSubmit" }
     | { type: "toggleExtraSettingsStaticHeight" }
+    | { type: "toggleSimpleMode" }
+    | { type: "toggleMustExpire" }
     | { type: "incrementTextAreaRow" }
     | { type: "decrementTextAreaRow" }
     | { type: "setDefaultEncryption", payload: EncryptionMethod }
     | { type: "setTextAreaRow", payload: number }
 
-export type NewNoteState = {
+type NewNoteState = {
     modals: {
         reset: boolean,
         extra_settings: boolean,
@@ -21,13 +23,13 @@ export type NewNoteState = {
     defaultEncryption: EncryptionMethod,
     alwaysSaveOnSubmit: boolean,
     textAreaRow: number,
+    simpleMode: boolean,
+    mustExpire: boolean,
 }
 
-// starting to question my own sanity
-// does this app really need reducers
-// i can just put it in the useState
-// why am i doing this to myself
-export const reducer = (state: NewNoteState, action: NewNoteAction): NewNoteState => {
+type NewNoteReducer = React.Reducer<NewNoteState, NewNoteAction>
+
+export const reducer: NewNoteReducer = (state, action) => {
     switch (action.type) {
         case "toggleModalReset":
             return { ...state, modals: { ...state.modals, reset: !state.modals.reset } };
@@ -50,20 +52,27 @@ export const reducer = (state: NewNoteState, action: NewNoteAction): NewNoteStat
                     extra_settings_static_height: !state.modals.extra_settings_static_height
                 }
             };
+        case "toggleSimpleMode":
+            return {
+                ...state, simpleMode: !state.simpleMode,
+            };
+        case "toggleMustExpire":
+            return {
+                ...state, mustExpire: !state.mustExpire,
+            };
         default:
             return state;
     }
 };
 
-// and i'm also starting to get really sick "initializing" contexts
-// "readonly" even got replaced when page provider asks for value
-// like why even bother then
 const NewNoteContext = createContext<[NewNoteState, React.Dispatch<NewNoteAction>]>([
     {
         modals: { reset: false, extra_settings: false, extra_settings_static_height: false, },
         defaultEncryption: DefaultValues.settings.encryption,
         alwaysSaveOnSubmit: DefaultValues.settings.history,
         textAreaRow: 15,
+        mustExpire: false,
+        simpleMode: true,
     },
     () => { }
 ]);
