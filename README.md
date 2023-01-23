@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/b5923999-7f69-49ab-8d75-bade720ab111/deploy-status)](https://app.netlify.com/sites/himitsu-note/deploys)
+
 # himitsu
 
 q: What is this?\
