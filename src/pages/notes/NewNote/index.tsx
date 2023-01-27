@@ -58,9 +58,6 @@ const NewNote = () => {
   const form = useForm<Fields>({
     mode: "onChange",
     defaultValues: {
-      duration: {
-        second: pageState.mustExpire ? 30 * 60 : undefined,
-      },
       encryption: pageState.defaultEncryption,
       extra: {
         discoverable: false,
