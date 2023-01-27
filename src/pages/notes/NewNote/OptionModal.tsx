@@ -27,7 +27,7 @@ const OptionModal = ({ show, onHide }: Props) => {
         async () => {
           // Modify this to prevent option or setting modal in this form to hide
           let is_okay = await form.trigger("extra.double_encryption"); // triggers double encryption first so it's able to check if double_encryption.passphrase should be validated or not          i think
-          is_okay = await form.trigger([
+          is_okay = (await form.trigger([
             "extra.double_encryption",
             "title",
             "custom_id",
@@ -35,8 +35,7 @@ const OptionModal = ({ show, onHide }: Props) => {
             "extra.delete_after_read"
           ], {
             shouldFocus: true
-          });
-          is_okay = !form.formState.errors.duration?.message;
+          })) && !form.formState.errors.duration?.message;
 
           is_okay && onHide();
         }
