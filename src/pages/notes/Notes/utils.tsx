@@ -1,5 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { FormCheck } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { PATHS } from "../../../utils/constants";
 import { into_readable_datetime } from "../../../utils/functions";
 import { NoteInfo } from "../../../utils/types";
 
@@ -41,7 +43,13 @@ export const columns: ColumnDef<NoteInfo>[] = [
             {
                 accessorKey: "id",
                 header: "ID",
-                cell: data => data.getValue(),
+                cell: data => (
+                    <Link
+                        to={PATHS.note_detail + "/" + data.getValue()}
+                    >
+                        {data.getValue()}
+                    </Link>
+                ),
                 footer: props => props.column.id,
             },
             {

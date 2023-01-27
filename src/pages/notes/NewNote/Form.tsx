@@ -26,12 +26,14 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const subscription = subscribe(({ duration }) => duration && setTotalDuration((
-      (+(duration.day || 0) * 86400) +
-      (+(duration.hour || 0) * 3600) +
-      (+(duration.minute || 0) * 60) +
-      (+(duration.second || 0))
-    )));
+    const subscription = subscribe(({ duration }) => {
+      duration && setTotalDuration((
+        (+(duration.day || 0) * 86400) +
+        (+(duration.hour || 0) * 3600) +
+        (+(duration.minute || 0) * 60) +
+        (+(duration.second || 0))
+      ))
+    });
 
     return () => subscription.unsubscribe();
   }, [subscribe]);
