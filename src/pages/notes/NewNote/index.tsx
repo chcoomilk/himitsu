@@ -162,7 +162,7 @@ const NewNote = () => {
       lifetime_in_secs: duration_in_secs,
       passphrase: form_data.passphrase,
       allow_delete_with_passphrase: form_data.extra.allow_delete_with_passphrase,
-      delete_after_read: form_data.extra.delete_after_read,
+      delete_after_read: +form_data.extra.delete_after_read,
     })
       .then(result => {
         const { data, error } = result;
