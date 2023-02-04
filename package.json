@@ -19,7 +19,7 @@
     "workbox-window": "^6.5.4"
   },
   "dependencies": {
-    "@tanstack/react-table": "^8.7.6",
+    "@tanstack/react-table": "^8.7.8",
     "change-case": "^4.1.2",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
