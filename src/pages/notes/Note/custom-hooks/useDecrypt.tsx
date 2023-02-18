@@ -18,7 +18,6 @@ const useDecrypt = ({ onFail, onSuccess }: Args) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // this shouldn't need to be wrapped in useCallback
 
   return decrypt;
 };

@@ -270,10 +270,12 @@ const Note = () => {
               >
                 {state.id}
               </span> was not found</>,
-            content: (t) => <>Note doesn't exist, or perhaps it's past its expiration date, {" "}
-              <Link className="alert-link" to="/find" onClick={() => toast.dismiss(t.id)}>
-                Try Again
-              </Link>?</>,
+            content: (t) =>
+              <>Note's already been deleted, {" "}
+                <Link className="alert-link" to="/find" onClick={() => toast.dismiss(t.id)}>
+                  Try Again
+                </Link>?
+              </>,
             duration: Infinity,
             variant: "warning"
           });
