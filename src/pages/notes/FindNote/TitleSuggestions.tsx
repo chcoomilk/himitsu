@@ -29,7 +29,6 @@ const TitleSuggestions: React.FC<Props> = ({ query, ...attributes }) => {
                   <ListGroup.Item
                     action
                     className="d-flex justify-content-between align-items-start"
-                    variant="dark"
                     href={PATHS.note_detail + "/" + note_info.id}
                     onClick={(e) => {
                       e.preventDefault();
@@ -62,11 +61,11 @@ const TitleSuggestions: React.FC<Props> = ({ query, ...attributes }) => {
                   </ListGroup.Item>
                 );
               }) : (
-                <ListGroup.Item variant="dark" className="text-center">Nothing found...</ListGroup.Item>
+                <ListGroup.Item className="text-center">Nothing found...</ListGroup.Item>
               )
           ) : (
-            <ListGroup.Item variant="dark" className="text-center">
-              <Spinner animation="grow" variant="dark" />
+            <ListGroup.Item className="text-center">
+              <Spinner animation="grow" />
             </ListGroup.Item>
           )
       }

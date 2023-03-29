@@ -86,7 +86,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
                   variant="outline-secondary"
                   title="Select an encryption method"
                 />
-                <Dropdown.Menu variant="dark">
+                <Dropdown.Menu>
                   {
                     createEncryptionMethodKeys("NoEncryption", "BackendEncryption", "FrontendEncryption").map(
                       method => (

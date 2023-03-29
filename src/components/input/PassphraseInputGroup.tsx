@@ -32,14 +32,6 @@ const PassphraseInputGroup = forwardRef(({
         aria-describedby="basic-passphrase-input"
         ref={ref}
         {...attr}
-        style={
-          typeof attr.style == "object"
-            ? {
-              ...attr.style,
-              zIndex: 3,
-            }
-            : { zIndex: 3 }
-        }
       />
       <Button
         name="show password as text"

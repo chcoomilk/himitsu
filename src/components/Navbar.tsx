@@ -17,7 +17,7 @@ const NavigationBar = () => {
   );
 
   return (
-    <Navbar variant="dark" sticky="top">
+    <Navbar sticky="top">
       <Container>
         <Navbar.Brand className="py-0 m-0">
           <Nav>
