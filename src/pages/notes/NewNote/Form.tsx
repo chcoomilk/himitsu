@@ -83,7 +83,7 @@ const NewNoteForm = ({ onSubmit: submit }: Props) => {
               >
                 <Dropdown.Toggle
                   disabled={form.formState.isSubmitting}
-                  variant="outline-light"
+                  variant="outline-secondary"
                   title="Select an encryption method"
                 />
                 <Dropdown.Menu variant="dark">

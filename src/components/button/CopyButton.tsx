@@ -22,7 +22,7 @@ const CopyButton = ({ copy_value: value, size }: Props) => {
       <Button
         title="Copy value"
         size={size}
-        variant="outline-light"
+        variant="outline-secondary"
         id="button-addon2"
         onClick={handleCopy}
         ref={target}

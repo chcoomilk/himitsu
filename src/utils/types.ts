@@ -77,7 +77,7 @@ export enum AppThemeSetting {
   // System = "system default",
   Normal,
   Black,
-  // Light = "light",
+  Light,
 };
 
 export type AppSetting = {

@@ -44,7 +44,7 @@ const PassphraseInputGroup = forwardRef(({
       <Button
         name="show password as text"
         title="show password as text"
-        variant="outline-light border-start-0"
+        variant="outline-secondary"
         onClick={togglePasswordVisibility}
       >
         {mask ? <i className="bi bi-eye" /> : <i className="bi bi-eye-slash" />}

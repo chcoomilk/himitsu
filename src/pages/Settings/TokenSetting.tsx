@@ -215,7 +215,7 @@ const TokenSetting = () => {
                   style={{ zIndex: !!combineTokenForm.formState.errors.firstToken ? 3 : 2, }}
                 />
                 <Button
-                  variant="outline-light"
+                  variant="outline-secondary"
                   title="Paste your current token"
                   onClick={() => combineTokenForm.setValue("firstToken", currentToken)}
                 >
@@ -278,7 +278,7 @@ const TokenSetting = () => {
         <Button
           title="Replace Token"
           size="sm"
-          variant="outline-light"
+          variant="outline-secondary"
           disabled={replaceAccessToken.loading}
           onClick={() => setReplaceAccessToken(p => ({ ...p, active: !p.active }))}
         >
@@ -291,7 +291,7 @@ const TokenSetting = () => {
             {" "} for granting access to delete the notes you've created. Token will clean out bad ids (nonexistent) periodically.
           </Tooltip>
         )}>
-          <Button size="sm" variant="outline-light" onClick={() => setShowHelp(p => (!p))}>{showHelp ? <i className="bi bi-question-lg" /> : <i className="bi bi-x" />}</Button>
+          <Button size="sm" variant="outline-secondary" onClick={() => setShowHelp(p => (!p))}>{showHelp ? <i className="bi bi-question-lg" /> : <i className="bi bi-x" />}</Button>
         </OverlayTrigger>
       </InputGroup>
       <Collapse in={replaceAccessToken.active}>

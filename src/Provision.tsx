@@ -2,7 +2,6 @@ import { Suspense, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 // import { persistQueryClient } from "react-query/persistQueryClient-experimental";
 import { BrowserRouter } from "react-router-dom";
-import { applyTheme } from "./stylings/theme";
 import AppSettingContext from "./utils/AppSettingContext";
 import { AppSetting } from "./utils/types";
 import { Toaster } from "react-hot-toast";
@@ -61,7 +60,7 @@ const Initialization = ({ appSettings, children }: AppDefinition) => {
     };
   }, []);
 
-  useEffect(() => applyTheme(appSettings.app_theme), [appSettings.app_theme]);
+  // useEffect(() => applyTheme(appSettings.app_theme), [appSettings.app_theme]);
 
   return (
     <BrowserRouter>
