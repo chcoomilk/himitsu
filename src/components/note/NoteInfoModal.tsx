@@ -17,7 +17,7 @@ interface Props {
   onHide?: () => void,
 }
 
-const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide: doUponHide, show: _show }: Props) => {
+const NoteInfoModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide: doUponHide, show: _show }: Props) => {
   const navigate = useNavigate();
   const [show, setShow] = useState(true);
   const [tooltip, setTooltip] = useState(false);
@@ -126,4 +126,4 @@ const NewNoteModal = ({ data: { id, expires_at: expired_at, passphrase }, onHide
   );
 };
 
-export default NewNoteModal;
+export default NoteInfoModal;

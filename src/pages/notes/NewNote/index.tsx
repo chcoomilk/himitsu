@@ -18,7 +18,7 @@ import unwrap_default from "../../../utils/functions/unwrap";
 import { Is } from "../../../utils/functions/is";
 import { useLocalStorage } from "usehooks-ts";
 
-const NewNoteModal = React.lazy(() => import("../../../components/note/NewNoteModal"));
+const NoteInfoModal = React.lazy(() => import("../../../components/note/NoteInfoModal"));
 
 type UNoteInfo = NoteInfo & {
   passphrase?: string,
@@ -211,7 +211,7 @@ const NewNote = () => {
       <NewNoteContext.Provider value={newNoteReducer}>
         {
           noteModal && (
-            <NewNoteModal data={{ ...noteModal }} onHide={() => {
+            <NoteInfoModal data={{ ...noteModal }} onHide={() => {
               setNoteModal(undefined);
               local_storage.remove("last_saved_note");
             }} />

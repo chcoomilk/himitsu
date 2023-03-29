@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { Alert as AlertT, NoteInfo } from "./utils/types";
 import { unwrap } from "./utils/functions";
 import SimpleConfirmationModal from "./components/modal/SimpleConfirmationModal";
-import NewNoteModal from "./components/note/NewNoteModal";
+import NoteInfoModal from "./components/note/NoteInfoModal";
 
 type AlertKeys = keyof AlertT;
 const createAlertKeys = <T extends AlertKeys[]>(
@@ -125,7 +125,7 @@ const Debug = () => {
         Show new note modal
       </Button>
       {
-        <NewNoteModal show={!!show.modal.newNote} data={show.modal.newNote || new_note} onHide={() => setShow({
+        <NoteInfoModal show={!!show.modal.newNote} data={show.modal.newNote || new_note} onHide={() => setShow({
           modal: {
             ...default_value.modal,
           }

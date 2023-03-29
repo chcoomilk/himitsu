@@ -17,7 +17,7 @@ const NotFound = lazy(() => import("./pages/404"));
 const About = lazy(() => import("./pages/About"));
 const AppSettings = lazy(() => import("./pages/Settings"));
 const Notes = lazy(() => import("./pages/notes/Notes"));
-const NewNoteModal = lazy(() => import("./components/note/NewNoteModal"));
+const NoteInfoModal = lazy(() => import("./components/note/NoteInfoModal"));
 const Debug = lazy(() => import("./Debug"));
 
 function App() {
@@ -68,7 +68,7 @@ function App() {
 
   const checkLastModalPopup = () => {
     let data = local_storage.get("last_saved_note");
-    return data && <NewNoteModal data={data} onHide={() => local_storage.remove("last_saved_note")} />;
+    return data && <NoteInfoModal data={data} onHide={() => local_storage.remove("last_saved_note")} />;
   };
 
   return (
