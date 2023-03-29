@@ -73,7 +73,7 @@ const Debug = () => {
             <Button
               className="mb-3"
               key={key}
-              onClick={_ => {
+              onClick={() => {
                 unwrap.default(key);
               }}
             >
@@ -84,7 +84,7 @@ const Debug = () => {
       }
       <Button
         className="mb-3"
-        onClick={_ => {
+        onClick={() => {
           toast("toast");
         }}
       >
