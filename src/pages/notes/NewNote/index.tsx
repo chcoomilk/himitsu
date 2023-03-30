@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { Fields } from "./formtypes";
 import NewNoteForm from "./Form";
-import NewNoteContext, { reducer } from "./context";
+import { reducer, NewNoteContext } from "./context";
 import OptionModal from "./OptionModal";
 import { post_note } from "../../../queries";
 import AppSettingContext from "../../../utils/AppSettingContext";

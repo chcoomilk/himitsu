@@ -1,14 +1,14 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { Col, Form, FormGroupProps, InputGroup, Row } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import { useLocation } from "react-router-dom";
 import UnitInput from "../../../../components/input/Unit";
-import NewNoteContext from "../context";
 import { Fields } from "../formtypes";
+import useNewNoteContext from "../context";
 
 const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
   const form = useFormContext<Fields>();
-  const [pageState] = useContext(NewNoteContext);
+  const [pageState] = useNewNoteContext();
   const [
     day, hour, minute, second
   ] = form.watch([

@@ -1,5 +1,4 @@
-import React, { createContext } from "react";
-import { DefaultValues } from "../../../utils/constants";
+import React, { createContext, useContext } from "react";
 import { EncryptionMethod } from "../../../utils/types";
 
 type NewNoteAction =
@@ -65,15 +64,16 @@ export const reducer: NewNoteReducer = (state, action) => {
     }
 };
 
-const NewNoteContext = createContext<[NewNoteState, React.Dispatch<NewNoteAction>]>([
-    {
-        modals: { reset: false, extra_settings: false, extra_settings_static_height: false, },
-        defaultEncryption: DefaultValues.settings.encryption,
-        alwaysSaveOnSubmit: DefaultValues.settings.history,
-        textAreaRow: 15,
-        mustExpire: false,
-        simpleMode: true,
-    },
-    () => { }
-]);
-export default NewNoteContext;
+export const NewNoteContext = createContext<[NewNoteState, React.Dispatch<NewNoteAction>] | undefined>(undefined);
+
+const useNewNoteContext = () => {
+    const context = useContext(NewNoteContext);
+
+    if (!context) {
+        throw new Error("useNewNoteContext is outside NewNote.Provider");
+    }
+
+    return context;
+}
+
+export default useNewNoteContext;

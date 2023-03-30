@@ -5,12 +5,12 @@ import { useFormContext } from "react-hook-form";
 import PassphraseInputGroup from "../../../components/input/PassphraseInputGroup";
 import AppContext from "../../../utils/AppSettingContext";
 import { createEncryptionMethodKeys, EncryptionMethod } from "../../../utils/types";
-import NewNoteContext from "./context";
 import { Fields } from "./formtypes";
 import FormButtons from "./components/FormButtons";
 import useLongPress from "../../../custom-hooks/useLongPress";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import useNewNoteContext from "./context";
 
 type Props = {
   onSubmit: (form_data: Fields) => void,
@@ -18,7 +18,7 @@ type Props = {
 
 const NewNoteForm = ({ onSubmit: submit }: Props) => {
   const appSettings = useContext(AppContext);
-  const [pageState] = useContext(NewNoteContext);
+  const [pageState] = useNewNoteContext();
   const form = useFormContext<Fields>();
   const { watch: subscribe } = form;
   const watch = form.watch();

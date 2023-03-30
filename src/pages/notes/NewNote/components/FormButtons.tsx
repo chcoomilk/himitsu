@@ -1,9 +1,8 @@
-import { useContext } from "react";
 import { Button, Spinner, Stack, StackProps } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import { Fields } from "../formtypes";
-import NewNoteContext from "../context";
 import { useNavigate } from "react-router-dom";
+import useNewNoteContext from "../context";
 
 type Props = {
   buttonSize?: "sm" | "lg",
@@ -11,7 +10,7 @@ type Props = {
 
 const FormButtons = ({ buttonSize, ...attr }: Props) => {
   const form = useFormContext<Fields>();
-  const [, dispatch] = useContext(NewNoteContext);
+  const [, dispatch] = useNewNoteContext();
   const navigate = useNavigate();
 
   return (

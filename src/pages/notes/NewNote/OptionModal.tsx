@@ -1,10 +1,10 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Tab, Modal, Nav } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
-import NewNoteContext from "./context";
 import { Fields } from "./formtypes";
 import NewNoteDefaultSettingFormGroup from "./components/DefaultSettingForm";
 import NewNoteOptionalGroupForm from "./components/OptionalGroupForm";
+import useNewNoteContext from "./context";
 
 type Props = {
   show: boolean,
@@ -19,7 +19,7 @@ enum Tabs {
 const OptionModal = ({ show, onHide }: Props) => {
   const form = useFormContext<Fields>();
   const [tabs, setTabs] = useState<Tabs>(Tabs.Common);
-  const [pageState] = useContext(NewNoteContext);
+  const [pageState] = useNewNoteContext();
 
   return (
     <Tab.Container defaultActiveKey={tabs}>

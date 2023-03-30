@@ -3,13 +3,13 @@ import { capitalCase } from "change-case";
 import { Form } from "react-bootstrap";
 import AppSettingContext from "../../../../utils/AppSettingContext";
 import { createEncryptionMethodKeys, EncryptionMethod } from "../../../../utils/types";
-import NewNoteContext from "../context";
 import InfoCircle from "../../../../components/InfoCircle";
+import useNewNoteContext from "../context";
 
 
 const NewNoteDefaultSettingFormGroup = () => {
   const appSettings = useContext(AppSettingContext);
-  const [pageState, dispatch] = useContext(NewNoteContext);
+  const [pageState, dispatch] = useNewNoteContext();
 
   return (
     <>
