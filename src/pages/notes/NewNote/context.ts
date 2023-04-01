@@ -14,11 +14,6 @@ type NewNoteAction =
     | { type: "setTextAreaRow", payload: number }
 
 type NewNoteState = {
-    modals: {
-        reset: boolean,
-        extra_settings: boolean,
-        extra_settings_static_height: boolean,
-    },
     defaultEncryption: EncryptionMethod,
     alwaysSaveOnSubmit: boolean,
     textAreaRow: number,
@@ -30,10 +25,6 @@ type NewNoteReducer = React.Reducer<NewNoteState, NewNoteAction>
 
 export const reducer: NewNoteReducer = (state, action) => {
     switch (action.type) {
-        case "toggleModalReset":
-            return { ...state, modals: { ...state.modals, reset: !state.modals.reset } };
-        case "toggleModalExtraSettings":
-            return { ...state, modals: { ...state.modals, extra_settings: !state.modals.extra_settings } };
         case "setDefaultEncryption":
             return { ...state, defaultEncryption: action.payload };
         case "toggleAlwaysSaveOnSubmit":
@@ -44,17 +35,8 @@ export const reducer: NewNoteReducer = (state, action) => {
             return { ...state, textAreaRow: state.textAreaRow + 1 };
         case "setTextAreaRow":
             return { ...state, textAreaRow: action.payload };
-        case "toggleExtraSettingsStaticHeight":
-            return {
-                ...state, modals: {
-                    ...state.modals,
-                    extra_settings_static_height: !state.modals.extra_settings_static_height
-                }
-            };
         case "toggleSimpleMode":
-            return {
-                ...state, simpleMode: !state.simpleMode,
-            };
+            return { ...state, simpleMode: !state.simpleMode };
         case "toggleMustExpire":
             return {
                 ...state, mustExpire: !state.mustExpire,
@@ -64,7 +46,8 @@ export const reducer: NewNoteReducer = (state, action) => {
     }
 };
 
-export const NewNoteContext = createContext<[NewNoteState, React.Dispatch<NewNoteAction>] | undefined>(undefined);
+// @ts-expect-error
+export const NewNoteContext = createContext<[NewNoteState, React.Dispatch<NewNoteAction>]>(undefined);
 
 const useNewNoteContext = () => {
     const context = useContext(NewNoteContext);

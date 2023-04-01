@@ -2,7 +2,6 @@ import { Button, Spinner, Stack, StackProps } from "react-bootstrap";
 import { useFormContext } from "react-hook-form";
 import { Fields } from "../formtypes";
 import { useNavigate } from "react-router-dom";
-import useNewNoteContext from "../context";
 
 type Props = {
   buttonSize?: "sm" | "lg",
@@ -10,7 +9,6 @@ type Props = {
 
 const FormButtons = ({ buttonSize, ...attr }: Props) => {
   const form = useFormContext<Fields>();
-  const [, dispatch] = useNewNoteContext();
   const navigate = useNavigate();
 
   return (
@@ -27,7 +25,7 @@ const FormButtons = ({ buttonSize, ...attr }: Props) => {
         className="w-100"
         size={buttonSize}
         variant="outline-danger"
-        onClick={() => dispatch({ type: "toggleModalReset" })} disabled={form.formState.isSubmitting}
+        onClick={() => navigate("#reset_form", { relative: "path" })} disabled={form.formState.isSubmitting}
       >
         Reset
       </Button>

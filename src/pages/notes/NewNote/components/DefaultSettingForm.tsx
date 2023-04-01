@@ -21,9 +21,8 @@ const NewNoteDefaultSettingFormGroup = () => {
           checked={pageState.mustExpire}
           onChange={() => dispatch({ type: "toggleMustExpire" })}
           label="Enforce expiry"
-        /> <InfoCircle
-          id="setMustExpire"
-        >
+        /> {" "}
+        <InfoCircle id="setMustExpire">
           Force the note to have an expiration. Warning! if this is turned off,
           you can have a note that lasts forever.
         </InfoCircle>
@@ -38,17 +37,8 @@ const NewNoteDefaultSettingFormGroup = () => {
           label="Always save note after submit"
         />
       </Form.Group>
-      <Form.Group controlId="staticHeight" className="mb-2">
-        <Form.Switch
-          inline
-          name="staticHeight"
-          checked={pageState.modals.extra_settings_static_height}
-          onChange={() => dispatch({ type: "toggleExtraSettingsStaticHeight" })}
-          label="Static window height"
-        />
-      </Form.Group>
       <Form.Group className="mb-2">
-        <Form.Group controlId="simpleModeOption">
+        <Form.Group className="mb-2" controlId="simpleModeOption">
           <Form.Switch
             className="me-0"
             inline
@@ -56,9 +46,8 @@ const NewNoteDefaultSettingFormGroup = () => {
             checked={pageState.simpleMode}
             onChange={() => dispatch({ type: "toggleSimpleMode" })}
             label="Simple mode"
-          /> <InfoCircle
-            id="simpleModeOption"
-          >
+          /> {" "}
+          <InfoCircle id="simpleModeOption">
             In simple mode, you don't need to choose any encryption, it'll do it automatically for you.
           </InfoCircle>
         </Form.Group>

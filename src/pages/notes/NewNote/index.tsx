@@ -37,11 +37,6 @@ const NewNote = () => {
   const newNoteReducer = useReducer(
     reducer,
     {
-      modals: {
-        reset: false,
-        extra_settings: false,
-        extra_settings_static_height: false,
-      },
       defaultEncryption: Is.existValueInEnum(EncryptionMethod, encryption)
         ? (encryption as EncryptionMethod)
         : EncryptionMethod.BackendEncryption,
@@ -52,7 +47,7 @@ const NewNote = () => {
     }
   );
 
-  const [pageState, dispatch] = newNoteReducer;
+  const [pageState] = newNoteReducer;
   const [noteModal, setNoteModal] = useState<UNoteInfo>();
 
   const form = useForm<Fields>({
@@ -220,11 +215,11 @@ const NewNote = () => {
         <SimpleConfirmationModal
           title="Reset form"
           text="This will reset the form, continue?"
-          show={pageState.modals.reset}
-          onHide={() => dispatch({ type: "toggleModalReset" })}
+          show={location.hash === "#reset_form"}
+          onHide={() => navigate(-1)}
           doDecide={c => {
             if (c) form.reset();
-            dispatch({ type: "toggleModalReset" });
+            navigate(-1);
           }}
           centered
         />

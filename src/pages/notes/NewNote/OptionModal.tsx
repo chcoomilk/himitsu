@@ -4,7 +4,6 @@ import { useFormContext } from "react-hook-form";
 import { Fields } from "./formtypes";
 import NewNoteDefaultSettingFormGroup from "./components/DefaultSettingForm";
 import NewNoteOptionalGroupForm from "./components/OptionalGroupForm";
-import useNewNoteContext from "./context";
 
 type Props = {
   show: boolean,
@@ -19,7 +18,6 @@ enum Tabs {
 const OptionModal = ({ show, onHide }: Props) => {
   const form = useFormContext<Fields>();
   const [tabs, setTabs] = useState<Tabs>(Tabs.Common);
-  const [pageState] = useNewNoteContext();
 
   return (
     <Tab.Container defaultActiveKey={tabs}>
@@ -43,7 +41,7 @@ const OptionModal = ({ show, onHide }: Props) => {
         <Modal.Header closeButton closeVariant="white">
           Options
         </Modal.Header>
-        <Modal.Body style={pageState.modals.extra_settings_static_height ? { height: "396px" } : undefined}>
+        <Modal.Body style={{ height: "45vh" }}>
           <Tab.Content>
             <Tab.Pane eventKey={Tabs.Common}>
               <NewNoteOptionalGroupForm />
