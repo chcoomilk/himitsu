@@ -1,40 +1,21 @@
 import { Suspense, useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
-// import { persistQueryClient } from "react-query/persistQueryClient-experimental";
 import { BrowserRouter } from "react-router-dom";
-import AppSettingContext from "./utils/AppSettingContext";
-import { AppSetting } from "./utils/types";
 import { Toaster } from "react-hot-toast";
 import { Spinner } from "react-bootstrap";
+
+import AppSettingContext from "./utils/AppSettingContext";
+import { AppSetting } from "./utils/types";
 import { local_storage } from "./utils/functions";
 import { patch_token } from "./queries";
 import Navbar from "./components/Navbar";
+import ReactQuery from "./libs/react-query";
 
-type AppDefinition = {
+type Args = {
   children: React.ReactNode,
   appSettings: AppSetting,
-  // setAppSettings: React.Dispatch<React.SetStateAction<AppSetting>>,
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      keepPreviousData: true,
-      retry: (failureCount, error) => {
-        if (error === 400) return false;
-        if (failureCount <= 3) return true;
-        else return false;
-      },
-      retryDelay: 6000,
-      cacheTime: Infinity,
-      staleTime: Infinity,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    },
-  }
-});
-
-const Initialization = ({ appSettings, children }: AppDefinition) => {
+const Initialization = ({ appSettings, children }: Args) => {
   useEffect(() => {
     let refresh_token_interval = setInterval(() => {
       const token = local_storage.get("token");
@@ -60,14 +41,12 @@ const Initialization = ({ appSettings, children }: AppDefinition) => {
     };
   }, []);
 
-  // useEffect(() => applyTheme(appSettings.app_theme), [appSettings.app_theme]);
-
   return (
     <BrowserRouter>
       <AppSettingContext.Provider
         value={appSettings}
       >
-        <QueryClientProvider client={queryClient}>
+        <ReactQuery>
           <Toaster
             position="bottom-center"
             toastOptions={{
@@ -94,7 +73,7 @@ const Initialization = ({ appSettings, children }: AppDefinition) => {
           }>
             {children}
           </Suspense>
-        </QueryClientProvider>
+        </ReactQuery>
       </AppSettingContext.Provider>
     </BrowserRouter>
   );
