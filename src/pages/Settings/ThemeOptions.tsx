@@ -23,6 +23,7 @@ const ThemeOptions = () => {
         createAppThemeKeys(
           "Normal",
           "Black",
+          "Light",
         ).map(theme_name => {
           return (
             <Form.Check
