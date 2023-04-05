@@ -98,7 +98,7 @@ const NavigationBar = () => {
           </Nav>
           <Nav className="ms-3">
             <Nav.Link
-              id="about"
+              id="setting"
               title="Settings"
               aria-label="settings link"
               className="py-0 fs-3"
