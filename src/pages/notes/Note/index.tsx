@@ -12,7 +12,7 @@ import { get_note, get_note_info, delete_note } from "../../../queries";
 import { generate_face, into_readable_datetime, local_storage, truncate_string, unwrap } from "../../../utils/functions";
 import { useAlert, useDescribe, useTitle } from "../../../custom-hooks";
 import SimpleConfirmationModal from "../../../components/modal/SimpleConfirmationModal";
-import { is_note_id } from "../../../utils/functions/is";
+import { is_note_id } from "../../../utils/is";
 import useDecrypt from "./custom-hooks/useDecrypt";
 import ContentTextarea from "./ContentField";
 import NoteInfoField from "./InfoField";

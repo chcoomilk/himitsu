@@ -1,17 +1,17 @@
 import React, { lazy, useEffect, useReducer } from "react";
 import { Route, Routes } from "react-router-dom";
-import { DefaultValues, PATHS } from "./utils/constants";
-import { AppSetting } from "./utils/types";
-import { local_storage } from "./utils/functions";
+import { useRegisterSW } from "virtual:pwa-register/react";
 import Initialization from "./Provision";
-import { AppAction, reducer as appReducer } from "./utils/AppSettingContext";
-
-import "./stylings/index.scss";
-
+import { useAlert } from "./custom-hooks";
+import useLastSavedNote from "./custom-hooks/localStorageState/useLastSavedNote";
 import FindNote from "./pages/notes/FindNote";
 import NewNote from "./pages/notes/NewNote";
-import { useAlert } from "./custom-hooks";
-import { useRegisterSW } from "virtual:pwa-register/react";
+import "./stylings/index.scss";
+import { AppAction, reducer as appReducer } from "./utils/AppSettingContext";
+import { DefaultValues, PATHS } from "./utils/constants";
+import { local_storage } from "./utils/functions";
+import { AppSetting } from "./utils/types";
+
 const Note = lazy(() => import("./pages/notes/Note"));
 const NotFound = lazy(() => import("./pages/404"));
 const About = lazy(() => import("./pages/About"));
@@ -21,6 +21,7 @@ const NoteInfoModal = lazy(() => import("./components/note/NoteInfoModal"));
 const Debug = lazy(() => import("./Debug"));
 
 export default function App() {
+  const [lastSavedNote, setLastSavedNote] = useLastSavedNote();
   const [appSettings, dispatchAppSetting] = useReducer<React.Reducer<AppSetting, AppAction>>(
     appReducer, local_storage.get("settings") || DefaultValues.settings
   );
@@ -67,14 +68,9 @@ export default function App() {
 
   useEffect(() => local_storage.set("settings", appSettings), [appSettings]);
 
-  const checkLastModalPopup = () => {
-    let data = local_storage.get("last_saved_note");
-    return data && <NoteInfoModal data={data} onHide={() => local_storage.remove("last_saved_note")} />;
-  };
-
   return (
     <Initialization appSettings={appSettings}>
-      {checkLastModalPopup()}
+      {lastSavedNote && <NoteInfoModal data={lastSavedNote} onHide={() => setLastSavedNote(null)} />}
       <Routes>
         <Route path={"/debug"} element={<Debug />} />
         <Route path={PATHS.about} element={<About />} />

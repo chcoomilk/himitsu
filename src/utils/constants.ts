@@ -25,7 +25,7 @@ const note: EnforceNote = {
 };
 
 const settings: AppSetting = {
-    app_theme: AppThemeSetting.Normal,
+    app_theme: AppThemeSetting.SystemDefault,
     encryption: EncryptionMethod.BackendEncryption,
     history: false,
     autofocus: true,

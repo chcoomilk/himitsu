@@ -15,7 +15,7 @@ import { useTitle } from "../../../custom-hooks";
 import { local_storage } from "../../../utils/functions";
 import SimpleConfirmationModal from "../../../components/modal/SimpleConfirmationModal";
 import unwrap_default from "../../../utils/functions/unwrap";
-import { Is } from "../../../utils/functions/is";
+import { Is } from "../../../utils/is";
 import { useLocalStorage } from "usehooks-ts";
 
 const NoteInfoModal = React.lazy(() => import("../../../components/note/NoteInfoModal"));

@@ -21,8 +21,8 @@ const ThemeOptions = () => {
     <>
       {
         createAppThemeKeys(
-          "Normal",
-          "Black",
+          "SystemDefault",
+          "Dark",
           "Light",
         ).map(theme_name => {
           return (

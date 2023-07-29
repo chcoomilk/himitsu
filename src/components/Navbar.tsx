@@ -17,7 +17,7 @@ const NavigationBar = () => {
   );
 
   return (
-    <Navbar sticky="top">
+    <Navbar className="bg-dark" sticky="top">
       <Container>
         <Navbar.Brand className="py-0 m-0">
           <Nav>
@@ -98,7 +98,7 @@ const NavigationBar = () => {
           </Nav>
           <Nav className="ms-3">
             <Nav.Link
-              id="setting"
+              id="settings"
               title="Settings"
               aria-label="settings link"
               className="py-0 fs-3"

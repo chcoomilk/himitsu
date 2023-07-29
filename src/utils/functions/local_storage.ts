@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import { DefaultValues } from "../constants";
 import { AppSetting, NoteInfo } from "../types";
-import { is_note, is_settings } from "./is";
+import { is_note_info, is_settings } from "../is";
 
 // pikachu dies from confusion
 // please see this for updates on conditional return in typescript
@@ -54,7 +54,7 @@ function get(key: LocalStorageItemKeys): LocalStorageReturnKind | null {
             case "notes":
                 if (Array.isArray(item)) {
                     let valid_arr_of_notes = item.map(data => {
-                        if (is_note(data)) {
+                        if (is_note_info(data)) {
                             return data;
                         }
 
@@ -66,7 +66,7 @@ function get(key: LocalStorageItemKeys): LocalStorageReturnKind | null {
 
                 throw invalid_error;
             case "last_saved_note":
-                if (is_note(item)) {
+                if (is_note_info(item)) {
                     return item;
                 }
 

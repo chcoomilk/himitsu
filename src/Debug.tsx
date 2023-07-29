@@ -55,6 +55,12 @@ const Debug = () => {
     },
   });
 
+  const resetModal = () => setShow({
+    modal: {
+      ...default_value.modal,
+    }
+  });
+
   return (
     <>
       {
@@ -103,14 +109,6 @@ const Debug = () => {
       >
         Show confirmation modal
       </Button>
-      <SimpleConfirmationModal centered show={show.modal.confirmation} doDecide={decision => {
-        console.log(decision);
-        setShow({
-          modal: {
-            ...default_value.modal,
-          }
-        });
-      }} />
       <Button
         onClick={() => {
           setShow(prev => ({
@@ -124,13 +122,11 @@ const Debug = () => {
       >
         Show new note modal
       </Button>
-      {
-        <NoteInfoModal show={!!show.modal.newNote} data={show.modal.newNote || new_note} onHide={() => setShow({
-          modal: {
-            ...default_value.modal,
-          }
-        })} />
-      }
+      <NoteInfoModal show={!!show.modal.newNote} data={show.modal.newNote || new_note} onHide={resetModal} />
+      <SimpleConfirmationModal centered show={show.modal.confirmation} onHide={resetModal} doDecide={decision => {
+        console.log(decision);
+        resetModal();
+      }} />
     </>
   );
 };

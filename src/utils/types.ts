@@ -74,9 +74,8 @@ export const createEncryptionMethodKeys = <T extends EncryptionMethodKey[]>(
 ) => array;
 
 export enum AppThemeSetting {
-  // System = "system default",
-  Normal,
-  Black,
+  SystemDefault,
+  Dark,
   Light,
 };
 
