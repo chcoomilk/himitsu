@@ -20,14 +20,15 @@ const NewNoteDurationGroupForm = ({ ...attr }: FormGroupProps) => {
 
   const location = useLocation();
 
+  // these are expanded because form in dependency will trigger every render
+  const { setFocus, trigger } = form;
   useEffect(() => {
-    location.state && JSON.parse(location.state)["focusOnDuration"] && form.setFocus("duration.second");
-  }, [form, location.state]);
+    location.state && JSON.parse(location.state)["focusOnDuration"] && setFocus("duration.second");
+  }, [setFocus, location.state]);
 
-  useEffect(() => { // deadly dependency "form" will cause infinite loop, do not try!!
-    form.trigger("duration.second");
-  }, [day, hour, minute]); // eslint-disable-line
-  // form will always be valid anyway
+  useEffect(() => {
+    trigger("duration.second");
+  }, [trigger, day, hour, minute]);
 
   useEffect(() => {
     if (pageState.mustExpire && !(day || hour || minute || second)) {
