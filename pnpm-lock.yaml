@@ -30,8 +30,8 @@ dependencies:
     specifier: ^18.2.0
     version: 18.2.0
   react-bootstrap:
-    specifier: ^2.7.2
-    version: 2.7.2(@types/react@18.0.31)(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^2.8.0
+    version: 2.8.0(@types/react@18.0.31)(react-dom@18.2.0)(react@18.2.0)
   react-countdown:
     specifier: ^2.3.5
     version: 2.3.5(react-dom@18.2.0)(react@18.2.0)
@@ -1829,8 +1829,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@restart/ui@1.6.2(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-hcYs8PwpmHEtwjihLVn2Jr89yrYajfhxN5HtTq3HA9U3+feg1SC3swBM8/qibMTCFsXWToEEtzJMV+LWE+Qjpg==}
+  /@restart/ui@1.6.6(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-eC3puKuWE1SRYbojWHXnvCNHGgf3uzHCb6JOhnF4OXPibOIPEkR1sqDSkL643ydigxwh+ruCa1CmYHlzk7ikKA==}
     peerDependencies:
       react: '>=16.14.0'
       react-dom: '>=16.14.0'
@@ -1844,7 +1844,7 @@ packages:
       dom-helpers: 5.2.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      uncontrollable: 8.0.0(react@18.2.0)
+      uncontrollable: 8.0.4(react@18.2.0)
       warning: 4.0.3
     dev: false
 
@@ -4305,8 +4305,8 @@ packages:
       safe-buffer: 5.2.1
     dev: true
 
-  /react-bootstrap@2.7.2(@types/react@18.0.31)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-WDSln+mG4RLLFO01stkj2bEx/3MF4YihK9D/dWnHaSxOiQZLbhhlf95D2Jb20X3t2m7vMxRe888FVrfLJoGmmA==}
+  /react-bootstrap@2.8.0(@types/react@18.0.31)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-e/aNtxl0Z2ozrIaR82jr6Zz7ss9GSoaXpQaxmvtDUsTZIq/XalkduR/ZXP6vbQHz2T4syvjA+4FbtwELxxmpww==}
     peerDependencies:
       '@types/react': '>=16.14.8'
       react: '>=16.14.0'
@@ -4317,7 +4317,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.21.0
       '@restart/hooks': 0.4.9(react@18.2.0)
-      '@restart/ui': 1.6.2(react-dom@18.2.0)(react@18.2.0)
+      '@restart/ui': 1.6.6(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.0.31
       '@types/react-transition-group': 4.4.5
       classnames: 2.3.2
@@ -4959,12 +4959,11 @@ packages:
       react-lifecycles-compat: 3.0.4
     dev: false
 
-  /uncontrollable@8.0.0(react@18.2.0):
-    resolution: {integrity: sha512-a954G/0JyXoZdpt0YIzTfoQyWtRS1VvygOBsHttCtZL8jDTKd6vQlUo811y46XnWoXIqQ36QKi3cSEdPuFADkA==}
+  /uncontrollable@8.0.4(react@18.2.0):
+    resolution: {integrity: sha512-ulRWYWHvscPFc0QQXvyJjY6LIXU56f0h8pQFvhxiKk5V1fcI8gp9Ht9leVAhrVjzqMw0BgjspBINx9r6oyJUvQ==}
     peerDependencies:
-      react: '>=17.0.0'
+      react: '>=16.14.0'
     dependencies:
-      '@types/react': 18.0.31
       react: 18.2.0
     dev: false
 
