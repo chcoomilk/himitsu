@@ -51,8 +51,8 @@ dependencies:
     specifier: ^6.16.0
     version: 6.16.0(react-dom@18.2.0)(react@18.2.0)
   sass:
-    specifier: ^1.69.0
-    version: 1.69.0
+    specifier: ^1.69.6
+    version: 1.69.6
   usehooks-ts:
     specifier: ^2.9.1
     version: 2.9.1(react-dom@18.2.0)(react@18.2.0)
@@ -87,7 +87,7 @@ devDependencies:
     version: 5.0.2
   vite:
     specifier: ^4.2.1
-    version: 4.2.1(@types/node@18.15.11)(sass@1.69.0)
+    version: 4.2.1(@types/node@18.15.11)(sass@1.69.6)
   vite-plugin-eslint:
     specifier: ^1.8.1
     version: 1.8.1(eslint@8.37.0)(vite@4.2.1)
@@ -2222,7 +2222,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.19.6(@babel/core@7.21.3)
       magic-string: 0.27.0
       react-refresh: 0.14.0
-      vite: 4.2.1(@types/node@18.15.11)(sass@1.69.0)
+      vite: 4.2.1(@types/node@18.15.11)(sass@1.69.6)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4604,8 +4604,8 @@ packages:
       is-regex: 1.1.4
     dev: true
 
-  /sass@1.69.0:
-    resolution: {integrity: sha512-l3bbFpfTOGgQZCLU/gvm1lbsQ5mC/WnLz3djL2v4WCJBDrWm58PO+jgngcGRNnKUh6wSsdm50YaovTqskZ0xDQ==}
+  /sass@1.69.6:
+    resolution: {integrity: sha512-qbRr3k9JGHWXCvZU77SD2OTwUlC+gNT+61JOLcmLm+XqH4h/5D+p4IIsxvpkB89S9AwJOyb5+rWNpIucaFxSFQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -5073,7 +5073,7 @@ packages:
       '@types/eslint': 8.21.3
       eslint: 8.37.0
       rollup: 2.79.1
-      vite: 4.2.1(@types/node@18.15.11)(sass@1.69.0)
+      vite: 4.2.1(@types/node@18.15.11)(sass@1.69.6)
     dev: true
 
   /vite-plugin-pwa@0.14.7(vite@4.2.1)(workbox-build@6.5.4)(workbox-window@6.5.4):
@@ -5088,7 +5088,7 @@ packages:
       fast-glob: 3.2.12
       pretty-bytes: 6.1.0
       rollup: 3.20.2
-      vite: 4.2.1(@types/node@18.15.11)(sass@1.69.0)
+      vite: 4.2.1(@types/node@18.15.11)(sass@1.69.6)
       workbox-build: 6.5.4
       workbox-window: 6.5.4
     transitivePeerDependencies:
@@ -5106,13 +5106,13 @@ packages:
       debug: 4.3.4
       globrex: 0.1.2
       tsconfck: 2.1.1(typescript@5.0.2)
-      vite: 4.2.1(@types/node@18.15.11)(sass@1.69.0)
+      vite: 4.2.1(@types/node@18.15.11)(sass@1.69.6)
     transitivePeerDependencies:
       - supports-color
       - typescript
     dev: true
 
-  /vite@4.2.1(@types/node@18.15.11)(sass@1.69.0):
+  /vite@4.2.1(@types/node@18.15.11)(sass@1.69.6):
     resolution: {integrity: sha512-7MKhqdy0ISo4wnvwtqZkjke6XN4taqQ2TBaTccLIpOKv7Vp2h4Y+NpmWCnGDeSvvn45KxvWgGyb0MkHvY1vgbg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -5142,7 +5142,7 @@ packages:
       postcss: 8.4.21
       resolve: 1.22.1
       rollup: 3.20.2
-      sass: 1.69.0
+      sass: 1.69.6
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
